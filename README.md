@@ -1,2 +1,2 @@
-# -berprachtige-KBS-game
+# Überprachtige-KBS-game
 Onze prachtige game
