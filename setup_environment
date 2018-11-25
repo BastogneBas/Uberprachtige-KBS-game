@@ -1,0 +1,8 @@
+#!/bin/bash
+version=1.8.7
+cd ~
+git clone https://github.com/sudar/Arduino-Makefile.git
+wget https://downloads.arduino.cc/arduino-$version-linux64.tar.xz
+tar -xvf arduino-$version-linux64.tar.xz
+mv arduino-$version/ arduino/
+rm arduino-$version-linux64.tar.xz

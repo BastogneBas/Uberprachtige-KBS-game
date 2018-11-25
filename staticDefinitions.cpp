@@ -1,84 +1,17 @@
-#include <Arduino.h>
-#include <Adafruit_GFX.h>		// Core graphics library
-#include "Adafruit_ILI9341.h"	// Hardware-specific library
-#include <SPI.h>
+#include "Adafruit_ILI9341.h"
+#include <stddef.h>
 #include <SD.h>
 
-// TFT display and SD card will share the hardware SPI interface.
-// Hardware SPI pins are specific to the Arduino board type and
-// cannot be remapped to alternate pins.  For Arduino Uno,
-// Duemilanove, etc., pin 11 = MOSI, pin 12 = MISO, pin 13 = SCK.
 
-#define TFT_DC 9
-#define TFT_CS 10
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
+class Definitions {
+	public:
+static const int TFT_DC	=9;
+static const int TFT_CS	=10;
+static const int SD_CS	=4;
 
-#define SD_CS 4
-
-//#define DEBUG
-
-void drawPoppetje1(uint8_t x, uint8_t y);
-void drawTon(uint8_t x, uint8_t y);
-void drawBlokje(uint8_t x, uint8_t y);
-void bmpDraw(char *filename, int16_t x, int16_t y);
-uint16_t read16(File & f);
-uint32_t read32(File & f);
-void printDirectory(File dir, int numTabs);
-
-int main(void)
-{
-
-	init();
-#ifdef DEBUG
-	Serial.begin(9600);
-#endif
-	tft.begin();
-
-	yield();
-
-	if (!SD.begin(SD_CS))
-	{
-	}
-
-	//File root = SD.open("/");
-	//printDirectory(root, 0);
-
-//if(0){
-	tft.setRotation(1);
-	tft.fillScreen(ILI9341_BLACK);
-	uint8_t width = 14, height = 16;
-	for (int x = 0; x <= height; x++)
-		drawBlokje(x, 0);
-	for (int y = 0; y <= width; y++)
-		drawBlokje(0, y);
-	for (int x = 0; x <= height; x++)
-		drawBlokje(x, width);
-	for (int y = 0; y <= width; y++)
-		drawBlokje(height, y);
-	for (int y = 2; y < width; y += 2)
-		for (int x = 2; x < height; x += 2)
-			drawBlokje(x, y);
-	drawPoppetje1(1, 1);
-	drawTon(1, 2);
-	drawTon(2, 1);
-//}
-	while (1) ;
-}
-
-void drawPoppetje1(uint8_t x, uint8_t y)
-{
-	bmpDraw("sp1.bmp", x * 16, y * 16);
-}
-
-void drawTon(uint8_t x, uint8_t y)
-{
-	bmpDraw("Ton.bmp", x * 16, y * 16);
-}
-
-void drawBlokje(uint8_t x, uint8_t y)
-{
-	bmpDraw("blokje.bmp", x * 16, y * 16);
-}
+static Adafruit_ILI9341 *tft;
+//Adafruit_ILI9341 *Definitions::tft;
+   	// = new Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 // This function opens a Windows Bitmap (BMP) file and
 // displays it at the given coordinates.  It's sped up
@@ -89,8 +22,7 @@ void drawBlokje(uint8_t x, uint8_t y)
 // good balance.
 
 #define BUFFPIXEL 20
-
-void bmpDraw(char *filename, int16_t x, int16_t y)
+static void bmpDraw(char *filename, int16_t x, int16_t y)
 {
 
 	File bmpFile;
@@ -106,7 +38,7 @@ void bmpDraw(char *filename, int16_t x, int16_t y)
 	uint8_t r, g, b;
 	uint32_t pos = 0, startTime = millis();
 
-	if ((x >= tft.width()) || (y >= tft.height()))
+	if ((x >= tft->width()) || (y >= tft->height()))
 		return;
 
 	Serial.println();
@@ -193,14 +125,14 @@ void bmpDraw(char *filename, int16_t x, int16_t y)
 						y = 0;
 						h = y2 + 1;
 					}
-					if (x2 >= tft.width())
-						w = tft.width() - x;	// Clip right
-					if (y2 >= tft.height())
-						h = tft.height() - y;	// Clip bottom
+					if (x2 >= tft->width())
+						w = tft->width() - x;	// Clip right
+					if (y2 >= tft->height())
+						h = tft->height() - y;	// Clip bottom
 
 					// Set TFT address window to clipped image bounds
-					tft.startWrite();	// Requires start/end transaction now
-					tft.setAddrWindow(x, y, w, h);
+					tft->startWrite();	// Requires start/end transaction now
+					tft->setAddrWindow(x, y, w, h);
 
 					for (row = 0; row < h; row++)
 					{			// For each scanline...
@@ -214,36 +146,36 @@ void bmpDraw(char *filename, int16_t x, int16_t y)
 						if (flip)	// Bitmap is stored bottom-to-top order (normal BMP)
 							pos =
 								bmpImageoffset + (bmpHeight - 1 -
-												  (row + by1)) * rowSize;
+											  (row + by1)) * rowSize;
 						else	// Bitmap is stored top-to-bottom
 							pos = bmpImageoffset + (row + by1) * rowSize;
 						pos += bx1 * 3;	// Factor in starting column (bx1)
 						if (bmpFile.position() != pos)
 						{		// Need seek?
-							tft.endWrite();	// End TFT transaction
+							tft->endWrite();	// End TFT transaction
 							bmpFile.seek(pos);
 							buffidx = sizeof(sdbuffer);	// Force buffer reload
-							tft.startWrite();	// Start new TFT transaction
+							tft->startWrite();	// Start new TFT transaction
 						}
 						for (col = 0; col < w; col++)
 						{		// For each pixel...
 							// Time to read more pixel data?
 							if (buffidx >= sizeof(sdbuffer))
 							{	// Indeed
-								tft.endWrite();	// End TFT transaction
+								tft->endWrite();	// End TFT transaction
 								bmpFile.read(sdbuffer, sizeof(sdbuffer));
 								buffidx = 0;	// Set index to beginning
-								tft.startWrite();	// Start new TFT transaction
+								tft->startWrite();	// Start new TFT transaction
 							}
 							// Convert pixel from BMP to TFT format, push to display
 							b = sdbuffer[buffidx++];
 							g = sdbuffer[buffidx++];
 							r = sdbuffer[buffidx++];
 							//if(r==0x00&&g==0x00&&b==0x00)
-							tft.writePixel(tft.color565(r, g, b));
+							tft->writePixel(tft->color565(r, g, b));
 						}		// end pixel
 					}			// end scanline
-					tft.endWrite();	// End last TFT transaction
+					tft->endWrite();	// End last TFT transaction
 				}				// end onscreen
 #ifdef DEBUG
 				Serial.print(F("Loaded in "));
@@ -265,7 +197,7 @@ void bmpDraw(char *filename, int16_t x, int16_t y)
 // BMP data is stored little-endian, Arduino is little-endian too.
 // May need to reverse subscript order if porting elsewhere.
 
-uint16_t read16(File & f)
+static uint16_t read16(File & f)
 {
 	uint16_t result;
 	((uint8_t *) & result)[0] = f.read();	// LSB
@@ -273,7 +205,7 @@ uint16_t read16(File & f)
 	return result;
 }
 
-uint32_t read32(File & f)
+static uint32_t read32(File & f)
 {
 	uint32_t result;
 	((uint8_t *) & result)[0] = f.read();	// LSB
@@ -282,34 +214,4 @@ uint32_t read32(File & f)
 	((uint8_t *) & result)[3] = f.read();	// MSB
 	return result;
 }
-
-void printDirectory(File dir, int numTabs)
-{
-	while (true)
-	{
-
-		File entry = dir.openNextFile();
-		if (!entry)
-		{
-			// no more files
-			break;
-		}
-		for (uint8_t i = 0; i < numTabs; i++)
-		{
-			Serial.print('\t');
-		}
-		Serial.print(entry.name());
-		if (entry.isDirectory())
-		{
-			Serial.println("/");
-			printDirectory(entry, numTabs + 1);
-		}
-		else
-		{
-			// files have sizes, directories do not
-			Serial.print("\t\t");
-			Serial.println(entry.size(), DEC);
-		}
-		entry.close();
-	}
-}
+};
