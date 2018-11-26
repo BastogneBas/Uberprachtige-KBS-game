@@ -1,4 +1,4 @@
-#include "Adafruit_ILI9341.h"
+#include "src/Adafruit_ILI9341/Adafruit_ILI9341.h"
 #include <stddef.h>
 #include <SD.h>
 

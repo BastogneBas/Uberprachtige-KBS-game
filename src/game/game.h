@@ -1,4 +1,5 @@
 #include "../../screen.h"
+#include <stddef.h>
 
 #ifndef SPELSCHERM_H
 #define SPELSCHERM_H

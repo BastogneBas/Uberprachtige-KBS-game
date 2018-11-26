@@ -1,5 +1,5 @@
-#include <Adafruit_GFX.h>		// Core graphics library
-#include "Adafruit_ILI9341.h"	// Hardware-specific library
+#include "../Adafruit_GFX_Library/Adafruit_GFX.h"		// Core graphics library
+#include "../Adafruit_ILI9341/Adafruit_ILI9341.h"	// Hardware-specific library
 #include <SPI.h>
 #include <SD.h>
 #include "../../staticDefinitions.cpp"
@@ -21,7 +21,7 @@ gameScreen::gameScreen()
 void gameScreen::begin()
 {
 	Definitions::tft->fillScreen(ILI9341_BLACK);
-	uint8_t width = 14, height = 16;
+	uint8_t width = 14, height = 14;
 	for (int x = 0; x <= height; x++)
 		drawBlock(x, 0);
 	for (int y = 0; y <= width; y++)
@@ -53,7 +53,7 @@ void gameScreen::drawPeep1(uint8_t x, uint8_t y)
 
 void gameScreen::drawBarrel(uint8_t x, uint8_t y)
 {
-	Definitions::bmpDraw("Barrel.bmp", x * 16, y * 16);
+	Definitions::bmpDraw("barrel.bmp", x * 16, y * 16);
 }
 
 void gameScreen::drawBlock(uint8_t x, uint8_t y)
