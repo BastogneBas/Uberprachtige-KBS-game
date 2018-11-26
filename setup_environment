@@ -1,8 +1,50 @@
 #!/bin/bash
 version=1.8.7
 cd ~
+echo Arduino-Makefile downloaden naar $HOME/Arduino-Makefile
 git clone https://github.com/sudar/Arduino-Makefile.git
+echo Arduino IDE downloaden naar $HOME/arduino
 wget https://downloads.arduino.cc/arduino-$version-linux64.tar.xz
-tar -xvf arduino-$version-linux64.tar.xz
+tar -xf arduino-$version-linux64.tar.xz
 mv arduino-$version/ arduino/
 rm arduino-$version-linux64.tar.xz
+echo De indent configuratie aanmaken
+cat >~/.indent.pro <<EOL
+-nbad
+-bap
+-bbo
+-nbc
+-bl
+-bli0
+//-br
+//-brs
+-c33
+-cd33
+-ncdb
+-nce
+-ci4
+-cli4
+-cp33
+-cs
+-d0
+-di1
+-nfc1
+-nfca
+-hnl
+-i4
+-ip0
+-l75
+-lp
+-npcs
+-nprs
+-npsl
+-saf
+-sai
+-saw
+-nsc
+-nsob
+-ss
+
+//[-kr]
+-ts4
+EOL
