@@ -1,7 +1,7 @@
-#ifndef SCHERM_H
-#define SCHERM_H
+#ifndef SCREEN_H
+#define SCREEN_H
 
-class scherm
+class screen
 {
   public:
 	//virtual Scherm()=0;

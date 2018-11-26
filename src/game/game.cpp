@@ -3,12 +3,12 @@
 #include <SPI.h>
 #include <SD.h>
 #include "../../staticDefinitions.cpp"
-#include "spel.h"
+#include "game.h"
 
 void printDirectory(File dir, int numTabs);
 //Adafruit_ILI9341 *Definitions::tft;
 
-spelScherm::spelScherm()
+gameScreen::gameScreen()
 {
 	if (!SD.begin(Definitions::SD_CS))
 	{
@@ -18,47 +18,47 @@ spelScherm::spelScherm()
 	//printDirectory(root, 0);
 }
 
-void spelScherm::begin()
+void gameScreen::begin()
 {
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 	uint8_t width = 14, height = 16;
 	for (int x = 0; x <= height; x++)
-		drawBlokje(x, 0);
+		drawBlock(x, 0);
 	for (int y = 0; y <= width; y++)
-		drawBlokje(0, y);
+		drawBlock(0, y);
 	for (int x = 0; x <= height; x++)
-		drawBlokje(x, width);
+		drawBlock(x, width);
 	for (int y = 0; y <= width; y++)
-		drawBlokje(height, y);
+		drawBlock(height, y);
 	for (int y = 2; y < width; y += 2)
 		for (int x = 2; x < height; x += 2)
-			drawBlokje(x, y);
-	drawPoppetje1(1, 1);
-	drawTon(1, 2);
-	drawTon(2, 1);
+			drawBlock(x, y);
+	drawPeep1(1, 1);
+	drawBarrel(1, 2);
+	drawBarrel(2, 1);
 }
 
-void spelScherm::end()
+void gameScreen::end()
 {
 }
 
-void spelScherm::refresh()
+void gameScreen::refresh()
 {
 }
 
-void spelScherm::drawPoppetje1(uint8_t x, uint8_t y)
+void gameScreen::drawPeep1(uint8_t x, uint8_t y)
 {
-	Definitions::bmpDraw("sp1.bmp", x * 16, y * 16);
+	Definitions::bmpDraw("peep1.bmp", x * 16, y * 16);
 }
 
-void spelScherm::drawTon(uint8_t x, uint8_t y)
+void gameScreen::drawBarrel(uint8_t x, uint8_t y)
 {
-	Definitions::bmpDraw("Ton.bmp", x * 16, y * 16);
+	Definitions::bmpDraw("Barrel.bmp", x * 16, y * 16);
 }
 
-void spelScherm::drawBlokje(uint8_t x, uint8_t y)
+void gameScreen::drawBlock(uint8_t x, uint8_t y)
 {
-	Definitions::bmpDraw("blokje.bmp", x * 16, y * 16);
+	Definitions::bmpDraw("block.bmp", x * 16, y * 16);
 }
 
 void printDirectory(File dir, int numTabs)

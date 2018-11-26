@@ -1,5 +1,5 @@
-#include "src/spel/spel.h"
-#include "scherm.h"
+#include "src/game/game.h"
+#include "screen.h"
 #include "staticDefinitions.cpp"
 
 // If we are debugging, uncomment this. Then there will be Serial communication.
@@ -8,7 +8,7 @@
 // The tft needs to be redefined here, for some reason.
 Adafruit_ILI9341 *Definitions::tft;
 // Pointer to the current visible screen.
-scherm *currentScreen;
+screen *currentScreen;
 
 int main()
 {
@@ -32,11 +32,11 @@ int main()
 	// TODO: replace with level selection screen.
 #warning Needs te be replaced
 	// Immediately start game screen.
-	spelScherm spel = spelScherm();
-	spel.begin();
+	gameScreen gamescreen = gameScreen();
+	gamescreen.begin();
 
 	// Sets the current screen to the current loaded screen
-	currentScreen = &spel;
+	currentScreen = &gamescreen;
 	while (1)
 	{
 		// Refresh screen
