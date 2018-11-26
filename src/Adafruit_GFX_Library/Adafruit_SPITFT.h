@@ -1,6 +1,8 @@
 #ifndef _ADAFRUIT_SPITFT_
 #define _ADAFRUIT_SPITFT_
 
+#if !defined(__AVR_ATtiny85__) // NOT A CHANCE of this stuff working on ATtiny
+
 #if ARDUINO >= 100
  #include "Arduino.h"
  #include "Print.h"
@@ -17,6 +19,7 @@
 #elif defined(ARDUINO_STM32_FEATHER)
   typedef volatile uint32 RwReg;
   #undef USE_FAST_PINIO
+  typedef class HardwareSPI SPIClass;
 #elif defined(__OPENCR__) || defined (__OPENCM904__)
   #undef USE_FAST_PINIO
 #elif defined(ARDUINO_FEATHER52) || defined(__arm__)
@@ -37,7 +40,7 @@ class Adafruit_SPITFT : public Adafruit_GFX {
     public:
         Adafruit_SPITFT(uint16_t w, uint16_t h, int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
         Adafruit_SPITFT(uint16_t w, uint16_t h, int8_t _CS, int8_t _DC, int8_t _RST = -1);
-
+        Adafruit_SPITFT(uint16_t w, uint16_t h, SPIClass *spiClass, int8_t _CS, int8_t _DC, int8_t _RST = -1);
         virtual void begin(uint32_t freq) = 0;  ///< Virtual begin() function to set SPI frequency, must be overridden in subclass. @param freq Maximum SPI hardware clock speed
 
         void      initSPI(uint32_t freq);
@@ -87,6 +90,7 @@ class Adafruit_SPITFT : public Adafruit_GFX {
         uint16_t  color565(uint8_t r, uint8_t g, uint8_t b);
 
     protected:
+	SPIClass *_spi;         ///< The SPI device we want to use (set in constructor)
         uint32_t _freq;         ///< SPI clock frequency (for hardware SPI)
 #if defined (__AVR__) || defined(TEENSYDUINO) || defined (ESP8266) || defined (ESP32)
         int8_t  _cs, _dc, _rst, _sclk, _mosi, _miso;
@@ -122,4 +126,6 @@ class Adafruit_SPITFT : public Adafruit_GFX {
 	int16_t   _ystart = 0;   ///< Many displays don't have pixels starting at (0,0) of the internal framebuffer, this is the y offset from 0 to align
 };
 
-#endif
+#endif // !__AVR_ATtiny85__
+
+#endif // !_ADAFRUIT_SPITFT_
