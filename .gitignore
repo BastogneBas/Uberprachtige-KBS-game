@@ -1,4 +1,6 @@
 build-uno/
 make_Bas
 *~
+cmake-build-debug
+CMakeLists.txt
 .idea/
