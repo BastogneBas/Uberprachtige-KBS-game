@@ -32,19 +32,18 @@
 *
 */
 
-#ifndef __AVR_ATtiny85__ // NOT A CHANCE of this stuff working on ATtiny!
+#if !defined(__AVR_ATtiny85__) // NOT A CHANCE of this stuff working on ATtiny
 
 #include "Adafruit_SPITFT.h"
-#ifndef ARDUINO_STM32_FEATHER
+#if !defined(ARDUINO_STM32_FEATHER)
   #include "pins_arduino.h"
-#ifndef RASPI
-    #include "wiring_private.h"
 #endif
+#if !defined(ARDUINO_STM32_FEATHER) && !defined(RASPI)
+  #include "wiring_private.h"
 #endif
 #include <limits.h>
 
 #include "Adafruit_SPITFT_Macros.h"
-
 
 
 /**************************************************************************/
@@ -126,10 +125,29 @@ Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h,
 /**************************************************************************/
 Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h,
 				 int8_t cs, int8_t dc, int8_t rst) 
+  : Adafruit_SPITFT(w, h, &SPI, cs, dc, rst) 
+{
+  // We just call the hardware SPI instantiator with the default SPI device (&SPI)
+}
+
+/**************************************************************************/
+/*!
+    @brief  Instantiate Adafruit SPI display driver with hardware SPI
+    @param    w     Display width in pixels
+    @param    h     Display height in pixels
+    @param    spiClass A pointer to an SPI hardware interface, e.g. &SPI1
+    @param    cs    Chip select pin #
+    @param    dc    Data/Command pin #
+    @param    rst   Reset pin # (optional, pass -1 if unused)
+*/
+/**************************************************************************/
+Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h, SPIClass *spiClass,
+				 int8_t cs, int8_t dc, int8_t rst) 
   : Adafruit_GFX(w, h) {
     _cs   = cs;
     _dc   = dc;
     _rst  = rst;
+    _spi = spiClass;
     _sclk = -1;
     _mosi = -1;
     _miso = -1;
@@ -199,7 +217,7 @@ void Adafruit_SPITFT::initSPI(uint32_t freq) {
 
 /**************************************************************************/
 /*!
-    @brief   Read one byte from SPI interface (hardware or software
+    @brief   Read one byte from SPI interface (hardware or software)
     @returns One byte, MSB order
 */
 /**************************************************************************/
@@ -224,7 +242,7 @@ uint8_t Adafruit_SPITFT::spiRead() {
 
 /**************************************************************************/
 /*!
-    @brief   Write one byte to SPI interface (hardware or software
+    @brief   Write one byte to SPI interface (hardware or software)
     @param  b  One byte to send, MSB order
 */
 /**************************************************************************/
