@@ -18,10 +18,14 @@ gameScreen::gameScreen()
 	//printDirectory(root, 0);
 }
 
+/*gameScreen::gameScreen(Level level)
+ *{
+ */
+
 void gameScreen::begin()
 {
 	Definitions::tft->fillScreen(ILI9341_BLACK);
-	uint8_t width = 14, height = 14;
+	uint8_t width = 14, height = 12;
 	for (int x = 0; x <= height; x++)
 		drawBlock(x, 0);
 	for (int y = 0; y <= width; y++)
@@ -51,6 +55,11 @@ void gameScreen::drawPeep1(uint8_t x, uint8_t y)
 	Definitions::bmpDraw("peep1.bmp", x * 16, y * 16);
 }
 
+void gameScreen::drawPeep2(uint8_t x, uint8_t y)
+{
+	Definitions::bmpDraw("peep2.bmp", x * 16, y * 16);
+}
+
 void gameScreen::drawBarrel(uint8_t x, uint8_t y)
 {
 	Definitions::bmpDraw("barrel.bmp", x * 16, y * 16);
@@ -59,6 +68,19 @@ void gameScreen::drawBarrel(uint8_t x, uint8_t y)
 void gameScreen::drawBlock(uint8_t x, uint8_t y)
 {
 	Definitions::bmpDraw("block.bmp", x * 16, y * 16);
+}
+
+void gameScreen::drawBomb(uint8_t x, uint8_t y)
+{
+	Definitions::bmpDraw("bomb.bmp", x * 16, y * 16);
+}
+
+void gameScreen::checkNunchuck()
+{
+}
+
+void gameScreen::operation()
+{
 }
 
 void printDirectory(File dir, int numTabs)
