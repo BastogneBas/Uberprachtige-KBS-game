@@ -10,6 +10,9 @@ class Definitions
 	static const int TFT_CS = 10;
 	static const int SD_CS = 4;
 
+	static const uint8_t gameHeight = 11;
+	static const uint8_t gameWidth = 13;
+
 	static Adafruit_ILI9341 *tft;
 
 // This function opens a Windows Bitmap (BMP) file and

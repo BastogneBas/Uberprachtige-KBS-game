@@ -10,6 +10,6 @@ ARDMK_VENDOR = arduino
 
 #CXXFLAGS += -Isrc/spel/
 USER_LIB_PATH = $(realpath ./src)
-ARDUINO_LIBS = Adafruit_GFX_Library SPI Wire Adafruit_ILI9341 SD game
+ARDUINO_LIBS = Adafruit_GFX_Library SPI Wire Adafruit_ILI9341 SD game level
 
 include $(ARDMK_DIR)/Arduino.mk
