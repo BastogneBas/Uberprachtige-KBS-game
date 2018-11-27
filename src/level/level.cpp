@@ -7,7 +7,7 @@
  */
 Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 {
-	for(uint8_t i=0,i<Definitions::gameHeight,i++){
+	for(uint8_t i=0;i<Definitions::gameHeight;i++){
 		
 	}
 }
