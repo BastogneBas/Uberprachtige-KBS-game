@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <SD.h>
 
+#ifndef DEFINITIONS_H
+#define DEFINITIONS_H
 
 class Definitions
 {
@@ -220,3 +222,5 @@ class Definitions
 		return result;
 	}
 };
+
+#endif
