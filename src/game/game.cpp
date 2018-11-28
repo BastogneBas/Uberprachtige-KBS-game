@@ -72,7 +72,7 @@ void gameScreen::drawPeep1(uint16_t x, uint16_t y)
 
 void gameScreen::drawPeep2(uint16_t x, uint16_t y)
 {
-	Definitions::bmpDraw("peep2.bmp", x * 16, y * 16);
+	Definitions::bmpDraw("PEEP2.bmp", x * 16, y * 16);
 }
 
 void gameScreen::drawBarrel(uint16_t x, uint16_t y)

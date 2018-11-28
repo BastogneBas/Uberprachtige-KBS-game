@@ -20,7 +20,7 @@ class LevelDefs{
 		//Level Levels[] = {level1};
 
 		// A mask for the locations where no barrels can be placed
-		static const uint16_t YouCantPlaceBarrelsHere[11]={
+		static const uint16_t YouCantPlaceBarrelsHere[11];/*={
 					0b1111110000000000,
 					0b1111101010101010,
 					0b1111000000000000,
@@ -32,7 +32,7 @@ class LevelDefs{
 					0b1110000000000001,
 					0b1110101010101011,
 					0b1110000000000111
-		};
+		};*/
 		//Level getLevel(uint8_t levelId){
 		//	return Level(levelBarrels[levelId], levelNames[levelId]);
 		//}

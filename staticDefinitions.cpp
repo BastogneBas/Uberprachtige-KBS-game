@@ -5,7 +5,7 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-#define DEBUG
+//#define DEBUG
 
 class Definitions
 {
@@ -33,6 +33,10 @@ class Definitions
 			tft->fillRect(x, y, 15, 15, ILI9341_WHITE);
 		if(filename[0] == 'B' && filename[5] == 'L')
 			tft->fillRect(x, y, 15, 15, ILI9341_MAROON);
+		if(filename[0] == 'P' && filename[4] == '1')
+			tft->fillRect(x, y, 15, 15, ILI9341_BLUE);
+		if(filename[0] == 'P' && filename[4] == '2')
+			tft->fillRect(x, y, 15, 15, ILI9341_RED);
 	}
 
 #ifdef SD

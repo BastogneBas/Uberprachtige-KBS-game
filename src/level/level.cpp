@@ -18,9 +18,10 @@ Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
  * Creates a level with random barrel locations
  */
 Level::Level(String name){
-	randomSeed((uint8_t)this);
+	randomSeed(analogRead(A0));
 	for(uint8_t i=0;i<Definitions::gameHeight;i++){
-		this->barrels[i] = ((uint16_t)random(0xFFFFFFFF) & ~(LevelDefs::YouCantPlaceBarrelsHere[i]));
+		this->barrels[i] = (((uint16_t)random(0xFFFF)) & ~(LevelDefs::YouCantPlaceBarrelsHere[i]));
+	//	this->barrels[i] = (~(LevelDefs::YouCantPlaceBarrelsHere[i]));
 	}
 	this->name = "Generated level";
 }
