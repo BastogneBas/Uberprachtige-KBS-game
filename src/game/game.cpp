@@ -4,6 +4,8 @@
 #include <SD.h>
 #include "../../staticDefinitions.cpp"
 #include "game.h"
+#include "../level/level.h"
+#include "../level/levelDefs.h"
 
 void printDirectory(File dir, int numTabs);
 //Adafruit_ILI9341 *Definitions::tft;
@@ -18,9 +20,10 @@ gameScreen::gameScreen()
 	//printDirectory(root, 0);
 }
 
-/*gameScreen::gameScreen(Level level)
- *{
- */
+gameScreen::gameScreen(Level level)
+ {
+	this->level = level;
+ }
 
 void gameScreen::begin()
 {
@@ -38,8 +41,25 @@ void gameScreen::begin()
 		for (int x = 2; x < height; x += 2)
 			drawBlock(x, y);
 	drawPeep1(1, 1);
-	drawBarrel(1, 2);
-	drawBarrel(2, 1);
+
+	Level level = new Level(level.getBarrels(), "Level1");
+	for (int x = 1; i <= level; i++) {
+        for (int y = 1; j < 16; j++) {
+
+            if (level.getBarrels() & (1 << level.getBarrels[x])) {
+                drawBarrel(x, y);
+            }
+
+        }
+    }
+	};
+
+
+
+
+	/*drawBarrel(1, 2);
+	 *drawBarrel(2, 1);
+	 */
 }
 
 void gameScreen::end()
@@ -76,10 +96,6 @@ void gameScreen::drawBomb(uint8_t x, uint8_t y)
 }
 
 void gameScreen::checkNunchuck()
-{
-}
-
-void gameScreen::operation()
 {
 }
 
