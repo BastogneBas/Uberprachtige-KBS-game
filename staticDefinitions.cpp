@@ -214,7 +214,6 @@ class Definitions
 			Serial.println(F("BMP format not recognized."));
 #endif
 	}
-#endif
 
 
 
@@ -239,6 +238,7 @@ class Definitions
 		((uint8_t *) & result)[3] = f.read();	// MSB
 		return result;
 	}
+#endif
 };
 
 #endif
