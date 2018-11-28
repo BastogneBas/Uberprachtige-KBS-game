@@ -1,6 +1,8 @@
 #include "src/Adafruit_ILI9341/Adafruit_ILI9341.h"
 #include <stddef.h>
+#ifdef SD
 #include <SD.h>
+#endif
 
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
@@ -19,15 +21,6 @@ class Definitions
 
 	static Adafruit_ILI9341 *tft;
 
-// This function opens a Windows Bitmap (BMP) file and
-// displays it at the given coordinates.  It's sped up
-// by reading many pixels worth of data at a time
-// (rather than pixel by pixel).  Increasing the buffer
-// size takes more of the Arduino's precious RAM but
-// makes loading a little faster.  20 pixels seems a
-// good balance.
-
-
 	static void bmpDraw(char *filename, uint16_t x, uint16_t y){
 		if(filename[0] == 'B' && filename[4] == 'K')
 			tft->fillRect(x, y, 15, 15, ILI9341_WHITE);
@@ -41,6 +34,13 @@ class Definitions
 
 #ifdef SD
 #define BUFFPIXEL 20
+// This function opens a Windows Bitmap (BMP) file and
+// displays it at the given coordinates.  It's sped up
+// by reading many pixels worth of data at a time
+// (rather than pixel by pixel).  Increasing the buffer
+// size takes more of the Arduino's precious RAM but
+// makes loading a little faster.  20 pixels seems a
+// good balance.
 	static void bmpDraw(char *filename, int16_t x, int16_t y)
 	{
 

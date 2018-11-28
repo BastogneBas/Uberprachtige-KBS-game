@@ -4,55 +4,25 @@
 #ifndef LEVELDEFS_H
 #define LEVELDEFS_H
 
-class LevelDefs{
-	public:
-		//	"Level 1"
-		//};
+class LevelDefs
+{
+  public:
+	/* Return a predefined level.
+	 * levelId = 0 --> Level 1
+	 * levelId = 1 --> Level 2
+	 * Etc.
+	 */
+	static Level getLevel(uint8_t levelId);
 
-		static Level getLevel(uint8_t levelId);//{
-		//	return Level(levelBarrels[levelId], levelNames[levelId]);
-		//}
-		//static Level level1 = Level(level1_barrels, (const char*)"Level 1");
+	// A mask for the locations where no barrels can be placed
+	static const uint16_t YouCantPlaceBarrelsHere[11];
+  private:
+	/* The static barrel locations we will be using.
+	 * For explanation see: level.h
+	 */
+	static const uint16_t levelBarrels[][11];
 
-		/* The static levels we will be using.
-		 * For explanation see: level.h
-		 */
-		//Level Levels[] = {level1};
-
-		// A mask for the locations where no barrels can be placed
-		static const uint16_t YouCantPlaceBarrelsHere[11];/*={
-					0b1111110000000000,
-					0b1111101010101010,
-					0b1111000000000000,
-					0b1110101010101010,
-					0b1110000000000000,
-					0b1110101010101010,
-					0b1110000000000000,
-					0b1110101010101010,
-					0b1110000000000001,
-					0b1110101010101011,
-					0b1110000000000111
-		};*/
-		//Level getLevel(uint8_t levelId){
-		//	return Level(levelBarrels[levelId], levelNames[levelId]);
-		//}
-		static const uint16_t levelBarrels[][11];/* =
-		{
-			{
-				0b0000001010101010,
-				0b0000000000000000,
-				0b0000001010101010,
-				0b0000000000000000,
-				0b0000001010101010,
-				0b0000000000000000,
-				0b0000001010101010,
-				0b0000000000000000,
-				0b0000001010101010,
-				0b0000000000000000,
-				0b0000001010101010
-			}
-		};*/
-	private:
-		static const char* levelNames[];
+	// The static level names that will be used.
+	static const char *levelNames[];
 };
 #endif

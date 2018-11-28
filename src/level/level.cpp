@@ -8,35 +8,51 @@
  */
 Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 {
-	for(uint8_t i=0;i<Definitions::gameHeight;i++){
-		this->barrels[i]=barrels[i];
+	// Copy barrel locations from current level to ram
+	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
+	{
+		this->barrels[i] = barrels[i];
 	}
+	// And set the name of the current level
 	this->name = name;
 }
 
 /* Level constructor
  * Creates a level with random barrel locations
  */
-Level::Level(String name){
+Level::Level(String name)
+{
+	// Use the analog input of A0 as the seed for the random number generator
 	randomSeed(analogRead(A0));
-	for(uint8_t i=0;i<Definitions::gameHeight;i++){
-		this->barrels[i] = (((uint16_t)random(0xFFFF)) & ~(LevelDefs::YouCantPlaceBarrelsHere[i]));
-	//	this->barrels[i] = (~(LevelDefs::YouCantPlaceBarrelsHere[i]));
+	// For each line use a random uint16_t for barrel locations, and turn off the where no barrel can be placed
+	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
+	{
+		this->barrels[i] =
+			(((uint16_t) random(0xFFFF)) &
+			 ~(LevelDefs::YouCantPlaceBarrelsHere[i]));
 	}
-	this->name = "Generated level";
+	// Set the name of the level
+	this->name = name;
 }
 
-Level::Level(){};
+// Dofault constructor
+Level::Level()
+{
+};
 
-Level::~Level(){}
+// TODO: free the values
+Level::~Level()
+{
+}
 
 // Returns the barrel locations
-uint16_t* Level::getBarrels()
+uint16_t *Level::getBarrels()
 {
 	return this->barrels;
 }
 
 // Returns the level name
-String Level::getName(){
+String Level::getName()
+{
 	return this->name;
 }
