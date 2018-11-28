@@ -15,11 +15,11 @@ class gameScreen:public screen
 	void refresh();
 	void checkNunchuck();
   private:
-	void drawPeep1(uint8_t x, uint8_t y);
-	void drawPeep2(uint8_t x, uint8_t y);
-	void drawBarrel(uint8_t x, uint8_t y);
-	void drawBlock(uint8_t x, uint8_t y);
-	void drawBomb (uint8_t x, uint8_t y);
+	void drawPeep1(uint16_t x, uint16_t y);
+	void drawPeep2(uint16_t x, uint16_t y);
+	void drawBarrel(uint16_t x, uint16_t y);
+	void drawBlock(uint16_t x, uint16_t y);
+	void drawBomb (uint16_t x, uint16_t y);
 	Level level;
 };
 

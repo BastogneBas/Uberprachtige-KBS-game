@@ -14,6 +14,7 @@ gameScreen::gameScreen()
 {
 	if (!SD.begin(Definitions::SD_CS))
 	{
+		Serial.println("SD not started!");
 	}
 
 	//File root = SD.open("/");
@@ -28,35 +29,29 @@ gameScreen::gameScreen(Level level)
 void gameScreen::begin()
 {
 	Definitions::tft->fillScreen(ILI9341_BLACK);
-	uint8_t width = 14, height = 12;
-	for (int x = 0; x <= height; x++)
+	uint8_t width = Definitions::gameWidth+1, height = Definitions::gameHeight+1;
+	for (int x = 0; x <= width; x++)
 		drawBlock(x, 0);
-	for (int y = 0; y <= width; y++)
+	for (int y = 0; y <= height; y++)
 		drawBlock(0, y);
-	for (int x = 0; x <= height; x++)
-		drawBlock(x, width);
-	for (int y = 0; y <= width; y++)
-		drawBlock(height, y);
-	for (int y = 2; y < width; y += 2)
-		for (int x = 2; x < height; x += 2)
+	for (int x = 0; x <= width; x++)
+		drawBlock(x, height);
+	for (int y = 0; y <= height; y++)
+		drawBlock(width, y);
+	for (int y = 2; y < height; y += 2)
+		for (int x = 2; x < width; x += 2)
 			drawBlock(x, y);
 	drawPeep1(1, 1);
 
-	Level level = new Level(level.getBarrels(), "Level1");
-	for (int x = 1; i <= level; i++) {
-        for (int y = 1; j < 16; j++) {
-
-            if (level.getBarrels() & (1 << level.getBarrels[x])) {
-                drawBarrel(x, y);
+	//Level level = new Level(level.getBarrels(), "Level1");
+	for (int x = 0; x < Definitions::gameHeight; x++) {
+        for (uint16_t y = 0; y < Definitions::gameWidth; y++) {
+			uint16_t mask = 1<<y;
+            if (this->level.getBarrels()[x] & (mask)) {
+                drawBarrel(y+1, x+1);
             }
-
         }
     }
-	};
-
-
-
-
 	/*drawBarrel(1, 2);
 	 *drawBarrel(2, 1);
 	 */
@@ -70,27 +65,27 @@ void gameScreen::refresh()
 {
 }
 
-void gameScreen::drawPeep1(uint8_t x, uint8_t y)
+void gameScreen::drawPeep1(uint16_t x, uint16_t y)
 {
-	Definitions::bmpDraw("peep1.bmp", x * 16, y * 16);
+	Definitions::bmpDraw("PEEP1.BMP", x * 16, y * 16);
 }
 
-void gameScreen::drawPeep2(uint8_t x, uint8_t y)
+void gameScreen::drawPeep2(uint16_t x, uint16_t y)
 {
 	Definitions::bmpDraw("peep2.bmp", x * 16, y * 16);
 }
 
-void gameScreen::drawBarrel(uint8_t x, uint8_t y)
+void gameScreen::drawBarrel(uint16_t x, uint16_t y)
 {
-	Definitions::bmpDraw("barrel.bmp", x * 16, y * 16);
+	Definitions::bmpDraw("BARREL.BMP", x * 16, y * 16);
 }
 
-void gameScreen::drawBlock(uint8_t x, uint8_t y)
+void gameScreen::drawBlock(uint16_t x, uint16_t y)
 {
-	Definitions::bmpDraw("block.bmp", x * 16, y * 16);
+	Definitions::bmpDraw("BLOCK.BMP", x * 16, y * 16);
 }
 
-void gameScreen::drawBomb(uint8_t x, uint8_t y)
+void gameScreen::drawBomb(uint16_t x, uint16_t y)
 {
 	Definitions::bmpDraw("bomb.bmp", x * 16, y * 16);
 }

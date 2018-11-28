@@ -5,6 +5,8 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#define DEBUG
+
 class Definitions
 {
   public:
@@ -25,6 +27,15 @@ class Definitions
 // makes loading a little faster.  20 pixels seems a
 // good balance.
 
+
+	static void bmpDraw(char *filename, uint16_t x, uint16_t y){
+		if(filename[0] == 'B' && filename[4] == 'K')
+			tft->fillRect(x, y, 15, 15, ILI9341_WHITE);
+		if(filename[0] == 'B' && filename[5] == 'L')
+			tft->fillRect(x, y, 15, 15, ILI9341_MAROON);
+	}
+
+#ifdef SD
 #define BUFFPIXEL 20
 	static void bmpDraw(char *filename, int16_t x, int16_t y)
 	{
@@ -199,6 +210,9 @@ class Definitions
 			Serial.println(F("BMP format not recognized."));
 #endif
 	}
+#endif
+
+
 
 // These read 16- and 32-bit types from the SD card file.
 // BMP data is stored little-endian, Arduino is little-endian too.

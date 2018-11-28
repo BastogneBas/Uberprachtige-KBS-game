@@ -1,9 +1,10 @@
 #include "src/game/game.h"
 #include "screen.h"
 #include "staticDefinitions.cpp"
+#include "src/level/levelDefs.h"
 
 // If we are debugging, uncomment this. Then there will be Serial communication.
-//#define DEBUG
+#define DEBUG
 
 // The tft needs to be redefined here, for some reason.
 Adafruit_ILI9341 *Definitions::tft;
@@ -32,7 +33,7 @@ int main()
 	// TODO: replace with level selection screen.
 #warning Needs te be replaced
 	// Immediately start game screen.
-	gameScreen gamescreen = gameScreen();
+	gameScreen gamescreen = gameScreen(LevelDefs::getLevel(0));
 	gamescreen.begin();
 
 	// Sets the current screen to the current loaded screen

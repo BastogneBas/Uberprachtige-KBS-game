@@ -10,7 +10,9 @@ class Level
 	public:
 		// Constructors
 		Level(uint16_t barrels[Definitions::gameHeight], String name);
+		Level(String name);
 		Level();
+		~Level();
 
 		// Getters
 		uint16_t* getBarrels();
