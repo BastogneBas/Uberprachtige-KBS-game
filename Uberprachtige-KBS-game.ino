@@ -8,6 +8,10 @@
 
 // The tft needs to be redefined here, for some reason.
 Adafruit_ILI9341 *Definitions::tft;
+
+// The nunchuk needs to be redefined here
+ArduinoNunchuk *Definitions::nunchuk;
+
 // Pointer to the current visible screen.
 screen *currentScreen;
 
@@ -29,6 +33,10 @@ int main()
 	yield();
 	Definitions::tft->setRotation(1);
 	Definitions::tft->fillScreen(ILI9341_BLACK);
+
+	// Initialize the Nunchuk for player 1
+	Definitions::nunchuk = new ArduinoNunchuk();
+	Definitions::nunchuk->init();
 
 	// TODO: replace with level selection screen.
 #warning Needs te be replaced

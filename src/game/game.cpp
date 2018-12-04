@@ -1,24 +1,15 @@
 #include "../Adafruit_GFX_Library/Adafruit_GFX.h"		// Core graphics library
 #include "../Adafruit_ILI9341/Adafruit_ILI9341.h"	// Hardware-specific library
 #include <SPI.h>
-#include <SD.h>
 #include "../../staticDefinitions.cpp"
 #include "game.h"
 #include "../level/level.h"
 #include "../level/levelDefs.h"
-
-void printDirectory(File dir, int numTabs);
-//Adafruit_ILI9341 *Definitions::tft;
+#include "../arduino-nunchuk-master/ArduinoNunchuk/ArduinoNunchuk.h"
+#include "Peep.h"
 
 gameScreen::gameScreen()
 {
-	if (!SD.begin(Definitions::SD_CS))
-	{
-		Serial.println("SD not started!");
-	}
-
-	//File root = SD.open("/");
-	//printDirectory(root, 0);
 }
 
 gameScreen::gameScreen(Level level)
@@ -42,6 +33,7 @@ void gameScreen::begin()
 		for (int x = 2; x < width; x += 2)
 			drawBlock(x, y);
 	drawPeep1(1, 1);
+	drawPeep2(Definitions::gameWidth, Definitions::gameHeight);
 
 	//Level level = new Level(level.getBarrels(), "Level1");
 	for (int x = 0; x < Definitions::gameHeight; x++) {
@@ -52,9 +44,50 @@ void gameScreen::begin()
             }
         }
     }
-	/*drawBarrel(1, 2);
-	 *drawBarrel(2, 1);
-	 */
+//	Peep *peep1 = new Peep(1, 1);
+//	Peep *peep2 = new Peep(Definitions::gameWidth, Definitions::gameWidth);
+
+
+
+}
+
+void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY) {
+	// make location of peep the same is the direction from Nunchuck
+	int nunX = Definitions::nunchuk->analogX;
+	int nunY = Definitions::nunchuk->analogY;
+
+	// check if nunchuk is left, if true go to left
+	if (nunX <= 130 && nunY == 125 && dirX > 0)
+	{
+		dirX--;
+	}
+
+	// check if nunchuk is right, if true go to right
+	if (nunX >= 131 && nunY == 125 && dirX > 0)
+	{
+		dirX++;
+	}
+	// check if nunchuk is up, if true go up
+	if (nunX == 125 && nunY <= 125 && dirY > 0)
+	{
+		dirY--;
+	}
+
+	if (nunX == 125 && nunY >= 126 && dirY <= Definitions::gameHeight)
+	{
+		dirY++;
+	}
+	//draw peep on the newest location
+	if(peep == 1)
+	{
+		drawPeep1(dirX, dirY);
+	}
+
+	if(peep == 2)
+    {
+	    drawPeep2(dirX, dirY);
+    }
+    return dirX, dirY;
 }
 
 void gameScreen::end()
@@ -63,6 +96,8 @@ void gameScreen::end()
 
 void gameScreen::refresh()
 {
+	Definitions::nunchuk->update();
+	movePeep(2, Definitions::gameWidth, Definitions::gameHeight);
 }
 
 void gameScreen::drawPeep1(uint16_t x, uint16_t y)
@@ -87,40 +122,12 @@ void gameScreen::drawBlock(uint16_t x, uint16_t y)
 
 void gameScreen::drawBomb(uint16_t x, uint16_t y)
 {
-	Definitions::bmpDraw("bomb.bmp", x * 16, y * 16);
+	if (Definitions::nunchuk->zButton)
+	{
+		Definitions::bmpDraw("bomb.bmp", x * 16, y * 16);
+	}
 }
 
 void gameScreen::checkNunchuck()
 {
-}
-
-void printDirectory(File dir, int numTabs)
-{
-	while (true)
-	{
-
-		File entry = dir.openNextFile();
-		if (!entry)
-		{
-			// no more files
-			break;
-		}
-		for (uint8_t i = 0; i < numTabs; i++)
-		{
-			Serial.print('\t');
-		}
-		Serial.print(entry.name());
-		if (entry.isDirectory())
-		{
-			Serial.println("/");
-			printDirectory(entry, numTabs + 1);
-		}
-		else
-		{
-			// files have sizes, directories do not
-			Serial.print("\t\t");
-			Serial.println(entry.size(), DEC);
-		}
-		entry.close();
-	}
 }
