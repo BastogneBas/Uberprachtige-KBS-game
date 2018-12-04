@@ -33,6 +33,23 @@ Level::Level(String name)
 	}
 	// Set the name of the level
 	this->name = name;
+	uint8_t width = Definitions::gameWidth+1, height=Definitions::gameHeight+1;
+
+	for(uint8_t y=2;y<=height;y++)
+		for(uint8_t x=2;x<=width;x++)
+			setObjectAt(x,y,mapObject::block);
+
+	setObjectAt(1,1,mapObject::peep1);
+	setObjectAt(Definitions::gameWidth, Definitions::gameHeight, mapObject::peep2);
+
+	for (uint8_t x = 0; x < Definitions::gameHeight; x++) {
+        for (uint8_t y = 0; y < Definitions::gameWidth; y++) {
+			uint16_t mask = 1<<y;
+            if (getBarrels()[x] & (mask)) {
+                setObjectAt(y+1, x+1,mapObject::barrel);
+            }
+        }
+    }
 }
 
 // Dofault constructor
@@ -65,4 +82,6 @@ void Level::setObjectAt(uint8_t x, uint8_t y, uint8_t object){
 	map[x][y] = object;
 }
 
-void Level::drawMap();
+void Level::drawMap(){
+
+}
