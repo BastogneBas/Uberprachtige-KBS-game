@@ -29,7 +29,7 @@ class Level
 	 */
 	uint16_t barrels[Definitions::gameHeight] = { 0 };
 
-	uint8_t map[16][16] = {0}{0};
+	uint8_t map[16][16] = {{16},{16},{16},{16},{16},{16},{16},{16},{16},{16},{16},{16},{16},{16},{16},{16}};
 	// The name of the level
 	String name;
 };
