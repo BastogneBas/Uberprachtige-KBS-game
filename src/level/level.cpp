@@ -57,6 +57,12 @@ String Level::getName()
 	return this->name;
 }
 
-uint8_t getObjectAt(uint8_t x, uint8_t y){
-
+uint8_t Level::getObjectAt(uint8_t x, uint8_t y){
+	return map[x][y];
 }
+
+void Level::setObjectAt(uint8_t x, uint8_t y, uint8_t object){
+	map[x][y] = object;
+}
+
+void Level::drawMap();
