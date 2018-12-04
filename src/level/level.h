@@ -17,6 +17,8 @@ class Level
 	// Getters
 	uint16_t *getBarrels();
 	String getName();
+
+	uint8_t getObjectAt(uint8_t x, uint8_t y);
   private:
 	/* The barrel locations
 	 * Every uint32_t is a horizontal row of barrels. So for example:
@@ -26,6 +28,8 @@ class Level
 	 *      █        B B B█
 	 */
 	uint16_t barrels[Definitions::gameHeight] = { 0 };
+
+	uint8_t map[16][16] = {0}{0};
 	// The name of the level
 	String name;
 };

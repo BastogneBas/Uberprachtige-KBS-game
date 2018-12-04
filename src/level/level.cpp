@@ -56,3 +56,7 @@ String Level::getName()
 {
 	return this->name;
 }
+
+uint8_t getObjectAt(uint8_t x, uint8_t y){
+
+}
