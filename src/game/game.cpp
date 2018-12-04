@@ -17,6 +17,8 @@ gameScreen::gameScreen(Level level)
 	this->level = level;
  }
 
+int p2Y=0,p2X=0;
+
 void gameScreen::begin()
 {
 	Definitions::tft->fillScreen(ILI9341_BLACK);
@@ -44,6 +46,9 @@ void gameScreen::begin()
             }
         }
     }
+	p2X = Definitions::gameWidth;
+	p2Y = Definitions::gameHeight;
+	
 //	Peep *peep1 = new Peep(1, 1);
 //	Peep *peep2 = new Peep(Definitions::gameWidth, Definitions::gameWidth);
 
@@ -51,53 +56,64 @@ void gameScreen::begin()
 
 }
 
+
 void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY) {
 	// make location of peep the same is the direction from Nunchuck
 	int nunX = Definitions::nunchuk->analogX;
 	int nunY = Definitions::nunchuk->analogY;
 
+	Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
+
 	// check if nunchuk is left, if true go to left
-	if (nunX <= 130 && nunY == 125 && dirX > 0)
+	if (nunX <= 90 && (nunY > 100 && nunY < 150) && p2X > 1)
 	{
-		dirX--;
+		p2X--;
 	}
 
 	// check if nunchuk is right, if true go to right
-	if (nunX >= 131 && nunY == 125 && dirX > 0)
+	if (nunX >= 150 && (nunY > 100 && nunY < 150) && p2X < Definitions::gameWidth)
 	{
-		dirX++;
+		p2X++;
 	}
 	// check if nunchuk is up, if true go up
-	if (nunX == 125 && nunY <= 125 && dirY > 0)
+	if ((nunX > 100 && nunX < 150) && nunY >= 150 && p2Y > 1)
 	{
-		dirY--;
+		// Nunchuck Y is inverted.
+		//p2Y--;
+		p2Y--;
 	}
 
-	if (nunX == 125 && nunY >= 126 && dirY <= Definitions::gameHeight)
+	if ((nunX > 100 && nunX < 150) && nunY <= 90 && p2Y < Definitions::gameHeight)
 	{
-		dirY++;
+		//p2Y++;
+		p2Y++;
 	}
 	//draw peep on the newest location
 	if(peep == 1)
 	{
-		drawPeep1(dirX, dirY);
+		drawPeep1(p2X, p2Y);
 	}
 
 	if(peep == 2)
     {
-	    drawPeep2(dirX, dirY);
+	    drawPeep2(p2X, p2Y);
     }
-    return dirX, dirY;
+    //return dirX, dirY;
 }
 
 void gameScreen::end()
 {
 }
 
+uint8_t RefreshCnt =0;
+
 void gameScreen::refresh()
 {
+	RefreshCnt++;
 	Definitions::nunchuk->update();
-	movePeep(2, Definitions::gameWidth, Definitions::gameHeight);
+	if((RefreshCnt%15)==0){
+		movePeep(2, Definitions::gameWidth, Definitions::gameHeight);
+	}
 }
 
 void gameScreen::drawPeep1(uint16_t x, uint16_t y)
