@@ -5,7 +5,7 @@
 #include "game.h"
 #include "../level/level.h"
 #include "../level/levelDefs.h"
-#include "../arduino-nunchuk-master/ArduinoNunchuk/ArduinoNunchuk.h"
+#include "../ArduinoNunchuk/ArduinoNunchuk.h"
 #include "Peep.h"
 
 gameScreen::gameScreen()

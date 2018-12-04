@@ -1,7 +1,7 @@
 #include "src/Adafruit_ILI9341/Adafruit_ILI9341.h"
 #include <stddef.h>
 #include "Sprites.h"
-#include "src/arduino-nunchuk-master/ArduinoNunchuk/ArduinoNunchuk.h"
+#include "src/ArduinoNunchuk/ArduinoNunchuk.h"
 
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
