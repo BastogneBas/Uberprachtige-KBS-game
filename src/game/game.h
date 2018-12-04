@@ -1,6 +1,7 @@
 #include "../../screen.h"
 #include <stddef.h>
 #include "../level/level.h"
+#include "Peep.h"
 
 #ifndef SPELSCHERM_H
 #define SPELSCHERM_H
@@ -20,6 +21,7 @@ class gameScreen:public screen
 	void drawBarrel(uint16_t x, uint16_t y);
 	void drawBlock(uint16_t x, uint16_t y);
 	void drawBomb (uint16_t x, uint16_t y);
+	void movePeep (int peep, uint16_t x, uint16_t y);
 	Level level;
 };
 

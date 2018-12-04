@@ -1,5 +1,6 @@
 #include "src/Adafruit_ILI9341/Adafruit_ILI9341.h"
 #include <stddef.h>
+#include "src/arduino-nunchuk-master/ArduinoNunchuk/ArduinoNunchuk.h"
 #ifdef SD
 #include <SD.h>
 #endif
@@ -21,6 +22,8 @@ class Definitions
 
 	static Adafruit_ILI9341 *tft;
 
+	static ArduinoNunchuk *nunchuk;
+
 	static void bmpDraw(char *filename, uint16_t x, uint16_t y){
 		if(filename[0] == 'B' && filename[4] == 'K')
 			tft->fillRect(x, y, 15, 15, ILI9341_WHITE);
@@ -30,6 +33,8 @@ class Definitions
 			tft->fillRect(x, y, 15, 15, ILI9341_BLUE);
 		if(filename[0] == 'P' && filename[4] == '2')
 			tft->fillRect(x, y, 15, 15, ILI9341_RED);
+		if(filename[0] == 'B' && filename[3] == 'B')
+		    tft->fillRect(x, y, 15, 15, ILI9341_GREEN);
 	}
 
 #ifdef SD
@@ -215,30 +220,6 @@ class Definitions
 #endif
 	}
 #endif
-
-
-
-// These read 16- and 32-bit types from the SD card file.
-// BMP data is stored little-endian, Arduino is little-endian too.
-// May need to reverse subscript order if porting elsewhere.
-
-	static uint16_t read16(File & f)
-	{
-		uint16_t result;
-		((uint8_t *) & result)[0] = f.read();	// LSB
-		((uint8_t *) & result)[1] = f.read();	// MSB
-		return result;
-	}
-
-	static uint32_t read32(File & f)
-	{
-		uint32_t result;
-		((uint8_t *) & result)[0] = f.read();	// LSB
-		((uint8_t *) & result)[1] = f.read();
-		((uint8_t *) & result)[2] = f.read();
-		((uint8_t *) & result)[3] = f.read();	// MSB
-		return result;
-	}
 };
 
 #endif

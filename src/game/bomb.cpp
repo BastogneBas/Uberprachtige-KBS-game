@@ -21,13 +21,13 @@ uint32_t Bomb::getPlacedTime()
     return placedTime;
 }
 
-// get position x from bomb / peep
+// get position x from bomb
 uint8_t Bomb::getx()
 {
     return x;
 }
 
-// get position y from bomb / peep
+// get position y from bomb
 uint8_t Bomb::gety()
 {
     return y;
