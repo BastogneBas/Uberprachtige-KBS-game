@@ -6,7 +6,8 @@
 #include "../level/level.h"
 #include "../level/levelDefs.h"
 #include "../ArduinoNunchuk/ArduinoNunchuk.h"
-#include "Peep.h"
+
+
 
 gameScreen::gameScreen()
 {
@@ -48,12 +49,6 @@ void gameScreen::begin()
     }
 	p2X = Definitions::gameWidth;
 	p2Y = Definitions::gameHeight;
-	
-//	Peep *peep1 = new Peep(1, 1);
-//	Peep *peep2 = new Peep(Definitions::gameWidth, Definitions::gameWidth);
-
-
-
 }
 
 
@@ -62,32 +57,47 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY) {
 	int nunX = Definitions::nunchuk->analogX;
 	int nunY = Definitions::nunchuk->analogY;
 
+	int newX = p2X;
+	int newY = p2Y;
+
 	Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
 
 	// check if nunchuk is left, if true go to left
 	if (nunX <= 90 && (nunY > 100 && nunY < 150) && p2X > 1)
 	{
-		p2X--;
+		newX--;
 	}
 
 	// check if nunchuk is right, if true go to right
 	if (nunX >= 150 && (nunY > 100 && nunY < 150) && p2X < Definitions::gameWidth)
 	{
-		p2X++;
+		newX++;
 	}
 	// check if nunchuk is up, if true go up
 	if ((nunX > 100 && nunX < 150) && nunY >= 150 && p2Y > 1)
 	{
 		// Nunchuck Y is inverted.
 		//p2Y--;
-		p2Y--;
+		newY--;
 	}
 
 	if ((nunX > 100 && nunX < 150) && nunY <= 90 && p2Y < Definitions::gameHeight)
 	{
 		//p2Y++;
-		p2Y++;
+		newY++;
 	}
+
+//	if (!(level.getObjectAt(newX, newY)& mapObject::block)  &&
+//		!(level.getObjectAt(newX, newY)& mapObject::barrel) &&
+//		!(level.getObjectAt(newX, newY)& mapObject::bomb))
+//	{
+		p2X = newX;
+		p2Y = newY;
+		Serial.println(level.getObjectAt(newX, newY), BIN);
+		Serial.println(newX);
+		Serial.println(newY);
+//	}
+
 	//draw peep on the newest location
 	if(peep == 1)
 	{

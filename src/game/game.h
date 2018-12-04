@@ -1,7 +1,6 @@
 #include "../../screen.h"
 #include <stddef.h>
 #include "../level/level.h"
-#include "Peep.h"
 
 #ifndef SPELSCHERM_H
 #define SPELSCHERM_H
