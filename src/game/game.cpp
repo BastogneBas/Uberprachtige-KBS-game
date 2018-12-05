@@ -23,7 +23,7 @@ int p2Y=0,p2X=0;
 void gameScreen::begin()
 {
 	Definitions::tft->fillScreen(ILI9341_BLACK);
-	uint8_t width = Definitions::gameWidth+1, height = Definitions::gameHeight+1;
+	/*uint8_t width = Definitions::gameWidth+1, height = Definitions::gameHeight+1;
 	for (int x = 0; x <= width; x++)
 		drawBlock(x, 0);
 	for (int y = 0; y <= height; y++)
@@ -46,7 +46,7 @@ void gameScreen::begin()
                 drawBarrel(y+1, x+1);
             }
         }
-    }
+    }*/
 	p2X = Definitions::gameWidth;
 	p2Y = Definitions::gameHeight;
 }
@@ -60,48 +60,54 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY) {
 	int newX = p2X;
 	int newY = p2Y;
 
-	Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
+	level.printMap();
+	Serial.println();
+
+	//Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
 
 	// check if nunchuk is left, if true go to left
-	if (nunX <= 90 && (nunY > 100 && nunY < 150) && p2X > 1)
+	if (nunX <= 90 && (nunY > 100 && nunY < 150))// && p2X > 1)
 	{
 		newX--;
 	}
 
 	// check if nunchuk is right, if true go to right
-	if (nunX >= 150 && (nunY > 100 && nunY < 150) && p2X < Definitions::gameWidth)
+	if (nunX >= 150 && (nunY > 100 && nunY < 150))// && p2X < Definitions::gameWidth)
 	{
 		newX++;
 	}
 	// check if nunchuk is up, if true go up
-	if ((nunX > 100 && nunX < 150) && nunY >= 150 && p2Y > 1)
+	if ((nunX > 100 && nunX < 150) && nunY >= 150)// && p2Y > 1)
 	{
 		// Nunchuck Y is inverted.
 		//p2Y--;
 		newY--;
 	}
 
-	if ((nunX > 100 && nunX < 150) && nunY <= 90 && p2Y < Definitions::gameHeight)
+	if ((nunX > 100 && nunX < 150) && nunY <= 90)// && p2Y < Definitions::gameHeight)
 	{
 		//p2Y++;
 		newY++;
 	}
 
-//	if (!(level.getObjectAt(newX, newY)& mapObject::block)  &&
-//		!(level.getObjectAt(newX, newY)& mapObject::barrel) &&
-//		!(level.getObjectAt(newX, newY)& mapObject::bomb))
-//	{
+	if (!(level.getObjectAt(newX, newY)& mapObject::block)  &&
+		!(level.getObjectAt(newX, newY)& mapObject::barrel) &&
+		!(level.getObjectAt(newX, newY)& mapObject::bomb))
+	{
+		level.setObjectAt(p2X,p2Y,mapObject::air);
+		level.setObjectAt(newX,newY,mapObject::peep2);
 		p2X = newX;
 		p2Y = newY;
-		Serial.println(level.getObjectAt(newX, newY), BIN);
-		Serial.println(newX);
-		Serial.println(newY);
-//	}
+		//Serial.println(level.getObjectAt(newX, newY), BIN);
+		//Serial.println(newX);
+		//Serial.println(newY);
+	}
 
 	//draw peep on the newest location
 	if(peep == 1)
 	{
 		drawPeep1(p2X, p2Y);
+
 	}
 
 	if(peep == 2)
@@ -120,37 +126,42 @@ uint8_t RefreshCnt =0;
 void gameScreen::refresh()
 {
 	RefreshCnt++;
-	Definitions::nunchuk->update();
 	if((RefreshCnt%15)==0){
+	Definitions::nunchuk->update();
 		movePeep(2, Definitions::gameWidth, Definitions::gameHeight);
 	}
 }
 
 void gameScreen::drawPeep1(uint16_t x, uint16_t y)
 {
-	Definitions::bmpDraw("PEEP1.BMP", x * 16, y * 16);
+	//Definitions::bmpDraw("PEEP1.BMP", x * 16, y * 16);
+	level.drawMap();
 }
 
 void gameScreen::drawPeep2(uint16_t x, uint16_t y)
 {
-	Definitions::bmpDraw("PEEP2.bmp", x * 16, y * 16);
+	//Definitions::bmpDraw("PEEP2.bmp", x * 16, y * 16);
+	level.drawMap();
 }
 
 void gameScreen::drawBarrel(uint16_t x, uint16_t y)
 {
-	Definitions::bmpDraw("BARREL.BMP", x * 16, y * 16);
+	//Definitions::bmpDraw("BARREL.BMP", x * 16, y * 16);
+	level.drawMap();
 }
 
 void gameScreen::drawBlock(uint16_t x, uint16_t y)
 {
-	Definitions::bmpDraw("BLOCK.BMP", x * 16, y * 16);
+	//Definitions::bmpDraw("BLOCK.BMP", x * 16, y * 16);
+	level.drawMap();
 }
 
 void gameScreen::drawBomb(uint16_t x, uint16_t y)
 {
 	if (Definitions::nunchuk->zButton)
 	{
-		Definitions::bmpDraw("bomb.bmp", x * 16, y * 16);
+		//Definitions::bmpDraw("bomb.bmp", x * 16, y * 16);
+		level.drawMap();
 	}
 }
 

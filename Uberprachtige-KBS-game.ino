@@ -23,7 +23,7 @@ int main()
 	init();
 	// Turn on Serial communication if we are debugging
 #ifdef DEBUG
-	Serial.begin(9600);
+	Serial.begin(500000);
 #endif
 
 	// Initialize the tft

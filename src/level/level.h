@@ -30,6 +30,7 @@ class mapObject
 	static const unsigned char peep2		= 0b00001000;
 	static const unsigned char bomb 		= 0b00010000;
 	static const unsigned char explosion 	= 0b00100000;
+	static const unsigned char needsRedraw	= 0b10000000;
 };
 
 // *INDENT-ON*
@@ -57,8 +58,9 @@ class Level
 	String getName();
 
 	uint8_t getObjectAt(uint8_t x, uint8_t y);
-	void setObjectAt(uint8_t x, uint8_t y, uint8_t object);
+	void setObjectAt(uint8_t x, uint8_t y, uint8_t object, uint8_t drawn = false);
 	void drawMap();
+	void printMap();
 
   private:
 	/* The barrel locations
