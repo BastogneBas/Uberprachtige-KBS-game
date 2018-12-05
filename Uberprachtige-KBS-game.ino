@@ -24,6 +24,7 @@ int main()
 	// Turn on Serial communication if we are debugging
 #ifdef DEBUG
 	Serial.begin(500000);
+	Serial.println("Welkom!");
 #endif
 
 	// Initialize the tft
@@ -51,5 +52,6 @@ int main()
 	{
 		// Refresh screen
 		currentScreen->refresh();
+		delay(100);
 	}
 }

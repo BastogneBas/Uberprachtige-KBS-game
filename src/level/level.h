@@ -23,14 +23,21 @@
 class mapObject
 {
   public:
-	static const unsigned char air			= 0b00000000;
-	static const unsigned char block		= 0b00000001;
-	static const unsigned char barrel		= 0b00000010;
-	static const unsigned char peep1		= 0b00000100;
-	static const unsigned char peep2		= 0b00001000;
-	static const unsigned char bomb 		= 0b00010000;
-	static const unsigned char explosion 	= 0b00100000;
-	static const unsigned char needsRedraw	= 0b10000000;
+	// Masks
+	static const unsigned int air			= 0b0000000000000000; // 0b 0000 0000 0000 0000
+
+	static const unsigned int block			= 0b0000000000000001; // 0b 0000 0000 0000 000x
+	static const unsigned int barrel		= 0b0000000000000010; // 0b 0000 0000 0000 00x0
+	static const unsigned int peep1			= 0b0000000000000100; // 0b 0000 0000 0000 0x00
+	static const unsigned int peep2			= 0b0000000000001000; // 0b 0000 0000 0000 x000
+
+	static const unsigned int bomb 			= 0b0000000000010000; // 0b 0000 0000 000x 0000
+	static const unsigned int explosion 	= 0b0000000000100000; // 0b 0000 0000 00x0 0000
+	static const unsigned int explosionH	= 0b0000000000000000; // 0b 0000 0000 0x00 0000
+	static const unsigned int explosionV	= 0b0000000001000000; // 0b 0000 0000 0x00 0000
+	static const unsigned int needsRedraw	= 0b0000000010000000; // 0b 0000 0000 x000 0000
+
+	static const unsigned int blockIdMsk	= 0b1111111100000000; // 0b xxxx xxxx 0000 0000
 };
 
 // *INDENT-ON*
@@ -52,14 +59,17 @@ class Level
 	Level(String name);
 	Level();
 	~Level();
+	void begin();
 
 	// Getters
 	uint16_t *getBarrels();
 	String getName();
 
-	uint8_t getObjectAt(uint8_t x, uint8_t y);
-	void setObjectAt(uint8_t x, uint8_t y, uint8_t object, uint8_t drawn =
+	uint16_t getObjectAt(uint8_t x, uint8_t y);
+	void setObjectAt(uint8_t x, uint8_t y, uint16_t object, uint8_t drawn =
 					 false);
+	void markObjectAt(uint8_t x, uint8_t y, uint16_t flag);
+	void unmarkObjectAt(uint8_t x, uint8_t y, uint16_t flag);
 	void drawMap();
 	void printMap();
 
@@ -73,10 +83,7 @@ class Level
 	 */
 	 uint16_t barrels[Definitions::gameHeight] = { 0 };
 
-	uint8_t map[16][16] = {
-		{0},
-		{0},
-		{0},
+	uint16_t map[Definitions::gameHeight+2][Definitions::gameWidth+2] = {
 		{0},
 		{0},
 		{0},

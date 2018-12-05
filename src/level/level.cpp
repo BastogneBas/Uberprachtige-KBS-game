@@ -34,6 +34,21 @@ Level::Level(String name)
 	}
 	// Set the name of the level
 	this->name = name;
+}
+
+// Dofault constructor
+Level::Level()
+{
+};
+
+// TODO: free the values
+Level::~Level()
+{
+}
+
+void Level::begin()
+{
+	Serial.println("begin!");
 	uint8_t width = Definitions::gameWidth + 1, height =
 		Definitions::gameHeight + 1;
 
@@ -50,35 +65,29 @@ Level::Level(String name)
 		for (uint8_t x = 2; x <= width; x += 2)
 			setObjectAt(x, y, mapObject::block);
 
+
+
 	setObjectAt(1, 1, mapObject::peep1);
 	setObjectAt(Definitions::gameWidth, Definitions::gameHeight,
 				mapObject::peep2);
 
-	for (uint8_t x = 0; x < Definitions::gameHeight; x++)
+	for (uint8_t y = 0; y < Definitions::gameHeight; y++)
 	{
-		for (uint8_t y = 0; y < Definitions::gameWidth; y++)
+		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
 		{
 			uint16_t mask = 1 << y;
 			if (getBarrels()[x] & (mask))
 			{
-				setObjectAt(y + 1, x + 1, mapObject::barrel);
+				setObjectAt(x + 1, y + 1, mapObject::barrel);
 			}
 			else
 			{
 				//setObjectAt(y, x,mapObject::air);
 			}
+			markObjectAt(x + 1, y + 1, mapObject::needsRedraw);
 		}
 	}
-}
-
-// Dofault constructor
-Level::Level()
-{
-};
-
-// TODO: free the values
-Level::~Level()
-{
+	//while(1);
 }
 
 // Returns the barrel locations
@@ -99,26 +108,42 @@ void Level::printMap()
 	{
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
 		{
-			Serial.print(map[x][y]);
+			Serial.print(map[y][x], HEX);
 			Serial.print(" ");
 		}
 		Serial.println();
 	}
 }
 
-uint8_t Level::getObjectAt(uint8_t x, uint8_t y)
+uint16_t Level::getObjectAt(uint8_t x, uint8_t y)
 {
 	//printMap();
-	return map[x][y];
+	return map[y][x];
 }
 
-void Level::setObjectAt(uint8_t x, uint8_t y, uint8_t object,
+void Level::setObjectAt(uint8_t x, uint8_t y, uint16_t object,
 						uint8_t drawn = false)
 {
 	if (!drawn)
-		map[x][y] = object | mapObject::needsRedraw;
+		map[y][x] = (object | mapObject::needsRedraw);
 	else
-		map[x][y] = object & ~(mapObject::needsRedraw);
+		map[y][x] = (object & ~(mapObject::needsRedraw));
+	printMap();
+	Serial.println();
+	//delay(15);
+}
+
+void Level::markObjectAt(uint8_t x, uint8_t y, uint16_t flag)
+{
+	map[y][x] |= flag;
+	printMap();
+	Serial.println();
+	//delay(15);
+}
+
+void Level::unmarkObjectAt(uint8_t x, uint8_t y, uint16_t flag)
+{
+	map[y][x] &= ~flag;
 }
 
 void Level::drawMap()
@@ -129,84 +154,91 @@ void Level::drawMap()
 		Definitions::tft->startWrite();
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
 		{
-			uint8_t currentObject =
+			uint16_t currentObject =
 				getObjectAt(x, y) & ~(mapObject::needsRedraw);
-			uint8_t Redraw = getObjectAt(x, y) & mapObject::needsRedraw;
+			uint16_t Redraw =
+				(getObjectAt(x, y) & mapObject::needsRedraw) ==
+				mapObject::needsRedraw;
+			//Serial.println(Redraw);
 			setObjectAt(x, y, currentObject, true);
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 			if (Redraw)
 			{
-				switch (currentObject)
+				if (!(currentObject & mapObject::air))
 				{
-					case mapObject::air:
-						Definitions::tft->writeFillRect(_x, _y, 16, 16,
-														ILI9341_BLACK);
-						break;
-					case mapObject::block:
-						for (uint16_t j = 0; j < _h; j++, _y++)
+					Serial.println("Draw air");
+					Definitions::tft->writeFillRect(_x, _y, 16, 16,
+													ILI9341_BLACK);
+				}
+				if (currentObject & mapObject::block)
+				{
+					Serial.println("Draw block");
+					for (uint16_t j = 0; j < _h; j++, _y++)
+					{
+						for (uint16_t i = 0; i < _w; i++)
 						{
-							for (uint16_t i = 0; i < _w; i++)
-							{
-								Definitions::tft->writePixel(_x + i, _y,
-															 pgm_read_word
-															 (&blokje
-															  [j * _w +
-															   i]));
-							}
+							Definitions::tft->writePixel(_x + i, _y,
+														 pgm_read_word
+														 (&blokje
+														  [j * _w + i]));
 						}
-						break;
-					case mapObject::barrel:
-						for (uint16_t j = 0; j < _h; j++, _y++)
+					}
+				}
+				if (currentObject & mapObject::barrel)
+				{
+					Serial.println("Draw barrel");
+					for (uint16_t j = 0; j < _h; j++, _y++)
+					{
+						for (uint16_t i = 0; i < _w; i++)
 						{
-							for (uint16_t i = 0; i < _w; i++)
-							{
-								Definitions::tft->writePixel(_x + i, _y,
-															 pgm_read_word
-															 (&ton
-															  [j * _w +
-															   i]));
-							}
+							Definitions::tft->writePixel(_x + i, _y,
+														 pgm_read_word
+														 (&ton
+														  [j * _w + i]));
 						}
-						break;
-					case mapObject::peep1:
-						for (uint16_t j = 0; j < _h; j++, _y++)
+					}
+				}
+				if (currentObject & mapObject::peep1)
+				{
+					Serial.println("Draw peep1");
+					for (uint16_t j = 0; j < _h; j++, _y++)
+					{
+						for (uint16_t i = 0; i < _w; i++)
 						{
-							for (uint16_t i = 0; i < _w; i++)
-							{
-								Definitions::tft->writePixel(_x + i, _y,
-															 pgm_read_word
-															 (&peep1
-															  [j * _w +
-															   i]));
-							}
+							Definitions::tft->writePixel(_x + i, _y,
+														 pgm_read_word
+														 (&peep1
+														  [j * _w + i]));
 						}
-						break;
-					case mapObject::peep2:
-						for (uint16_t j = 0; j < _h; j++, _y++)
+					}
+				}
+				if (currentObject & mapObject::peep2)
+				{
+					Serial.println("Draw peep2");
+					for (uint16_t j = 0; j < _h; j++, _y++)
+					{
+						for (uint16_t i = 0; i < _w; i++)
 						{
-							for (uint16_t i = 0; i < _w; i++)
-							{
-								Definitions::tft->writePixel(_x + i, _y,
-															 pgm_read_word
-															 (&peep2
-															  [j * _w +
-															   i]));
-							}
+							Definitions::tft->writePixel(_x + i, _y,
+														 pgm_read_word
+														 (&peep2
+														  [j * _w + i]));
 						}
-						break;
-					case mapObject::bomb:
-						for (uint16_t j = 0; j < _h; j++, _y++)
+					}
+				}
+				if (currentObject & mapObject::bomb)
+				{
+					Serial.println("Draw bomb");
+					for (uint16_t j = 0; j < _h; j++, _y++)
+					{
+						for (uint16_t i = 0; i < _w; i++)
 						{
-							for (uint16_t i = 0; i < _w; i++)
-							{
-								Definitions::tft->writePixel(_x + i, _y,
-															 pgm_read_word
-																	 (&bomb1
-																	 [j * _w +
-																	  i]));
-							}
+							Definitions::tft->writePixel(_x + i, _y,
+														 pgm_read_word
+														 (&bomb1
+														  [j * _w + i]));
 						}
-						break;
+					}
 				}
 			}
 		}

@@ -7,7 +7,7 @@
 #include "../level/levelDefs.h"
 #include "../ArduinoNunchuk/ArduinoNunchuk.h"
 
-
+#define DEBUG 1
 
 gameScreen::gameScreen()
 {
@@ -23,6 +23,9 @@ int p2Y = 0, p2X = 0;
 void gameScreen::begin()
 {
 	Definitions::tft->fillScreen(ILI9341_BLACK);
+	level.begin();
+	level.printMap();
+	level.drawMap();
 	/*uint8_t width = Definitions::gameWidth+1, height = Definitions::gameHeight+1;
 	   for (int x = 0; x <= width; x++)
 	   drawBlock(x, 0);
@@ -61,8 +64,6 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 	int newX = p2X;
 	int newY = p2Y;
 
-	level.printMap();
-	Serial.println();
 
 	//Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
 
@@ -91,36 +92,43 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 		newY++;
 	}
 
-	if (!(level.getObjectAt(newX, newY) & mapObject::block) &&
-		!(level.getObjectAt(newX, newY) & mapObject::barrel) &&
-		!(level.getObjectAt(newX, newY) & mapObject::bomb))
+	if (newY != p2Y || newX != p2X)
 	{
-		level.setObjectAt(p2X, p2Y, mapObject::air);
-		level.setObjectAt(newX, newY, mapObject::peep2);
-		p2X = newX;
-		p2Y = newY;
-		//Serial.println(level.getObjectAt(newX, newY), BIN);
-		//Serial.println(newX);
-		//Serial.println(newY);
+
+		if (!(level.getObjectAt(newX, newY) & mapObject::block) &&
+			!(level.getObjectAt(newX, newY) & mapObject::barrel) &&
+			!(level.getObjectAt(newX, newY) & mapObject::bomb))
+		{
+			level.unmarkObjectAt(p2X, p2Y, mapObject::peep2);
+			level.markObjectAt(p2X, p2Y, mapObject::needsRedraw);
+			level.markObjectAt(newX, newY, mapObject::peep2);
+			level.markObjectAt(newX, newY, mapObject::needsRedraw);
+			//Serial.println(level.getObjectAt(newX, newY), BIN);
+			//Serial.println(newX);
+			//Serial.println(newY);
+		}
 	}
+	p2X = newX;
+	p2Y = newY;
 
 	//draw peep on the newest location
-	if (peep == 1)
-	{
-		drawPeep1(p2X, p2Y);
+	/*if (peep == 1)
+	   {
+	   drawPeep1(p2X, p2Y);
 
-	}
+	   }
 
-	if (peep == 2)
-	{
-		drawPeep2(p2X, p2Y);
-	}
+	   if (peep == 2)
+	   {
+	   drawPeep2(p2X, p2Y);
+	   } */
 	//return dirX, dirY;
 }
 
-void gameScreen::placeBomb ()
+void gameScreen::placeBomb()
 {
-	level.setObjectAt(p2X, p2Y, mapObject::bomb);
+	level.markObjectAt(p2X, p2Y, mapObject::bomb);
+	level.markObjectAt(p2X, p2Y, mapObject::needsRedraw);
 }
 
 void gameScreen::end()
@@ -132,14 +140,21 @@ uint8_t RefreshCnt = 0;
 void gameScreen::refresh()
 {
 	RefreshCnt++;
-	if ((RefreshCnt % 15) == 0)
+	if ((RefreshCnt % 5) == 0)
 	{
+		Serial.println("Refresh");
 		Definitions::nunchuk->update();
 		movePeep(2, Definitions::gameWidth, Definitions::gameHeight);
 
-		if (Definitions::nunchuk->zButton){
+		if (Definitions::nunchuk->zButton)
+		{
 			placeBomb();
 		}
+#ifdef DEBUG
+		level.printMap();
+		Serial.println();
+#endif
+		level.drawMap();
 	}
 }
 
