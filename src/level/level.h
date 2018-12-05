@@ -58,7 +58,8 @@ class Level
 	String getName();
 
 	uint8_t getObjectAt(uint8_t x, uint8_t y);
-	void setObjectAt(uint8_t x, uint8_t y, uint8_t object, uint8_t drawn = false);
+	void setObjectAt(uint8_t x, uint8_t y, uint8_t object, uint8_t drawn =
+					 false);
 	void drawMap();
 	void printMap();
 
@@ -72,25 +73,24 @@ class Level
 	 */
 	 uint16_t barrels[Definitions::gameHeight] = { 0 };
 
-uint8_t map[16][16] =
-		{ 
-			{0},
-		   	{0},
-			{0},
-		{0}, 
-		{0}, 
+	uint8_t map[16][16] = {
 		{0},
-		{0}, 
-		{0}, 
 		{0},
-		{0}, 
-		{0}, 
 		{0},
-		{0}, 
-		{0}, 
 		{0},
-		{0} 
-		};
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0}
+	};
 
 	// The name of the level
 	String name;
