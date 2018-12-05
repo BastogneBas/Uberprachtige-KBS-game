@@ -194,7 +194,19 @@ void Level::drawMap()
 							}
 						}
 						break;
-
+					case mapObject::bomb:
+						for (uint16_t j = 0; j < _h; j++, _y++)
+						{
+							for (uint16_t i = 0; i < _w; i++)
+							{
+								Definitions::tft->writePixel(_x + i, _y,
+															 pgm_read_word
+																	 (&bomb1
+																	 [j * _w +
+																	  i]));
+							}
+						}
+						break;
 				}
 			}
 		}

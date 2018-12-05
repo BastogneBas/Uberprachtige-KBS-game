@@ -87,4 +87,11 @@ const PROGMEM uint16_t peep2[] = {
 000000, 0x18c3, 0x1082, 0x18e3, 0x18e3, 0x18e3, 0x18e3, 0x18e3, 0x18e3, 0x18e3, 0x18e3, 0x18e3, 0x18e3, 0x1062, 000000, 000000
 };
 
+const PROGMEM uint16_t bomb1[] = {
+
+};
+
+const PROGMEM uint16_t bomb2[] = {
+
+};
 #endif

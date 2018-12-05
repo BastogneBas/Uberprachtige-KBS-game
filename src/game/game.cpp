@@ -118,6 +118,11 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 	//return dirX, dirY;
 }
 
+void gameScreen::placeBomb ()
+{
+	level.setObjectAt(p2X, p2Y, mapObject::bomb);
+}
+
 void gameScreen::end()
 {
 }
@@ -131,6 +136,10 @@ void gameScreen::refresh()
 	{
 		Definitions::nunchuk->update();
 		movePeep(2, Definitions::gameWidth, Definitions::gameHeight);
+
+		if (Definitions::nunchuk->zButton){
+			placeBomb();
+		}
 	}
 }
 
