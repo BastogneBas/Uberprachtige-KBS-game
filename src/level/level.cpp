@@ -128,22 +128,24 @@ void Level::setObjectAt(uint8_t x, uint8_t y, uint16_t object,
 		map[y][x] = (object | mapObject::needsRedraw);
 	else
 		map[y][x] = (object & ~(mapObject::needsRedraw));
-	printMap();
-	Serial.println();
+	//printMap();
+	//Serial.println();
 	//delay(15);
 }
 
 void Level::markObjectAt(uint8_t x, uint8_t y, uint16_t flag)
 {
 	map[y][x] |= flag;
-	printMap();
-	Serial.println();
+	//printMap();
+	//Serial.println();
 	//delay(15);
 }
 
 void Level::unmarkObjectAt(uint8_t x, uint8_t y, uint16_t flag)
 {
+	Serial.println(map[y][x], BIN);
 	map[y][x] &= ~flag;
+	Serial.println(map[y][x], BIN);
 }
 
 void Level::drawMap()
@@ -161,17 +163,18 @@ void Level::drawMap()
 				mapObject::needsRedraw;
 			//Serial.println(Redraw);
 			setObjectAt(x, y, currentObject, true);
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 			if (Redraw)
 			{
 				if (!(currentObject & mapObject::air))
 				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 					Serial.println("Draw air");
 					Definitions::tft->writeFillRect(_x, _y, 16, 16,
 													ILI9341_BLACK);
 				}
 				if (currentObject & mapObject::block)
 				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 					Serial.println("Draw block");
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -186,6 +189,7 @@ void Level::drawMap()
 				}
 				if (currentObject & mapObject::barrel)
 				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 					Serial.println("Draw barrel");
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -200,6 +204,7 @@ void Level::drawMap()
 				}
 				if (currentObject & mapObject::peep1)
 				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 					Serial.println("Draw peep1");
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -214,6 +219,7 @@ void Level::drawMap()
 				}
 				if (currentObject & mapObject::peep2)
 				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 					Serial.println("Draw peep2");
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -228,6 +234,7 @@ void Level::drawMap()
 				}
 				if (currentObject & mapObject::bomb)
 				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 					Serial.println("Draw bomb");
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{

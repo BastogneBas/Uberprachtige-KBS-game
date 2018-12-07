@@ -106,10 +106,10 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 			//Serial.println(level.getObjectAt(newX, newY), BIN);
 			//Serial.println(newX);
 			//Serial.println(newY);
+			p2X = newX;
+			p2Y = newY;
 		}
 	}
-	p2X = newX;
-	p2Y = newY;
 
 	//draw peep on the newest location
 	/*if (peep == 1)
@@ -144,12 +144,12 @@ void gameScreen::refresh()
 	{
 		Serial.println("Refresh");
 		Definitions::nunchuk->update();
-		movePeep(2, Definitions::gameWidth, Definitions::gameHeight);
-
 		if (Definitions::nunchuk->zButton)
 		{
 			placeBomb();
 		}
+		movePeep(2, Definitions::gameWidth, Definitions::gameHeight);
+
 #ifdef DEBUG
 		level.printMap();
 		Serial.println();
