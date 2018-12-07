@@ -140,7 +140,7 @@ uint8_t RefreshCnt = 0;
 void gameScreen::refresh()
 {
 	RefreshCnt++;
-	if ((RefreshCnt % 5) == 0)
+	//if ((RefreshCnt % 5) == 0)
 	{
 		Serial.println("Refresh");
 		Definitions::nunchuk->update();

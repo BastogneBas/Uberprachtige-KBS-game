@@ -202,6 +202,22 @@ void Level::drawMap()
 						}
 					}
 				}
+				if (currentObject & mapObject::bomb)
+				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					Serial.println("Draw bomb");
+					for (uint16_t j = 0; j < _h; j++, _y++)
+					{
+						for (uint16_t i = 0; i < _w; i++)
+						{
+							Definitions::tft->writePixel(_x + i, _y,
+														 pgm_read_word
+														 //(&bomb1Idle
+														 (&explosion2Center
+														  [j * _w + i]));
+						}
+					}
+				}
 				if (currentObject & mapObject::peep1)
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
@@ -228,21 +244,6 @@ void Level::drawMap()
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
 														 (&peep2
-														  [j * _w + i]));
-						}
-					}
-				}
-				if (currentObject & mapObject::bomb)
-				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
-					Serial.println("Draw bomb");
-					for (uint16_t j = 0; j < _h; j++, _y++)
-					{
-						for (uint16_t i = 0; i < _w; i++)
-						{
-							Definitions::tft->writePixel(_x + i, _y,
-														 pgm_read_word
-														 (&bomb1
 														  [j * _w + i]));
 						}
 					}
