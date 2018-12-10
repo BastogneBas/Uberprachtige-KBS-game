@@ -6,7 +6,7 @@ const char *LevelDefs::levelNames[] = {
 
 const uint16_t LevelDefs::levelBarrels[][11] = {
         {
-                0b0001001000100011,
+                0b0000001000100011,
                 0b0000000000000000,
                 0b0000000000100000,
                 0b0000000000000000,

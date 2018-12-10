@@ -42,7 +42,7 @@ int main()
 	// TODO: replace with level selection screen.
 #warning Needs te be replaced
 	// Immediately start game screen.
-	//gameScreen gamescreen = gameScreen(LevelDefs::getLevel(0));
+//	gameScreen gamescreen = gameScreen(LevelDefs::getLevel(0));
 	gameScreen gamescreen = gameScreen(Level("Random"));
 	gamescreen.begin();
 

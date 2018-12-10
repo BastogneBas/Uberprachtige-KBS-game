@@ -143,9 +143,9 @@ void Level::markObjectAt(uint8_t x, uint8_t y, uint16_t flag)
 
 void Level::unmarkObjectAt(uint8_t x, uint8_t y, uint16_t flag)
 {
-	Serial.println(map[y][x], BIN);
+	//Serial.println(map[y][x], BIN);
 	map[y][x] &= ~flag;
-	Serial.println(map[y][x], BIN);
+	//Serial.println(map[y][x], BIN);
 }
 
 void Level::drawMap()
@@ -212,12 +212,57 @@ void Level::drawMap()
 						{
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
-														 //(&bomb1Idle
-														 (&explosion2Center
+														 (&bomb1Idle
+														 //(&explosion2Center
 														  [j * _w + i]));
 						}
 					}
 				}
+                if (currentObject & mapObject::explosion)
+                {
+                    uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+                    Serial.println("Draw explosion center");
+                    for (uint16_t j = 0; j < _h; j++, _y++)
+                    {
+                        for (uint16_t i = 0; i < _w; i++)
+                        {
+                            Definitions::tft->writePixel(_x + i, _y,
+                                                         pgm_read_word
+                                                                 (&explosion2Center
+                                                                 [j * _w + i]));
+                        }
+                    }
+                }
+                if (currentObject & mapObject::explosionH)
+                {
+                    uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+                    Serial.println("Draw explosion horizontal");
+                    for (uint16_t j = 0; j < _h; j++, _y++)
+                    {
+                        for (uint16_t i = 0; i < _w; i++)
+                        {
+                            Definitions::tft->writePixel(_x + i, _y,
+                                                         pgm_read_word
+                                                                 (&explosion2H
+                                                                 [j * _w + i]));
+                        }
+                    }
+                }
+                if (currentObject & mapObject::explosionV)
+                {
+                    uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+                    Serial.println("Draw explosion vertical");
+                    for (uint16_t j = 0; j < _h; j++, _y++)
+                    {
+                        for (uint16_t i = 0; i < _w; i++)
+                        {
+                            Definitions::tft->writePixel(_x + i, _y,
+                                                         pgm_read_word
+                                                                 (&explosion2V
+                                                                 [j * _w + i]));
+                        }
+                    }
+                }
 				if (currentObject & mapObject::peep1)
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;

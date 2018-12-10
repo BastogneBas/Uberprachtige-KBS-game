@@ -22,6 +22,7 @@ class gameScreen:public screen
 	void drawBomb (uint16_t x, uint16_t y);
 	void movePeep (int peep, uint16_t x, uint16_t y);
     void placeBomb ();
+    void drawExplosion ();
 	Level level;
 };
 

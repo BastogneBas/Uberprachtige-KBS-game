@@ -103,9 +103,7 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 			level.markObjectAt(p2X, p2Y, mapObject::needsRedraw);
 			level.markObjectAt(newX, newY, mapObject::peep2);
 			level.markObjectAt(newX, newY, mapObject::needsRedraw);
-			//Serial.println(level.getObjectAt(newX, newY), BIN);
-			//Serial.println(newX);
-			//Serial.println(newY);
+
 			p2X = newX;
 			p2Y = newY;
 		}
@@ -129,6 +127,78 @@ void gameScreen::placeBomb()
 {
 	level.markObjectAt(p2X, p2Y, mapObject::bomb);
 	level.markObjectAt(p2X, p2Y, mapObject::needsRedraw);
+
+}
+
+void gameScreen::drawExplosion() {
+
+    int explX = p2X;
+    int explY = p2Y;
+
+//    int X = p2X;
+//    int Y = p2Y;
+
+    for (int x = -2; x <= 2; x++) {
+        if (x != 0) {
+            Serial.println((!(x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block)), BIN);
+            Serial.println((!(x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
+            if(((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block))
+                || ((x > 0) && !((level.getObjectAt(explX + x - 1, explY)) & mapObject::block))){
+
+                if (!(level.getObjectAt(explX + x, explY) & mapObject::block)) {
+                    level.markObjectAt(explX + x, explY, mapObject::explosion);
+                    level.markObjectAt(explX + x, explY, mapObject::needsRedraw);
+                    level.unmarkObjectAt(explX + x, explY, mapObject::barrel);
+                    //level.markObjectAt(explX + x, explY, mapObject::air);
+                }
+            }
+
+//            if(!(x > 0) && !((level.getObjectAt(explX + x - 1, explY)) & mapObject::block)){
+//                //(!(x > 0 && (level.getObjectAt(explX + x - 1, explY)) & mapObject::block))) {
+//                if (!(level.getObjectAt(explX + x, explY) & mapObject::block)) {
+//                    level.markObjectAt(explX + x, explY, mapObject::explosion);
+//                    level.markObjectAt(explX + x, explY, mapObject::needsRedraw);
+//                    level.unmarkObjectAt(explX + x, explY, mapObject::barrel);
+//                    //level.markObjectAt(explX + x, explY, mapObject::air);
+//                }
+//            }
+        } else {
+            level.markObjectAt(explX, explY, mapObject::explosion);
+            level.markObjectAt(explX, explY, mapObject::needsRedraw);
+            level.unmarkObjectAt(explX, explY, mapObject::bomb);
+        }
+    }
+
+
+    for (int y = -2; y <= 2; y++) {
+
+        if (y != 0) {
+            if ((y < 0) && !((level.getObjectAt(explX, explY + y + 1)) & mapObject::block)
+                || (y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::block)) {
+
+                if (!(level.getObjectAt(explX, explY + y) & mapObject::block)) {
+                    level.markObjectAt(explX, explY + y, mapObject::explosionV);
+                    level.markObjectAt(explX, explY + y, mapObject::needsRedraw);
+                    level.unmarkObjectAt(explX, explY + y, mapObject::barrel);
+                }
+            }
+
+//                if(! (y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::block)) {
+//                    if (!(level.getObjectAt(explX, explY + y) & mapObject::block)) {
+//                        level.markObjectAt(explX, explY + y, mapObject::explosionV);
+//                        level.markObjectAt(explX, explY + y, mapObject::needsRedraw);
+//                        level.unmarkObjectAt(explX, explY + y, mapObject::barrel);
+//                    }
+//                }
+        } else {
+            level.markObjectAt(explX, explY, mapObject::explosion);
+            level.markObjectAt(explX, explY, mapObject::needsRedraw);
+            level.unmarkObjectAt(explX, explY, mapObject::bomb);
+        }
+    }
+//			if (!(level.getObjectAt(explX, explY) & mapObject::block)) {
+//			if (!(level.getObjectAt(explX, explY) & mapObject::block))
+
 }
 
 void gameScreen::end()
@@ -147,8 +217,12 @@ void gameScreen::refresh()
 		if (Definitions::nunchuk->zButton)
 		{
 			placeBomb();
+			// time to wait before bomb is going to explode
+			drawExplosion();
 		}
 		movePeep(2, Definitions::gameWidth, Definitions::gameHeight);
+
+
 
 #ifdef DEBUG
 		level.printMap();
