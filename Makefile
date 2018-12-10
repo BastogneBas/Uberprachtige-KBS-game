@@ -7,6 +7,7 @@ ARDMK_VENDOR = arduino
 #BOARD_TAG = uno
 #BOARD_SUB = atmega328
 #TARGET = Uberprachtige-KBS-game
+MONITOR_BAUDRATE = 500000
 
 #CXXFLAGS += -Isrc/spel/
 USER_LIB_PATH = $(realpath ./src)

@@ -75,8 +75,8 @@ void Level::begin()
 	{
 		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
 		{
-			uint16_t mask = 1 << y;
-			if (getBarrels()[x] & (mask))
+			uint16_t mask = (1 << (Definitions::gameWidth-1)) >> x;
+			if (getBarrels()[y] & (mask))
 			{
 				setObjectAt(x + 1, y + 1, mapObject::barrel);
 			}
@@ -212,13 +212,58 @@ void Level::drawMap()
 						{
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
-														 (&bomb1Idle
+														 (&bomb2Idle
 														 //(&explosion2Center
 														  [j * _w + i]));
 						}
 					}
 				}
-                if (currentObject & mapObject::explosion)
+				if (currentObject & mapObject::explosion && !(currentObject & mapObject::explosionV))
+				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					Serial.println("Draw explosion H");
+					for (uint16_t j = 0; j < _h; j++, _y++)
+					{
+						for (uint16_t i = 0; i < _w; i++)
+						{
+							Definitions::tft->writePixel(_x + i, _y,
+														 pgm_read_word
+														 (&explosion2H
+														  [j * _w + i]));
+						}
+					}
+				}
+				if (currentObject & mapObject::explosion && (currentObject & mapObject::explosionV))
+				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					Serial.println("Draw explosion V");
+					for (uint16_t j = 0; j < _h; j++, _y++)
+					{
+						for (uint16_t i = 0; i < _w; i++)
+						{
+							Definitions::tft->writePixel(_x + i, _y,
+														 pgm_read_word
+														 (&explosion2V
+														  [j * _w + i]));
+						}
+					}
+				}
+                if (currentObject & mapObject::bomb && currentObject & mapObject::explosion)
+				{
+			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					Serial.println("Draw explosion");
+					for (uint16_t j = 0; j < _h; j++, _y++)
+					{
+						for (uint16_t i = 0; i < _w; i++)
+						{
+							Definitions::tft->writePixel(_x + i, _y,
+														 pgm_read_word
+														 (&explosion2Center
+														  [j * _w + i]));
+						}
+					}
+				}
+				/*if (currentObject & mapObject::explosion)
                 {
                     uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
                     Serial.println("Draw explosion center");
@@ -262,7 +307,7 @@ void Level::drawMap()
                                                                  [j * _w + i]));
                         }
                     }
-                }
+                }*/
 				if (currentObject & mapObject::peep1)
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
@@ -289,51 +334,6 @@ void Level::drawMap()
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
 														 (&peep2
-														  [j * _w + i]));
-						}
-					}
-				}
-				if (currentObject & mapObject::explosion && currentObject & mapObject::bomb)
-				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
-					Serial.println("Draw bomb");
-					for (uint16_t j = 0; j < _h; j++, _y++)
-					{
-						for (uint16_t i = 0; i < _w; i++)
-						{
-							Definitions::tft->writePixel(_x + i, _y,
-														 pgm_read_word
-														 (&explosion2Center
-														  [j * _w + i]));
-						}
-					}
-				}
-				if (currentObject & mapObject::explosion && !(currentObject & mapObject::explosionV))
-				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
-					Serial.println("Draw bomb");
-					for (uint16_t j = 0; j < _h; j++, _y++)
-					{
-						for (uint16_t i = 0; i < _w; i++)
-						{
-							Definitions::tft->writePixel(_x + i, _y,
-														 pgm_read_word
-														 (&explosion2H
-														  [j * _w + i]));
-						}
-					}
-				}
-				if (currentObject & mapObject::explosion && (currentObject & mapObject::explosionV))
-				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
-					Serial.println("Draw bomb");
-					for (uint16_t j = 0; j < _h; j++, _y++)
-					{
-						for (uint16_t i = 0; i < _w; i++)
-						{
-							Definitions::tft->writePixel(_x + i, _y,
-														 pgm_read_word
-														 (&explosion2V
 														  [j * _w + i]));
 						}
 					}

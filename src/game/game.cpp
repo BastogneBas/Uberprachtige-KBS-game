@@ -142,11 +142,12 @@ void gameScreen::drawExplosion() {
         if (x != 0) {
             Serial.println((!(x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block)), BIN);
             Serial.println((!(x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
-            if(((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block))
+            if(    ((x < 0) && !((level.getObjectAt(explX + x + 1, explY)) & mapObject::block))
                 || ((x > 0) && !((level.getObjectAt(explX + x - 1, explY)) & mapObject::block))){
 
                 if (!(level.getObjectAt(explX + x, explY) & mapObject::block)) {
                     level.markObjectAt(explX + x, explY, mapObject::explosion);
+                    level.markObjectAt(explX + x, explY, mapObject::explosionH);
                     level.markObjectAt(explX + x, explY, mapObject::needsRedraw);
                     level.unmarkObjectAt(explX + x, explY, mapObject::barrel);
                     //level.markObjectAt(explX + x, explY, mapObject::air);
@@ -173,10 +174,11 @@ void gameScreen::drawExplosion() {
     for (int y = -2; y <= 2; y++) {
 
         if (y != 0) {
-            if ((y < 0) && !((level.getObjectAt(explX, explY + y + 1)) & mapObject::block)
-                || (y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::block)) {
+            if    (((y < 0) && !((level.getObjectAt(explX, explY + y + 1)) & mapObject::block))
+                || ((y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::block))) {
 
                 if (!(level.getObjectAt(explX, explY + y) & mapObject::block)) {
+                    level.markObjectAt(explX, explY + y, mapObject::explosion);
                     level.markObjectAt(explX, explY + y, mapObject::explosionV);
                     level.markObjectAt(explX, explY + y, mapObject::needsRedraw);
                     level.unmarkObjectAt(explX, explY + y, mapObject::barrel);
@@ -191,9 +193,9 @@ void gameScreen::drawExplosion() {
 //                    }
 //                }
         } else {
+            level.markObjectAt(explX, explY, mapObject::bomb);
             level.markObjectAt(explX, explY, mapObject::explosion);
             level.markObjectAt(explX, explY, mapObject::needsRedraw);
-            level.unmarkObjectAt(explX, explY, mapObject::bomb);
         }
     }
 //			if (!(level.getObjectAt(explX, explY) & mapObject::block)) {
