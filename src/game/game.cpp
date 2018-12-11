@@ -97,7 +97,7 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 
 		if (!(level.getObjectAt(newX, newY) & mapObject::block) &&
 			!(level.getObjectAt(newX, newY) & mapObject::barrel) &&
-			!(level.getObjectAt(newX, newY) & mapObject::bomb))
+			!((level.getObjectAt(newX, newY) & mapObject::bomb) && !(level.getObjectAt(newX, newY) & mapObject::explosion)))
 		{
 			level.unmarkObjectAt(p2X, p2Y, mapObject::peep2);
 			level.markObjectAt(p2X, p2Y, mapObject::needsRedraw);
