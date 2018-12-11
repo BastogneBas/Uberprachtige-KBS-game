@@ -1,16 +1,10 @@
-//
-// Created by alber on 7-12-2018.
-//
-
 #ifndef UBERPRACHTIGE_KBS_GAME_HOMESCREEN_H
 #define UBERPRACHTIGE_KBS_GAME_HOMESCREEN_H
 
-// Defining touchscreen variables
-
-
 class homeScreen: public screen
 {
-
+	// Defining all the public functions and variables
+	// The instructions of the functions can be found in the homeScreen.cpp file
 public:
 	homeScreen();
 	void begin();
@@ -20,9 +14,13 @@ public:
 	void repaint(uint8_t buttonSelect);
 	void newScreen(uint8_t buttonSelect);
 
-private:
-	// Defining variables
+	// Defining variable that holds the value of the current button being selected
+	uint8_t buttonSelect = 0;
 
+	// Defining variables to fill the screen with
+	uint8_t yRect = 79, yFill = 80, cursor = 90;
+
+private:
 
 };
 
