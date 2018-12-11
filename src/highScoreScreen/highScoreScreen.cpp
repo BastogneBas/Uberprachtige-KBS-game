@@ -10,7 +10,7 @@
 // Other includes
 #include "../../staticDefinitions.cpp"
 #include "highScoreScreen.h"
-#include "src/homeScreen./homeScreen.h"
+#include "../homeScreen/homeScreen.h"
 #include "../../screen.h"
 
 highScoreScreen::highScoreScreen()
@@ -29,7 +29,17 @@ void highScoreScreen::begin()
 
 void highScoreScreen::refresh()
 {
+	Definitions::nunchuk->update();
 
+	uint8_t nunY = Definitions::nunchuk->analogY;
+	bool zButton = Definitions::nunchuk->zButton;
+	bool cButton = Definitions::nunchuk->cButton;
+
+	if (cButton)
+	{
+		Definitions::currentScreen = new homeScreen();
+		Definitions::currentScreen->begin();
+	}
 }
 
 void highScoreScreen::end() {
