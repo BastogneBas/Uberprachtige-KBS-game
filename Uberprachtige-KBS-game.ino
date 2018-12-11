@@ -14,7 +14,7 @@ Adafruit_ILI9341 *Definitions::tft;
 ArduinoNunchuk *Definitions::nunchuk;
 
 // Pointer to the current visible screen.
-screen *Definitions::currentScreen;
+screen *currentScreen;
 
 int main()
 {
@@ -56,7 +56,7 @@ int main()
 	while (1)
 	{
 		// Refresh screen
-		Definitions::currentScreen->refresh();
+		currentScreen->refresh();
 		delay(100);
 	}
 }
