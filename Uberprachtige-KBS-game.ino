@@ -2,6 +2,7 @@
 #include "screen.h"
 #include "staticDefinitions.cpp"
 #include "src/level/levelDefs.h"
+#include "src/homeScreen/homeScreen.h"
 
 // If we are debugging, uncomment this. Then there will be Serial communication.
 #define DEBUG
@@ -13,7 +14,7 @@ Adafruit_ILI9341 *Definitions::tft;
 ArduinoNunchuk *Definitions::nunchuk;
 
 // Pointer to the current visible screen.
-screen *currentScreen;
+screen *Definitions::currentScreen;
 
 int main()
 {
@@ -48,10 +49,14 @@ int main()
 
 	// Sets the current screen to the current loaded screen
 	currentScreen = &gamescreen;
+
+	//Definitions::currentScreen = new homeScreen();
+	//Definitions::currentScreen->begin();
+
 	while (1)
 	{
 		// Refresh screen
-		currentScreen->refresh();
+		Definitions::currentScreen->refresh();
 		delay(100);
 	}
 }

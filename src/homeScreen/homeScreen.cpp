@@ -9,7 +9,9 @@
 // Other includes
 #include "../../staticDefinitions.cpp"
 #include "homeScreen.h"
-#include "src/lvlSelectScreen/lvlSelectScreen.h"
+#include "../lvlSelectScreen/lvlSelectScreen.h"
+#include "../instructionScreen/instructionScreen.h"
+#include "../highScoreScreen/highScoreScreen.h"
 #include "../../screen.h"
 
 homeScreen::homeScreen()
@@ -49,16 +51,23 @@ void homeScreen::begin()
 
 uint8_t buttonSelect = 0;
 
-void homeScreen::refresh() {
+void homeScreen::refresh()
+{
 	Definitions::nunchuk->update();
 
 	uint8_t nunY = Definitions::nunchuk->analogY;
 	bool zButton = Definitions::nunchuk->zButton;
 
-	if (nunY < 50) {
-		if (!(buttonSelect == 3)) {
+	if (nunY < 50)
+	{
+		if (!buttonSelect == 3)
+		{
 			buttonSelect++;
-			homeScreen::repaint(buttonSelect, zButton);
+			homeScreen::repaint(buttonSelect);
+		}
+		else
+		{
+			homeScreen::repaint(buttonSelect);
 		}
 	}
 
@@ -69,6 +78,15 @@ void homeScreen::refresh() {
 				buttonSelect--;
 				homeScreen::repaint(buttonSelect);
 			}
+			else
+			{
+				homeScreen::repaint(buttonSelect);
+			}
+	}
+
+	if ((zButton) && (!buttonSelect == 0))
+	{
+		newScreen(buttonSelect);
 	}
 }
 
@@ -78,16 +96,12 @@ void homeScreen::repaint(uint8_t buttonSelect)
 	{
 		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_BLACK);
 		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_WHITE);
-
-		homeScreen::newScreen(zButton, buttonSelect);
 	}
 	else if (buttonSelect == 2)
 	{
 		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_BLACK);
 		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_WHITE);
 		Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_BLACK);
-
-		homeScreen::newScreen(zButton, buttonSelect);
 	}
 	else if (buttonSelect == 3)
 	{
@@ -95,28 +109,25 @@ void homeScreen::repaint(uint8_t buttonSelect)
 	}
 }
 
-void homeScreen::newScreen(bool zButton, uint8_t buttonSelect)
+void homeScreen::newScreen(uint8_t buttonSelect)
 {
-	if (zButton)
+	if (buttonSelect == 1)
 	{
-		if (buttonSelect == 1)
-		{
-			Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_RED);
-			Definitions::currentScreen = new lvlSelectScreen();
-			Definitions::currentScreen->begin();
-		}
-		else if (buttonSelect == 2)
-		{
-			Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_RED);
-			Definitions::currentScreen = new highScoreScreen();
-			Definitions::currentScreen->begin();
-		}
-		else if (buttonSelect == 3)
-		{
-			Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_RED);
-			Definitions::currentScreen = new highScoreScreen();
-			Definitions::currentScreen->begin();
-		}
+		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_RED);
+		Definitions::currentScreen = new lvlSelectScreen();
+		Definitions::currentScreen->begin();
+	}
+	else if (buttonSelect == 2)
+	{
+		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_RED);
+		Definitions::currentScreen = new highScoreScreen();
+		Definitions::currentScreen->begin();
+	}
+	else if (buttonSelect == 3)
+	{
+		Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_RED);
+		Definitions::currentScreen = new instructionScreen();
+		Definitions::currentScreen->begin();
 	}
 
 }

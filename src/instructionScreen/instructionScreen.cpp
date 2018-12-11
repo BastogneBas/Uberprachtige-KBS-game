@@ -12,7 +12,7 @@
 
 // Other includes
 #include "../../staticDefinitions.cpp"
-#include "src/homeScreen./homeScreen.h"
+#include "../homeScreen/homeScreen.h"
 #include "instructionScreen.h"
 #include "../../screen.h"
 

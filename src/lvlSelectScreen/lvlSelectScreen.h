@@ -1,7 +1,3 @@
-//
-// Created by alber on 10-12-2018.
-//
-
 #ifndef UBERPRACHTIGE_KBS_GAME_LVLSELECTSCREEN_H
 #define UBERPRACHTIGE_KBS_GAME_LVLSELECTSCREEN_H
 
@@ -13,6 +9,8 @@ void begin();
 void refresh();
 void end();
 void checkNunchuck();
+void repaint(uint8_t selectedButton);
+void startGame(uint8_t selectedButton);
 
 private:
 

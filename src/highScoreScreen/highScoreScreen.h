@@ -8,13 +8,13 @@
 class highScoreScreen: public screen
 {
 public:
-	homeScreen();
+	highScoreScreen();
 	void begin();
 	void refresh();
 	void end();
 	void checkNunchuck();
-	void repaint(uint8_t buttonSelect, bool zButton);
-	void newScreen(bool zButton, uint8_t buttonSelect);
+	void repaint(uint8_t buttonSelect);
+	void newScreen(uint8_t buttonSelect);
 
 private:
 	// Defining variables

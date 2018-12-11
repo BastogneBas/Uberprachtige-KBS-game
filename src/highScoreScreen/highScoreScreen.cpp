@@ -10,7 +10,7 @@
 // Other includes
 #include "../../staticDefinitions.cpp"
 #include "highScoreScreen.h"
-#include "src/homeScreen./homeScreen.h"
+#include "../homeScreen/homeScreen.h"
 #include "../../screen.h"
 
 highScoreScreen::highScoreScreen()

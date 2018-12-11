@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include "Sprites.h"
 #include "src/ArduinoNunchuk/ArduinoNunchuk.h"
+#include "screen.h"
 
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
@@ -22,6 +23,7 @@ class Definitions
 
 	static Adafruit_ILI9341 *tft;
 	static ArduinoNunchuk *nunchuk;
+	static screen *currentScreen;
 
 	static void bmpDraw(char *filename, int16_t x, int16_t y)
 	{
