@@ -14,7 +14,7 @@ Adafruit_ILI9341 *Definitions::tft;
 ArduinoNunchuk *Definitions::nunchuk;
 
 // Pointer to the current visible screen.
-screen *currentScreen;
+screen *Definitions::currentScreen;
 
 int main()
 {
@@ -43,20 +43,20 @@ int main()
 	// TODO: replace with level selection screen.
 #warning Needs te be replaced
 	// Immediately start game screen.
-	gameScreen gamescreen = gameScreen(LevelDefs::getLevel(0));
+	//gameScreen gamescreen = gameScreen(LevelDefs::getLevel(0));
 //	gameScreen gamescreen = gameScreen(Level("Random"));
-	gamescreen.begin();
+	//gamescreen.begin();
 
 	// Sets the current screen to the current loaded screen
-	currentScreen = &gamescreen;
+	//currentScreen = &gamescreen;
 
-	//Definitions::currentScreen = new homeScreen();
-	//Definitions::currentScreen->begin();
+	Definitions::currentScreen = new homeScreen();
+	Definitions::currentScreen->begin();
 
 	while (1)
 	{
 		// Refresh screen
-		currentScreen->refresh();
+		Definitions::currentScreen->refresh();
 		delay(100);
 	}
 }
