@@ -193,7 +193,7 @@ void gameScreen::drawExplosion() {
 //                    }
 //                }
         } else {
-            level.markObjectAt(explX, explY, mapObject::bomb);
+            level.unmarkObjectAt(explX, explY, mapObject::bomb);
             level.markObjectAt(explX, explY, mapObject::explosion);
             level.markObjectAt(explX, explY, mapObject::needsRedraw);
         }
