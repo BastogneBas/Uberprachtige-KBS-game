@@ -20,6 +20,9 @@ public:
 	// Defining variables to fill the screen with
 	uint8_t yRect = 79, yFill = 80, cursor = 90;
 
+	// Variables for writing the sprite
+	uint16_t _x = 9, _y = 5, _w = 16, _h = 16;
+
 private:
 
 };

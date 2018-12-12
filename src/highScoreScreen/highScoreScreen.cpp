@@ -20,23 +20,22 @@ highScoreScreen::highScoreScreen()
 
 void highScoreScreen::begin()
 {
-	Definitions::tft->fillScreen(ILI9341_DARKGREY);		// Filling the screen with darkGrey
+	Definitions::tft->fillScreen(ILI9341_BLACK);		// Filling the screen with darkGrey
 	Definitions::tft->setCursor(55, 120);
-	Definitions::tft->setTextColor(ILI9341_BLACK);
+	Definitions::tft->setTextColor(ILI9341_GREENYELLOW);
 	Definitions::tft->setTextSize(4);
-	Definitions::tft->println("High-score pagina");
+	Definitions::tft->println("Bonnie 100. Guus INFINITY");
 }
 
 void highScoreScreen::refresh()
 {
 	Definitions::nunchuk->update();
 
-	uint8_t nunY = Definitions::nunchuk->analogY;
-	bool zButton = Definitions::nunchuk->zButton;
-	bool cButton = Definitions::nunchuk->cButton;
-
-	if (cButton)
+	if (Definitions::nunchuk->cButton)
 	{
+		// Deleting current screen
+		delete Definitions::currentScreen;
+
 		Definitions::currentScreen = new homeScreen();
 		Definitions::currentScreen->begin();
 	}

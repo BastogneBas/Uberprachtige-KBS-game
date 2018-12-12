@@ -16,30 +16,33 @@
 #include "instructionScreen.h"
 #include "../../screen.h"
 
+// Defining constructor
 instructionScreen::instructionScreen()
 {
 
 }
 
+// Void that gets called once when the class is being called.
 void instructionScreen::begin()
 {
-	Definitions::tft->fillScreen(ILI9341_DARKGREY);		// Filling the screen with darkGrey
+	Definitions::tft->fillScreen(ILI9341_BLACK);		// Filling the screen with darkGrey
 	Definitions::tft->setCursor(55, 120);
-	Definitions::tft->setTextColor(ILI9341_BLACK);
+	Definitions::tft->setTextColor(ILI9341_GREENYELLOW);
 	Definitions::tft->setTextSize(4);
-	Definitions::tft->println("Instructie pagina");
+	Definitions::tft->println("iNsTrUcTiE pAgInA");
 }
 
 void instructionScreen::refresh()
 {
 	Definitions::nunchuk->update();
 
-	uint8_t nunY = Definitions::nunchuk->analogY;
-	bool zButton = Definitions::nunchuk->zButton;
-	bool cButton = Definitions::nunchuk->cButton;
 
-	if (cButton)
+	// If statement that will check if the cButton is being pushed
+	if (Definitions::nunchuk->cButton)
 	{
+		// Deleting current screen
+		delete Definitions::currentScreen;
+
 		Definitions::currentScreen = new homeScreen();
 		Definitions::currentScreen->begin();
 	}

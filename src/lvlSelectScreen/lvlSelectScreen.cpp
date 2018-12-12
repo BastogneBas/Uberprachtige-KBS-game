@@ -24,13 +24,13 @@ lvlSelectScreen::lvlSelectScreen()
 void lvlSelectScreen::begin()
 {
 	// Filling the screen with darkGrey
-	Definitions::tft->fillScreen(ILI9341_DARKGREY);
+	Definitions::tft->fillScreen(ILI9341_BLACK);
 
 	// For loop that makes the four buttons in the levelSelectScreen
-	for (int i = 1; i <= 4; i++)
+	for (uint8_t i = 1; i <= 4; i++)
 	{
 		// Setting the values for the fist button
-		Definitions::tft->drawRect(19, lvlSelectScreen::yRect, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(19, lvlSelectScreen::yRect, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->fillRect(20, lvlSelectScreen::yFill, 240, 40, ILI9341_YELLOW);
 
 		// Setting the colors
@@ -104,12 +104,16 @@ void lvlSelectScreen::refresh()
 	// If statement that will check if the cButton is being pushed
 	if (Definitions::nunchuk->cButton)
 	{
+		// First, delete pointer to the current screen
+		delete Definitions::currentScreen;
+
 		// If true, we will return to the previous screen (= homeScreen)
 		// Will close the current screen, and call the new screen
 		// selectedButton will also be set to 0
 		Definitions::currentScreen = new homeScreen();
 		Definitions::currentScreen->begin();
 		lvlSelectScreen::selectedButton = 0;
+
 
 	}
 }
@@ -125,26 +129,26 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 		Definitions::tft->drawRect(19, 29, 242, 42, ILI9341_WHITE);
 
 		// This will rewrite the border of the button underneath black
-		Definitions::tft->drawRect(19, 79, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(19, 79, 242, 42, ILI9341_DARKGREY);
 	}
 
 	// The same things happen with levels 2, 3 and the random level
 	else if (selectedButton == 2)
 	{
-		Definitions::tft->drawRect(19, 29, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(19, 29, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(19, 79, 242, 42, ILI9341_WHITE);
-		Definitions::tft->drawRect(19, 129, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(19, 129, 242, 42, ILI9341_DARKGREY);
 
 	}
 	else if (selectedButton == 3)
 	{
-		Definitions::tft->drawRect(19, 79, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(19, 79, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(19, 129, 242, 42, ILI9341_WHITE);
-		Definitions::tft->drawRect(19, 179, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(19, 179, 242, 42, ILI9341_DARKGREY);
 	}
 	else if (selectedButton == 4)
 	{
-		Definitions::tft->drawRect(19, 129, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(19, 129, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(19, 179, 242, 42, ILI9341_WHITE);
 	}
 }
@@ -155,6 +159,9 @@ void lvlSelectScreen::startGame(uint8_t selectedButton)
 	// Checking if buttonSelect is > 0 && <= 4 for general functions on all buttons
 	if (selectedButton > 0 && selectedButton <= 4)
 	{
+		// Deleting current pointer
+		delete Definitions::currentScreen;
+
 		// If buttonSelect == 1, the lvlSelect screen will be called and started.
 		// The same things happen with the other buttons
 		if (selectedButton == 1)
@@ -174,9 +181,9 @@ void lvlSelectScreen::startGame(uint8_t selectedButton)
 			Definitions::currentScreen = new gameScreen(LevelDefs::getLevel("Random"));
 
 		}
-		Definitions::currentScreen->begin();
 
-		// TODO close the currentscreen
+		// Opening the new screen
+		Definitions::currentScreen->begin();
 	}
 }
 

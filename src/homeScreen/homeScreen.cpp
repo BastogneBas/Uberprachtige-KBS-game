@@ -24,13 +24,13 @@ homeScreen::homeScreen()
 void homeScreen::begin()
 {
 	// Filling the screen with darkGrey
-	Definitions::tft->fillScreen(ILI9341_DARKGREY);
+	Definitions::tft->fillScreen(ILI9341_BLACK);
 
 	// For loop that makes the three buttons in the homeScreen
-	for (int i = 1; i <= 3; i++)
+	for (uint8_t i = 1; i <= 3; i++)
 	{
 		// Setting the values for the fist button
-		Definitions::tft->drawRect(39, homeScreen::yRect, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(39, homeScreen::yRect, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->fillRect(40, homeScreen::yFill, 240, 40, ILI9341_YELLOW);
 
 		// Setting the colors
@@ -57,6 +57,37 @@ void homeScreen::begin()
 		homeScreen::yFill += 50;
 		homeScreen::cursor += 50;
 	}
+
+	// Enabling pixel writing
+	Definitions::tft->startWrite();
+
+	// Nestled for-loop for writing the bomberman peep :)
+	// The first for-loop gets
+	for (uint16_t j = 0; j < homeScreen::_h; j++, homeScreen::_y++)
+	{
+		for (uint16_t i = 0; i < homeScreen::_w; i++)
+		{
+			for (uint8_t subY = 0; subY < 3; subY++) {
+				for (uint8_t subX = 0; subX < 3; subX++) {
+
+					Definitions::tft->writePixel((homeScreen::_x + i) * 3 + subX, homeScreen::_y * 3 + subY,
+												 pgm_read_word
+														 (&peep1
+														 [j * homeScreen::_w + i]));
+				}
+			}
+		}
+	}
+
+	// End writing pixels
+	Definitions::tft->endWrite();
+
+	// Writing the game title
+	Definitions::tft->setCursor(85,30);
+	Definitions::tft->setTextColor(ILI9341_ORANGE);
+	Definitions::tft->setTextSize(2);
+	Definitions::tft->print("SpElEn MeT vUuR");
+
 }
 
 // Void for refreshing the homepage
@@ -114,19 +145,19 @@ void homeScreen::repaint(uint8_t buttonSelect)
 		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_WHITE);
 
 		// This will rewrite the border of the button underneath black
-		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_DARKGREY);
 	}
 
 	// The same things happens with buttons 2 and 3
 	else if (buttonSelect == 2)
 	{
-		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_WHITE);
-		Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_DARKGREY);
 	}
 	else if (buttonSelect == 3)
 	{
-		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_BLACK);
+		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_WHITE);
 	}
 }
