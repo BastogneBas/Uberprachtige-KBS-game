@@ -25,7 +25,7 @@ void lvlSelectScreen::begin()
 {
 	// Filling the screen with darkGrey
 	Definitions::tft->fillScreen(ILI9341_DARKGREY);
-	
+
 	// For loop that makes the four buttons in the levelSelectScreen
 	for (int i = 1; i <= 4; i++)
 	{
@@ -69,7 +69,7 @@ void lvlSelectScreen::refresh()
 	{
 		// Checking if buttonSelect (variable that holds the current buttonValue)
 		// isn't >= 4. This will check if the button is at or past the last button
-		if (!lvlSelectScreen::selectedButton >= 4)
+		if (!(lvlSelectScreen::selectedButton >= 4))
 		{
 			// If it isn't, it means that the last button hasn't been reached yet, so we can increment it
 			lvlSelectScreen::selectedButton++;
@@ -83,7 +83,7 @@ void lvlSelectScreen::refresh()
 	{
 		// The same thing happens if the joystick is being pushed up
 		// If buttonSelect isn't smaller or equal to 0 OR buttonSelect isn't 1
-		if ((!lvlSelectScreen::selectedButton <= 0) || (!lvlSelectScreen::selectedButton == 1))
+		if ((!(lvlSelectScreen::selectedButton <= 0)) || (!(lvlSelectScreen::selectedButton == 1)))
 		{
 			// Then it is possible to decrement the value (button hasn't reached the bottom yet)
 			lvlSelectScreen::selectedButton--;
@@ -94,7 +94,7 @@ void lvlSelectScreen::refresh()
 
 	// If statement that will check if the zButton is being pushed
 	// and if buttonSelect != 0. With the zButton we can select button in the menu
-	if ((Definitions::nunchuk->zButton) && (!lvlSelectScreen::selectedButton == 0))
+	if ((Definitions::nunchuk->zButton) && (!(lvlSelectScreen::selectedButton == 0)))
 	{
 		// If true, the newScreen function will be called. This function
 		// Will close the current screen, and call the new screen
@@ -110,7 +110,7 @@ void lvlSelectScreen::refresh()
 		Definitions::currentScreen = new homeScreen();
 		Definitions::currentScreen->begin();
 		lvlSelectScreen::selectedButton = 0;
-		Definitions::tft->endWrite();
+
 	}
 }
 
@@ -177,7 +177,6 @@ void lvlSelectScreen::startGame(uint8_t selectedButton)
 		Definitions::currentScreen->begin();
 
 		// TODO close the currentscreen
-		Definitions::tft->endWrite();
 	}
 }
 

@@ -42,7 +42,6 @@ void instructionScreen::refresh()
 	{
 		Definitions::currentScreen = new homeScreen();
 		Definitions::currentScreen->begin();
-		Definitions::tft->endWrite();
 	}
 }
 

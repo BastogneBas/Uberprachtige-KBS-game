@@ -155,7 +155,6 @@ void homeScreen::newScreen(uint8_t buttonSelect)
 		Definitions::currentScreen->begin();
 
 		// TODO close the currentscreen
-		Definitions::tft->endWrite();
 	}
 
 	// At the end, buttonSelect will be rosetted, so it will be at 0 again
