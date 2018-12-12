@@ -110,7 +110,7 @@ int main()
 		// Refresh screen
 		if(startRefresh){
 			refreshDone = 0;
-			PORTD |= (1 << PORTD6);
+			//PORTD |= (1 << PORTD6);
 #ifdef DEBUG
 			Serial.println("refresh");
 #endif
