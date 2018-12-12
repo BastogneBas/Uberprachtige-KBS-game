@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include "../../staticDefinitions.cpp"
+#include "../game/bomb.h"
 
 #ifndef LEVEL_H
 #define LEVEL_H
@@ -73,6 +74,15 @@ class Level
 	void drawMap();
 	void printMap();
 
+	//Bomb getBomb(int index);
+	//void setBomb(int index, Bomb bomb);
+	void setBomb(int index, uint8_t x, uint8_t y, uint8_t time, uint8_t peep);
+	uint8_t getBombX();
+	uint8_t getBombY();
+	uint8_t getBombTime();
+	uint8_t getBombPeep();
+
+
   private:
 	/* The barrel locations
 	 * Every uint32_t is a horizontal row of barrels. So for example:
@@ -98,6 +108,11 @@ class Level
 		{0},
 		{0}
 	};
+
+	uint8_t *bombX[2];
+	uint8_t *bombY[2];
+	uint8_t *bombTime[2];
+	uint8_t *bombPeep[2];
 
 	// The name of the level
 	String name;
