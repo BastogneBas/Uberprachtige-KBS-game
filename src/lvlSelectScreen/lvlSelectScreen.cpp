@@ -25,7 +25,7 @@ void lvlSelectScreen::begin()
 {
 	// Filling the screen with darkGrey
 	Definitions::tft->fillScreen(ILI9341_DARKGREY);
-
+	
 	// For loop that makes the four buttons in the levelSelectScreen
 	for (int i = 1; i <= 4; i++)
 	{
@@ -110,6 +110,7 @@ void lvlSelectScreen::refresh()
 		Definitions::currentScreen = new homeScreen();
 		Definitions::currentScreen->begin();
 		lvlSelectScreen::selectedButton = 0;
+		Definitions::tft->endWrite();
 	}
 }
 
@@ -176,10 +177,9 @@ void lvlSelectScreen::startGame(uint8_t selectedButton)
 		Definitions::currentScreen->begin();
 
 		// TODO close the currentscreen
+		Definitions::tft->endWrite();
 	}
-
 }
-
 
 void lvlSelectScreen::end()
 {
