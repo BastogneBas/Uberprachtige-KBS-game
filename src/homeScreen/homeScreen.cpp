@@ -215,10 +215,9 @@ void homeScreen::newScreen(uint8_t buttonSelect)
 		{
 			//Definitions::currentScreen = new instructionScreen();
 		}
+
 		// Opening the new window
 		Definitions::currentScreen->begin();
-
-		// TODO close the currentscreen
 	}
 
 	// At the end, buttonSelect will be rosetted, so it will be at 0 again
