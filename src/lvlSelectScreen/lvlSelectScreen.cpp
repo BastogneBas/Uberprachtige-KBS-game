@@ -83,7 +83,7 @@ void lvlSelectScreen::refresh()
 	{
 		// The same thing happens if the joystick is being pushed up
 		// If buttonSelect isn't smaller or equal to 0 OR buttonSelect isn't 1
-		if ((!(lvlSelectScreen::selectedButton <= 0)) || (!(lvlSelectScreen::selectedButton == 1)))
+		if (!(lvlSelectScreen::selectedButton <= 1))
 		{
 			// Then it is possible to decrement the value (button hasn't reached the bottom yet)
 			lvlSelectScreen::selectedButton--;
@@ -92,13 +92,16 @@ void lvlSelectScreen::refresh()
 		lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
 	}
 
+
 	// If statement that will check if the zButton is being pushed
 	// and if buttonSelect != 0. With the zButton we can select button in the menu
-	if ((Definitions::nunchuk->zButton) && (!(lvlSelectScreen::selectedButton == 0)))
+	if ((Definitions::nunchuk->zButton))
 	{
+
 		// If true, the newScreen function will be called. This function
 		// Will close the current screen, and call the new screen
 		lvlSelectScreen::startGame(lvlSelectScreen::selectedButton);
+
 	}
 
 	// If statement that will check if the cButton is being pushed
@@ -112,7 +115,6 @@ void lvlSelectScreen::refresh()
 		// selectedButton will also be set to 0
 		Definitions::currentScreen = new homeScreen();
 		Definitions::currentScreen->begin();
-		lvlSelectScreen::selectedButton = 0;
 
 
 	}
@@ -122,6 +124,8 @@ void lvlSelectScreen::refresh()
 // are moving through the menu. Selected == white and unselected == black
 void lvlSelectScreen::repaint(uint8_t selectedButton)
 {
+	Definitions::tft->setTextSize(3);
+
 	// If buttonSelect is 1, it means that the first button (Level 1, in this example) is selected
 	if (selectedButton == 1)
 	{
@@ -130,6 +134,17 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 
 		// This will rewrite the border of the button underneath black
 		Definitions::tft->drawRect(19, 79, 242, 42, ILI9341_DARKGREY);
+
+		// Overwrite text
+		Definitions::tft->setTextColor(ILI9341_RED);
+		Definitions::tft->setCursor(35, 40);
+		Definitions::tft->print("Level 1");
+
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(35, 90);
+		Definitions::tft->print("Level 2");
+
+
 	}
 
 	// The same things happen with levels 2, 3 and the random level
@@ -139,25 +154,58 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 		Definitions::tft->drawRect(19, 79, 242, 42, ILI9341_WHITE);
 		Definitions::tft->drawRect(19, 129, 242, 42, ILI9341_DARKGREY);
 
-	}
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(35, 40);
+		Definitions::tft->print("Level 1");
+
+		Definitions::tft->setTextColor(ILI9341_RED);
+		Definitions::tft->setCursor(35, 90);
+		Definitions::tft->print("Level 2");
+
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(35, 140);
+		Definitions::tft->print("Level 3");
+}
 	else if (selectedButton == 3)
 	{
 		Definitions::tft->drawRect(19, 79, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(19, 129, 242, 42, ILI9341_WHITE);
 		Definitions::tft->drawRect(19, 179, 242, 42, ILI9341_DARKGREY);
+
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(35, 90);
+		Definitions::tft->print("Level 2");
+
+		Definitions::tft->setTextColor(ILI9341_RED);
+		Definitions::tft->setCursor(35, 140);
+		Definitions::tft->print("Level 3");
+
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(35, 190);
+		Definitions::tft->print("Random level");
 	}
 	else if (selectedButton == 4)
 	{
 		Definitions::tft->drawRect(19, 129, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(19, 179, 242, 42, ILI9341_WHITE);
+
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(35, 140);
+		Definitions::tft->print("Level 3");
+
+		Definitions::tft->setTextColor(ILI9341_RED);
+		Definitions::tft->setCursor(35, 190);
+		Definitions::tft->print("Random level");
 	}
 }
 
 // Function that will be called if the user wants to go to start a level
 void lvlSelectScreen::startGame(uint8_t selectedButton)
 {
+
+	Serial.println(lvlSelectScreen::selectedButton);
 	// Checking if buttonSelect is > 0 && <= 4 for general functions on all buttons
-	if (selectedButton > 0 && selectedButton <= 4)
+	if ((selectedButton > 0) && (selectedButton <= 4))
 	{
 		// Deleting current pointer
 		delete Definitions::currentScreen;
@@ -166,24 +214,31 @@ void lvlSelectScreen::startGame(uint8_t selectedButton)
 		// The same things happen with the other buttons
 		if (selectedButton == 1)
 		{
+			Serial.print("Currentscreen: ");
+			Serial.println((uint16_t)Definitions::currentScreen, HEX);
 			Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(0));
+			Serial.println("Daar");
+			Definitions::currentScreen->begin();
+
 		}
 		else if (selectedButton == 2)
 		{
 			Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(1));
+			Definitions::currentScreen->begin();
+
 		}
 		else if (selectedButton == 3)
 		{
 			Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(2));
+			Definitions::currentScreen->begin();
+
 		}
 		else if (selectedButton == 4)
 		{
-			Definitions::currentScreen = new gameScreen(LevelDefs::getLevel("Random"));
+			Definitions::currentScreen = new gameScreen(Level("Random"));
+			Definitions::currentScreen->begin();
 
 		}
-
-		// Opening the new screen
-		Definitions::currentScreen->begin();
 	}
 }
 

@@ -16,7 +16,9 @@ gameScreen::gameScreen()
 
 gameScreen::gameScreen(Level level)
 {
+	Serial.println("Ik ben nu bij gamescreen");
 	this->level = level;
+	Serial.println("Ik ben nu bij gamescreen");
 }
 
 int p2Y = 0, p2X = 0;

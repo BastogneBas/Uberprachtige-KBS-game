@@ -15,7 +15,7 @@ public:
 	void newScreen(uint8_t buttonSelect);
 
 	// Defining variable that holds the value of the current button being selected
-	uint8_t buttonSelect = 0;
+	uint8_t buttonSelect = 1;
 
 	// Defining variables to fill the screen with
 	uint8_t yRect = 79, yFill = 80, cursor = 90;

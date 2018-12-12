@@ -10,7 +10,7 @@
 #include "../../staticDefinitions.cpp"
 #include "homeScreen.h"
 #include "../lvlSelectScreen/lvlSelectScreen.h"
-#include "../instructionScreen/instructionScreen.h"
+//#include "../instructionScreen/instructionScreen.h"
 #include "../highScoreScreen/highScoreScreen.h"
 #include "../../screen.h"
 
@@ -115,7 +115,7 @@ void homeScreen::refresh()
 	{
 		// The same thing happens if the joystick is being pushed up
 		// If buttonSelect isn't smaller or equal to 0 OR buttonSelect isn't 1
-		if ((!homeScreen::buttonSelect <= 0) || (!homeScreen::buttonSelect == 1))
+		if (!(homeScreen::buttonSelect <= 1))
 		{
 			// Then it is possible to decrement the value (button hasn't reached the bottom yet)
 			homeScreen::buttonSelect--;
@@ -126,7 +126,7 @@ void homeScreen::refresh()
 
 	// If statement that will check if the zButton is being pushed
 	// and if buttonSelect != 0. With the zButton we can select button in the menu
-	if ((Definitions::nunchuk->zButton) && (!homeScreen::buttonSelect == 0))
+	if ((Definitions::nunchuk->zButton) && (!(homeScreen::buttonSelect == 0)))
 	{
 		// If true, the newScreen function will be called. This function
 		// Will close the current screen, and call the new screen
@@ -138,6 +138,8 @@ void homeScreen::refresh()
 // are moving through the menu. Selected == white and unselected == black
 void homeScreen::repaint(uint8_t buttonSelect)
 {
+	Definitions::tft->setTextSize(3);
+
 	// If buttonSelect is 1, it means that the first button (Levels, in this example) is selected
 	if (buttonSelect == 1)
 	{
@@ -146,6 +148,14 @@ void homeScreen::repaint(uint8_t buttonSelect)
 
 		// This will rewrite the border of the button underneath black
 		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_DARKGREY);
+
+		Definitions::tft->setTextColor(ILI9341_RED);
+		Definitions::tft->setCursor(55, 90);
+		Definitions::tft->print("Levels");
+
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(55, 140);
+		Definitions::tft->print("High-scores");
 	}
 
 	// The same things happens with buttons 2 and 3
@@ -154,11 +164,32 @@ void homeScreen::repaint(uint8_t buttonSelect)
 		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_WHITE);
 		Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_DARKGREY);
+
+
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(55, 90);
+		Definitions::tft->print("Levels");
+
+		Definitions::tft->setTextColor(ILI9341_RED);
+		Definitions::tft->setCursor(55, 140);
+		Definitions::tft->print("High-scores");
+
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(55, 190);
+		Definitions::tft->print("Instructions");
 	}
 	else if (buttonSelect == 3)
 	{
 		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_WHITE);
+
+		Definitions::tft->setTextColor(ILI9341_BLACK);
+		Definitions::tft->setCursor(55, 140);
+		Definitions::tft->print("High-scores");
+
+		Definitions::tft->setTextColor(ILI9341_RED);
+		Definitions::tft->setCursor(55, 190);
+		Definitions::tft->print("Instructions");
 	}
 }
 
@@ -168,6 +199,8 @@ void homeScreen::newScreen(uint8_t buttonSelect)
 	// Checking if buttonSelect is > 0 && <= 3 for general functions on all buttons
 	if (buttonSelect > 0 && buttonSelect <= 3)
 	{
+		delete Definitions::currentScreen;
+
 		// If buttonSelect == 1, the lvlSelect screen will be called and started.
 		// Idem buttons 2 and 3
 		if (buttonSelect == 1)
@@ -180,7 +213,7 @@ void homeScreen::newScreen(uint8_t buttonSelect)
 		}
 		else if (buttonSelect == 3)
 		{
-			Definitions::currentScreen = new instructionScreen();
+			//Definitions::currentScreen = new instructionScreen();
 		}
 		// Opening the new window
 		Definitions::currentScreen->begin();
