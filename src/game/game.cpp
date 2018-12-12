@@ -7,7 +7,7 @@
 #include "../level/levelDefs.h"
 #include "../ArduinoNunchuk/ArduinoNunchuk.h"
 
-#define DEBUG 1
+//#define DEBUG 1
 
 gameScreen::gameScreen()
 {
@@ -140,8 +140,10 @@ void gameScreen::drawExplosion() {
 
     for (int x = -2; x <= 2; x++) {
         if (x != 0) {
+#ifdef DEBUG
             Serial.println((!(x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block)), BIN);
             Serial.println((!(x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
+#endif
             if(    ((x < 0) && !((level.getObjectAt(explX + x + 1, explY)) & mapObject::block))
                 || ((x > 0) && !((level.getObjectAt(explX + x - 1, explY)) & mapObject::block))){
 
@@ -214,7 +216,9 @@ void gameScreen::refresh()
 	RefreshCnt++;
 	//if ((RefreshCnt % 5) == 0)
 	{
+#ifdef DEBUG
 		Serial.println("Refresh");
+#endif
 		Definitions::nunchuk->update();
 		if (Definitions::nunchuk->zButton)
 		{

@@ -48,7 +48,6 @@ Level::~Level()
 
 void Level::begin()
 {
-	Serial.println("begin!");
 	uint8_t width = Definitions::gameWidth + 1, height =
 		Definitions::gameHeight + 1;
 
@@ -104,6 +103,7 @@ String Level::getName()
 
 void Level::printMap()
 {
+#ifdef DEBUG
 	for (uint8_t y = 0; y <= Definitions::gameHeight + 1; y++)
 	{
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
@@ -113,6 +113,7 @@ void Level::printMap()
 		}
 		Serial.println();
 	}
+#endif
 }
 
 uint16_t Level::getObjectAt(uint8_t x, uint8_t y)
@@ -150,7 +151,6 @@ void Level::unmarkObjectAt(uint8_t x, uint8_t y, uint16_t flag)
 
 void Level::drawMap()
 {
-	Serial.println("draw!");
 	for (uint8_t y = 0; y <= Definitions::gameHeight + 1; y++)
 	{
 		Definitions::tft->startWrite();
@@ -168,14 +168,18 @@ void Level::drawMap()
 				if (!(currentObject & mapObject::air))
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+#ifdef DEBUG
 					Serial.println("Draw air");
+#endif
 					Definitions::tft->writeFillRect(_x, _y, 16, 16,
 													ILI9341_BLACK);
 				}
 				if (currentObject & mapObject::block)
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+#ifdef DEBUG
 					Serial.println("Draw block");
+#endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
 						for (uint16_t i = 0; i < _w; i++)
@@ -190,7 +194,9 @@ void Level::drawMap()
 				if (currentObject & mapObject::barrel)
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+#ifdef DEBUG
 					Serial.println("Draw barrel");
+#endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
 						for (uint16_t i = 0; i < _w; i++)
@@ -205,7 +211,9 @@ void Level::drawMap()
 				if (currentObject & mapObject::bomb && !(currentObject & mapObject::explosion))
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+#ifdef DEBUG
 					Serial.println("Draw bomb");
+#endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
 						for (uint16_t i = 0; i < _w; i++)
@@ -221,7 +229,9 @@ void Level::drawMap()
 				if (currentObject & mapObject::explosion && !(currentObject & mapObject::explosionV))
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+#ifdef DEBUG
 					Serial.println("Draw explosion H");
+#endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
 						for (uint16_t i = 0; i < _w; i++)
@@ -236,7 +246,9 @@ void Level::drawMap()
 				if (currentObject & mapObject::explosion && (currentObject & mapObject::explosionV))
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+#ifdef DEBUG
 					Serial.println("Draw explosion V");
+#endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
 						for (uint16_t i = 0; i < _w; i++)
@@ -251,7 +263,9 @@ void Level::drawMap()
                 if (currentObject & mapObject::bomb && currentObject & mapObject::explosion)
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+#ifdef DEBUG
 					Serial.println("Draw explosion");
+#endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
 						for (uint16_t i = 0; i < _w; i++)
@@ -311,7 +325,9 @@ void Level::drawMap()
 				if (currentObject & mapObject::peep1)
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+#ifdef DEBUG
 					Serial.println("Draw peep1");
+#endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
 						for (uint16_t i = 0; i < _w; i++)
@@ -326,7 +342,9 @@ void Level::drawMap()
 				if (currentObject & mapObject::peep2)
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+#ifdef DEBUG
 					Serial.println("Draw peep2");
+#endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
 						for (uint16_t i = 0; i < _w; i++)
