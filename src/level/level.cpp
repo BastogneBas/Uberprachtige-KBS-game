@@ -18,32 +18,32 @@ Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 	this->name = name;
 }
 
-uint8_t Level::getBombX()
+uint8_t Level::getBombX(int index)
 {
-    return this->bombX;
+    return this->bombX[index];
 }
 
-uint8_t Level::getBombY()
+uint8_t Level::getBombY(int index)
 {
-    return this->bombY;
+    return this->bombY[index];
 }
 
-uint8_t Level::getBombTime()
+uint8_t Level::getBombTime(int index)
 {
-    return this->bombTime;
+    return this->bombTime[index];
 }
 
-uint8_t Level::getBombPeep()
+uint8_t Level::getBombPeep(int index)
 {
-    return this->bombPeep;
+    return this->bombPeep[index];
 }
 
 void Level::setBomb(int index, uint8_t x, uint8_t y, uint8_t time, uint8_t peep)
 {
-    *bombX[index] = x;
-    *bombY[index] = y;
-    *bombTime[index] = time;
-    *bombPeep[index] = peep;
+    bombX[index] = x;
+    bombY[index] = y;
+    bombTime[index] = time;
+    bombPeep[index] = peep;
 }
 /* Level constructor
  * Creates a level with random barrel locations
