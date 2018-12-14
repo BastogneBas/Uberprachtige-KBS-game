@@ -81,7 +81,8 @@ int main()
 	TCCR1A = (0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
 	TCCR1B = (0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (1<<WGM12) | (1<<CS12) | (0<<CS11) | (0<<CS10);
 	
-	OCR1A = (uint16_t)6250;
+	//OCR1A = (uint16_t)6250;
+	OCR1A = (uint16_t)1562;
 	TIMSK1 = (1<<OCF1A);
 
 	// Initialize the tft
@@ -112,7 +113,7 @@ int main()
 			refreshDone = 0;
 			//PORTD |= (1 << PORTD6);
 #ifdef DEBUG
-			Serial.println("refresh");
+			//Serial.println("refresh");
 #endif
 			Definitions::currentScreen->refresh();
 			startRefresh = 0;
