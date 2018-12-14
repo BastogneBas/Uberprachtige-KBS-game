@@ -8,10 +8,10 @@
  * Creates a level from predefined barrel locations.
  */
 Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
-{
+{	Definitions::println("level.cpp:11");
 	// Copy barrel locations from current level to ram
 	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
-	{
+	{	Definitions::println("level.cpp:14");
 		this->barrels[i] = barrels[i];
 	}
 	// And set the name of the current level
@@ -28,7 +28,7 @@ uint8_t Level::getBombY(int index)
     return this->bombY[index];
 }
 
-uint8_t Level::getBombTime(int index)
+uint32_t Level::getBombTime(int index)
 {
     return this->bombTime[index];
 }
@@ -38,7 +38,7 @@ uint8_t Level::getBombPeep(int index)
     return this->bombPeep[index];
 }
 
-void Level::setBomb(int index, uint8_t x, uint8_t y, uint8_t time, uint8_t peep)
+void Level::setBomb(int index, uint8_t x, uint8_t y, uint32_t time, uint8_t peep)
 {
     bombX[index] = x;
     bombY[index] = y;
@@ -52,11 +52,13 @@ Level::Level(String name)
 {
 	// Use the analog input of A0 as the seed for the random number generator
 	randomSeed(analogRead(A0));
+	//randomSeed(0xFFFF);
 	// For each line use a random uint16_t for barrel locations, and turn off the where no barrel can be placed
 	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
 	{
 		this->barrels[i] =
 			(((uint16_t) random(0xFFFF)) &
+			//(((uint16_t)0xFFFF) & 
 			 ~(LevelDefs::YouCantPlaceBarrelsHere[i]));
 	}
 	// Set the name of the level
@@ -130,17 +132,20 @@ String Level::getName()
 
 void Level::printMap()
 {
-#ifdef DEBUG
+//#ifdef DEBUG
 	for (uint8_t y = 0; y <= Definitions::gameHeight + 1; y++)
 	{
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
 		{
+			if(map[y][x] <= 0xF){
+				Serial.print(" ");
+			}
 			Serial.print(map[y][x], HEX);
 			Serial.print(" ");
 		}
 		Serial.println();
 	}
-#endif
+//#endif
 }
 
 uint16_t Level::getObjectAt(uint8_t x, uint8_t y)

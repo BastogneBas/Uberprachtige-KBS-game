@@ -56,6 +56,8 @@ void lvlSelectScreen::begin()
 		lvlSelectScreen::yFill += 50;
 		lvlSelectScreen::cursor += 50;
 	}
+	lvlSelectScreen::selectedButton = 1;
+	lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
 }
 
 // Void for refreshing the levelSelectScreen

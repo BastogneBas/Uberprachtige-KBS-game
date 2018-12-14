@@ -227,6 +227,7 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
     for (int x = -2; x <= 2; x++)
     {
         level.unmarkObjectAt(explX + x, explY, mapObject::explosion);
+		level.unmarkObjectAt(explX + x, explY, mapObject::explosionV);
         level.unmarkObjectAt(explX + x, explY, mapObject::bomb);
 
         if (!(level.getObjectAt (explX + x, explY) & mapObject::block)){
@@ -238,6 +239,7 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
     for (int y = -2; y <= 2; y++)
     {
         level.unmarkObjectAt(explX , explY + y, mapObject::explosion);
+		level.unmarkObjectAt(explX, explY + y, mapObject::explosionV);
         level.unmarkObjectAt(explX, explY + y, mapObject::bomb);
 
         if (!(level.getObjectAt (explX, explY + y) & mapObject::block)){
@@ -251,7 +253,7 @@ void gameScreen::end()
 {
 }
 
-uint8_t RefreshCnt = 0;
+uint32_t RefreshCnt = 0;
 //bool placed;
 void gameScreen::refresh()
 {
@@ -279,6 +281,13 @@ void gameScreen::refresh()
 			//placed = true;
 		}
 
+		Definitions::tft->print("BombTime: ");
+		Definitions::tft->print(level.getBombTime(0)+12);
+		Definitions::tft->println("  ");
+		Definitions::tft->print("ExplTime: ");
+		Definitions::tft->print(level.getBombTime(0)+24);
+		Definitions::tft->println("      ");
+
 		if (RefreshCnt == level.getBombTime(0) + 12)
         {
 		    if ((level.getObjectAt(bombX, bombY) & mapObject::bomb) && !(level.getObjectAt(bombX, bombY) & mapObject::explosion))
@@ -302,10 +311,15 @@ void gameScreen::refresh()
 
 
 
-#ifdef DEBUG
+//#ifdef DEBUG
 		level.printMap();
 		Serial.println();
-#endif
+//#endif
+		Definitions::tft->setCursor(0,210);
+		Definitions::tft->setTextSize(1);
+		Definitions::tft->setTextColor(ILI9341_RED, ILI9341_BLACK);
+		Definitions::tft->print("frame: ");
+		Definitions::tft->println(RefreshCnt);
 		level.drawMap();
 	}
 }

@@ -88,6 +88,8 @@ void homeScreen::begin()
 	Definitions::tft->setTextSize(2);
 	Definitions::tft->print("SpElEn MeT vUuR");
 
+	homeScreen::buttonSelect = 1;
+	homeScreen::repaint(homeScreen::buttonSelect);
 }
 
 // Void for refreshing the homepage

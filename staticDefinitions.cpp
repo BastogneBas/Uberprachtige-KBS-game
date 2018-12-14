@@ -25,6 +25,13 @@ class Definitions
 	static ArduinoNunchuk *nunchuk;
 	static screen *currentScreen;
 
+	static void println(char *str){
+		tft->setTextColor(ILI9341_WHITE, ILI9341_BLACK);
+		tft->setCursor(0,0);
+		tft->setTextSize(1);
+		tft->println(str);
+	}
+
 	static void bmpDraw(char *filename, int16_t x, int16_t y)
 	{
 		if (filename[0] == 'B' && filename[4] == 'K')
