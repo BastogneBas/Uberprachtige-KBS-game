@@ -71,15 +71,16 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 	int nunX = Definitions::nunchuk->analogX;
 	int nunY = Definitions::nunchuk->analogY;
 
-	//if (peep == 2) {
+	if (peep == 1)
+	{
+        newX = p1X;
+        newY = p1Y;
+    }
+
+	if (peep == 2) {
 		newX = p2X;
 		newY = p2Y;
-//	}
-
-//	if (peep == 1) {
-//		int newX = p1X;
-//		int newY = p1Y;
-//	}
+	}
 
 	//Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
 
@@ -115,7 +116,7 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 			!(level.getObjectAt(newX, newY) & mapObject::barrel) &&
 			!((level.getObjectAt(newX, newY) & mapObject::bomb) && !(level.getObjectAt(newX, newY) & mapObject::explosion)))
 		{
-			//if (peep == 2){
+			if (peep == 2){
 			level.unmarkObjectAt(p2X, p2Y, mapObject::peep2);
 			level.markObjectAt(p2X, p2Y, mapObject::needsRedraw);
 			level.markObjectAt(newX, newY, mapObject::peep2);
@@ -123,17 +124,17 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 
 			p2X = newX;
 			p2Y = newY;
-//			}
+			}
 
-//			if (peep == 1){
-//				level.unmarkObjectAt(p1X, p1Y, mapObject::peep1);
-//				level.markObjectAt(p1X, p1Y, mapObject::needsRedraw);
-//				level.markObjectAt(newX, newY, mapObject::peep1);
-//				level.markObjectAt(newX, newY, mapObject::needsRedraw);
-//
-//				p1X = newX;
-//				p1Y = newY;
-//			}
+			if (peep == 1){
+				level.unmarkObjectAt(p1X, p1Y, mapObject::peep1);
+				level.markObjectAt(p1X, p1Y, mapObject::needsRedraw);
+				level.markObjectAt(newX, newY, mapObject::peep1);
+				level.markObjectAt(newX, newY, mapObject::needsRedraw);
+
+				p1X = newX;
+				p1Y = newY;
+			}
 		}
 	}
 
@@ -151,16 +152,23 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 	//return dirX, dirY;
 }
 
-void gameScreen::placeBomb(uint16_t x, uint16_t y)
+void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y)
 {
 
 	//level.setBomb(0, x, y, )
+	if (peep == 1) {
+        level.markObjectAt(x, y, mapObject::bombPeep1);
+    }
+    if (peep == 2) {
+        level.markObjectAt(x, y, mapObject::bombPeep2);
+    }
 	level.markObjectAt(x, y, mapObject::bomb);
 	level.markObjectAt(x, y, mapObject::needsRedraw);
 
+
 }
 
-void gameScreen::drawExplosion(uint16_t explX, uint16_t explY) {
+void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
 
 //    int explX = p2X;
 //    int explY = p2Y;
@@ -182,6 +190,15 @@ void gameScreen::drawExplosion(uint16_t explX, uint16_t explY) {
                     ||  ((x > 0) && !((level.getObjectAt(explX + x - 1, explY)) & mapObject::barrel)))
                 {
                     if (!(level.getObjectAt(explX + x, explY) & mapObject::block)) {
+                        if (peep == 1){
+                            level.markObjectAt(explX + x, explY, mapObject::bombPeep1);
+                        }
+
+                        if (peep == 2)
+                        {
+                            level.markObjectAt(explX + x, explY, mapObject::bombPeep2);
+                        }
+
                         level.markObjectAt(explX + x, explY, mapObject::explosion);
                         level.markObjectAt(explX + x, explY, mapObject::explosionH);
                         level.markObjectAt(explX + x, explY, mapObject::needsRedraw);
@@ -190,6 +207,15 @@ void gameScreen::drawExplosion(uint16_t explX, uint16_t explY) {
                 }
             }
         } else {
+            if (peep == 1)
+            {
+                level.markObjectAt(explX + x, explY, mapObject::bombPeep1);
+            }
+
+            if (peep == 2)
+            {
+                level. markObjectAt(explX + x, explY, mapObject::bombPeep2);
+            }
             level.markObjectAt(explX, explY, mapObject::explosion);
             level.markObjectAt(explX, explY, mapObject::needsRedraw);
             level.unmarkObjectAt(explX, explY, mapObject::bomb);
@@ -207,6 +233,16 @@ void gameScreen::drawExplosion(uint16_t explX, uint16_t explY) {
                     ||  ((y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::barrel))) {
 
                     if (!(level.getObjectAt(explX, explY + y) & mapObject::block)) {
+
+                        if (peep == 1)
+                        {
+                            level.markObjectAt(explX, explY + y, mapObject::bombPeep1);
+                        }
+
+                        if (peep == 2)
+                        {
+                            level.markObjectAt(explX, explY + y, mapObject::bombPeep2);
+                        }
                         level.markObjectAt(explX, explY + y, mapObject::explosion);
                         level.markObjectAt(explX, explY + y, mapObject::explosionV);
                         level.markObjectAt(explX, explY + y, mapObject::needsRedraw);
@@ -215,6 +251,16 @@ void gameScreen::drawExplosion(uint16_t explX, uint16_t explY) {
                 }
             }
         } else {
+
+            if (peep == 1)
+            {
+                level.markObjectAt(explX, explY + y, mapObject::bombPeep1);
+            }
+
+            if (peep == 2)
+            {
+                level.markObjectAt(explX, explY + y, mapObject::bombPeep2);
+            }
             level.markObjectAt(explX, explY, mapObject::bomb);
             level.markObjectAt(explX, explY, mapObject::explosion);
             level.markObjectAt(explX, explY, mapObject::needsRedraw);
@@ -227,8 +273,10 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
     for (int x = -2; x <= 2; x++)
     {
         level.unmarkObjectAt(explX + x, explY, mapObject::explosion);
-		level.unmarkObjectAt(explX + x, explY, mapObject::explosionV);
+		level.unmarkObjectAt(explX + x, explY, mapObject::explosionH);
         level.unmarkObjectAt(explX + x, explY, mapObject::bomb);
+        level.unmarkObjectAt(explX + x, explY, mapObject::bombPeep2);
+        level.unmarkObjectAt(explX + x, explY, mapObject::bombPeep1);
 
         if (!(level.getObjectAt (explX + x, explY) & mapObject::block)){
             level.markObjectAt (explX + x, explY, mapObject::air);
@@ -241,6 +289,8 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
         level.unmarkObjectAt(explX , explY + y, mapObject::explosion);
 		level.unmarkObjectAt(explX, explY + y, mapObject::explosionV);
         level.unmarkObjectAt(explX, explY + y, mapObject::bomb);
+        level.unmarkObjectAt(explX, explY + y, mapObject::bombPeep2);
+        level.unmarkObjectAt(explX, explY + y, mapObject::bombPeep1);
 
         if (!(level.getObjectAt (explX, explY + y) & mapObject::block)){
             level.markObjectAt (explX, explY + y, mapObject::air);
@@ -255,25 +305,25 @@ void gameScreen::end()
 
 uint32_t RefreshCnt = 0;
 //bool placed;
-void gameScreen::refresh()
-{
-	RefreshCnt++;
-	uint8_t getPlacedTime;
+void gameScreen::refresh() {
 
-	//if ((RefreshCnt % 5) == 0)
-	{
+    RefreshCnt++;
+    uint8_t getPlacedTime;
+
+    //if ((RefreshCnt % 5) == 0)
+    {
 #ifdef DEBUG
-		Serial.println("Refresh");
+        Serial.println("Refresh");
 #endif
         Definitions::nunchuk->update();
         if (Definitions::nunchuk->zButton && level.getBombX(0) == 0 && level.getBombTime(0) == 0 &&
             level.getBombY(0) == 0 && level.getBombPeep(0) == 0) {
 
-            level.setBomb(0, p2X, p2Y, RefreshCnt, 2);
-            level.setBomb(1, p1X, p1Y, RefreshCnt, 1);
+            level.setBomb(1, p2X, p2Y, RefreshCnt, 2);
+            level.setBomb(0, p1X, p1Y, RefreshCnt, 1);
 
-            placeBomb(level.getBombX(0), level.getBombY(0));
-            placeBomb(level.getBombX(1), level.getBombY(1));
+            placeBomb(1, level.getBombX(0), level.getBombY(0));
+            placeBomb(2, level.getBombX(1), level.getBombY(1));
 
             //getPlacedTime = level.getBombTime(0);
             //Serial.println(getPlacedTime, DEC);
@@ -285,30 +335,36 @@ void gameScreen::refresh()
                  !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
                 || ((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb) &&
                     !(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))) {
-                drawExplosion(level.getBombX(0), level.getBombY(0));
-                drawExplosion(level.getBombX(1), level.getBombY(1));
+                drawExplosion(1, level.getBombX(0), level.getBombY(0));
+                drawExplosion(2, level.getBombX(1), level.getBombY(1));
 
-		Definitions::tft->print("BombTime: ");
-		Definitions::tft->print(level.getBombTime(0)+12);
-		Definitions::tft->println("  ");
-		Definitions::tft->print("ExplTime: ");
-		Definitions::tft->print(level.getBombTime(0)+24);
-		Definitions::tft->println("      ");
+                Definitions::tft->print("BombTime: ");
+                Definitions::tft->print(level.getBombTime(0) + 12);
+                Definitions::tft->println("  ");
+                Definitions::tft->print("ExplTime: ");
+                Definitions::tft->print(level.getBombTime(0) + 24);
+                Definitions::tft->println("      ");
 
-		if (RefreshCnt == level.getBombTime(0) + 12)
-        {
-		    if ((level.getObjectAt(bombX, bombY) & mapObject::bomb) && !(level.getObjectAt(bombX, bombY) & mapObject::explosion))
-		    {
-                drawExplosion(bombX, bombY);
-                //getExTime = RefreshCnt;
             }
         }
+
+//        if (RefreshCnt == level.getBombTime(0) + 12) {
+//            if (((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb) &&
+//                 !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
+//                || ((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb) &&
+//                    (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))) {
+//                drawExplosion(level.getBombX(0), level.getBombY(0));
+//                drawExplosion(level.getBombX(1), level.getBombY(1));
+//                //getExTime = RefreshCnt;
+//            }
+//        }
+
 
         if (RefreshCnt >= level.getBombTime(0) + 24) {
             if ((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb) &&
                 (level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion)
-                ||(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb) &&
-                  (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion) ) {
+                || (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb) &&
+                   (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion)) {
                 drawAir(level.getBombX(0), level.getBombY(0));
                 drawAir(level.getBombX(1), level.getBombY(1));
                 level.setBomb(0, 0, 0, 0, 0);
@@ -316,23 +372,28 @@ void gameScreen::refresh()
 
             }
         }
-            movePeep(2, p2X, p2Y);
-            //movePeep(1, p1X, p1Y);
+    }
+
+    if (Definitions::nunchuk->cButton)
+    {
+        movePeep(2, p2X, p2Y);
+    } else {
+        movePeep(1, p1X, p1Y);
     }
 
 
 
 //#ifdef DEBUG
-		level.printMap();
-		Serial.println();
+        //level.printMap();
+        //Serial.println();
 //#endif
-		Definitions::tft->setCursor(0,210);
-		Definitions::tft->setTextSize(1);
-		Definitions::tft->setTextColor(ILI9341_RED, ILI9341_BLACK);
-		Definitions::tft->print("frame: ");
-		Definitions::tft->println(RefreshCnt);
-		level.drawMap();
-	}
+        Definitions::tft->setCursor(0, 210);
+        Definitions::tft->setTextSize(1);
+        Definitions::tft->setTextColor(ILI9341_RED, ILI9341_BLACK);
+        Definitions::tft->print("frame: ");
+        Definitions::tft->println(RefreshCnt);
+        level.drawMap();
+}
 
 void gameScreen::drawPeep1(uint16_t x, uint16_t y)
 {

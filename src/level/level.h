@@ -39,6 +39,8 @@ class mapObject
 	static const unsigned int needsRedraw	= 0b0000000010000000; // 0b 0000 0000 x000 0000
 
 	static const unsigned int blockIdMsk	= 0b1111111100000000; // 0b xxxx xxxx 0000 0000
+	static const unsigned int bombPeep1		= 0b0000000100000000; // 0b 0000 000x 0000 0000
+	static const unsigned int bombPeep2		= 0b0000001000000000; // 0b 0000 00x0 0000 0000
 };
 
 // *INDENT-ON*
