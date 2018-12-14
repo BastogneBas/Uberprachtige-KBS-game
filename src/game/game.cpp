@@ -25,7 +25,7 @@ int p2Y = 0, p2X = 0;
 int p1Y = 0, p1X = 0;
 //uint8_t bomb1X, bomb1Y;
 //uint8_t bomb2X, bomb2Y;
-uint8_t bombX, bombY;
+//uint8_t bombX, bombY;
 int newX, newY;
 
 void gameScreen::begin()
@@ -263,42 +263,47 @@ void gameScreen::refresh()
 #ifdef DEBUG
 		Serial.println("Refresh");
 #endif
-		Definitions::nunchuk->update();
-		if (Definitions::nunchuk->zButton && level.getBombX(0) == 0 && level.getBombTime(0) == 0 && level.getBombY(0) == 0 && level.getBombPeep(0) == 0) {
+        Definitions::nunchuk->update();
+        if (Definitions::nunchuk->zButton && level.getBombX(0) == 0 && level.getBombTime(0) == 0 &&
+            level.getBombY(0) == 0 && level.getBombPeep(0) == 0) {
 
-			level.setBomb(0, p2X, p2Y, RefreshCnt, 2);
-			//level.setBomb(0, p2X, p2Y, RefreshCnt, 2);
-			//level.setBomb(1, p1X, p1Y, RefreshCnt, 1);
+            level.setBomb(0, p2X, p2Y, RefreshCnt, 2);
+            level.setBomb(1, p1X, p1Y, RefreshCnt, 1);
 
-			bombX = level.getBombX(0);
-			bombY = level.getBombY(0);
+            placeBomb(level.getBombX(0), level.getBombY(0));
+            placeBomb(level.getBombX(1), level.getBombY(1));
 
-			placeBomb(bombX, bombY);
-			//getPlacedTime = level.getBombTime(0);
-			//Serial.println(getPlacedTime, DEC);
-			//placed = true;
-		}
+            //getPlacedTime = level.getBombTime(0);
+            //Serial.println(getPlacedTime, DEC);
+            //placed = true;
+        }
 
-		if (RefreshCnt == level.getBombTime(0) + 12)
-        {
-		    if ((level.getObjectAt(bombX, bombY) & mapObject::bomb) && !(level.getObjectAt(bombX, bombY) & mapObject::explosion))
-		    {
-                drawExplosion(bombX, bombY);
-                //getExTime = RefreshCnt;
+        if (RefreshCnt >= level.getBombTime(0) + 12) {
+            if (((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb) &&
+                 !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
+                || ((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb) &&
+                    !(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))) {
+                drawExplosion(level.getBombX(0), level.getBombY(0));
+                drawExplosion(level.getBombX(1), level.getBombY(1));
+
             }
-		}
+        }
 
-		if (RefreshCnt == level.getBombTime(0) + 24)
-		{
-			if ((level.getObjectAt(bombX, bombY) & mapObject::bomb) && (level.getObjectAt(bombX, bombY) & mapObject::explosion)) {
-			    drawAir(bombX, bombY);
-			    level.setBomb(0, 0, 0, 0, 0);
-			   // placed = false;
-			}
-		}
+        if (RefreshCnt >= level.getBombTime(0) + 24) {
+            if ((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb) &&
+                (level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion)
+                ||(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb) &&
+                  (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion) ) {
+                drawAir(level.getBombX(0), level.getBombY(0));
+                drawAir(level.getBombX(1), level.getBombY(1));
+                level.setBomb(0, 0, 0, 0, 0);
+                level.setBomb(1, 0, 0, 0, 0);
 
-		movePeep(2, p2X, p2Y);
-		//movePeep(1, p1X, p1Y);
+            }
+        }
+            movePeep(2, p2X, p2Y);
+            //movePeep(1, p1X, p1Y);
+    }
 
 
 
@@ -308,7 +313,6 @@ void gameScreen::refresh()
 #endif
 		level.drawMap();
 	}
-}
 
 void gameScreen::drawPeep1(uint16_t x, uint16_t y)
 {
