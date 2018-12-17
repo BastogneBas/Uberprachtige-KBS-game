@@ -3,6 +3,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stddef.h>
+#include "../../staticDefinitions.cpp"
 
 #ifndef IRCOMM_H
 #define IRCOMM_H
@@ -31,9 +32,7 @@
 #define START_TYPE		2
 #define STOP_TYPE		3
 
-// Defining constants
-//#define PWMFREQ        56
-#define PWMFREQ        38
+// PWMFREQ is defined in Static Definations, based on which player is playing
 
 class IRComm
 {

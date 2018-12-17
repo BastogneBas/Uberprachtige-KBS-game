@@ -43,15 +43,21 @@ void IRComm::sendBit(uint8_t sendType)
 	bitSendCounter = 0;
 	// Set which type of bit to send
 	bitSendType = sendType;
-	//_delay_us(50);
 
-	// Disable the 'blocking' PIN
+	// Disable the 'blocking' PIN, allowing the PWM signal to be sent
 	PORTD &= ~(1 << PORTD4);
-	//PORTD |= (1 << PORTD4);
 
-	//_delay_us(50);
 	// Indicate that a bit wants to be sent
 	bitSendEnabled = 1;
+
+	// Wait for the bit to be completely sent
+	while(!bitSendComplete)
+	{
+		// Enable digital PIN 1 to indicate that the bit is still sending
+		PORTC |= (1 << PORTC1);
+	}
+	// Disable digital PIN 1 to indicate that the sending is done
+	PORTC &= ~(1 << PORTC1);
 }
 
 void IRComm::startReceive(){

@@ -7,6 +7,14 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#define PEEP 1
+//#define PEEP = 2
+#if PEEP == 1
+	#define PWMFREQ 38
+#elif PEEP == 2
+	#define PWMFREQ 56
+#endif
+
 //#define DEBUG
 
 class Definitions

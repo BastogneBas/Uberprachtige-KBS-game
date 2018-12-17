@@ -10,7 +10,7 @@
 IRComm *irComm;
 
 // If we are debugging, uncomment this. Then there will be Serial communication.
-#define DEBUG
+//#define DEBUG
 
 // The tft needs to be redefined here, for some reason.
 Adafruit_ILI9341 *Definitions::tft;
@@ -33,7 +33,7 @@ ISR(TIMER0_COMPA_vect)
 		// ...for the specified bit to be sent...
 		if(irComm->bitSendCounter >= irComm->bitSendType)
 		{
-			// Disable the 'let-through' pin for the IR LED
+			// Disable the 'let-through' pin for the IR LED, blovking the PWM signal
 			PORTD |= (1 << PORTD4);
 		}
 
@@ -60,7 +60,6 @@ ISR(TIMER1_COMPA_vect)
 		//PORTD |= (1 << PORTD5);
 		startRefresh=1;
 	}
-	PORTD ^= (1 << PORTD2);
 	
 	//Serial.println("refresh");
 	//Definitions::currentScreen->refresh();
@@ -83,6 +82,7 @@ ISR(TIMER2_COMPA_vect)
 // Receival Pin Change Interrupt
 ISR(PCINT1_vect)
 {
+	PORTD ^= (1 << PORTD2);
 	// If Analog PIN A3 is high
 	if(PORTC & (1 << PORTC3))
 	{
@@ -126,14 +126,16 @@ ISR(PCINT1_vect)
 int main()
 {
 	DDRB |= (1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4) | (1 << DDB5);
-	DDRD |= (1 << DDD0) | (1 << DDD1) | (1 << DDD2) | (1 << DDD3) | (1 << DDD4) | (1 << DDD5) | (1 << DDD6) | (1 << DDD7);
+	DDRD |= (1 << DDD1) | (1 << DDD2) | (1 << DDD3) | (1 << DDD4) | (1 << DDD5) | (1 << DDD6) | (1 << DDD7);
+	DDRC |= (1 << DDC1);
 
+	PORTC |= (1 << PORTC3);
 	//PORTD = 0xFF;
 	//_delay_ms(10);
 	//PORTD = 0x00;
 
 	PORTB = 0;
-	PORTD |= (1 << PORTD4);
+	//PORTD |= (1 << PORTD4);
 
 	// TODO: replace with own initialisation.
 	// Default Arduino initialisation.
@@ -169,11 +171,16 @@ int main()
 	Definitions::nunchuk->init();
 
 	// Opening the homeScreen
-	Definitions::currentScreen = new homeScreen();
-	Definitions::currentScreen->begin();
+	//Definitions::currentScreen = new homeScreen();
+	//Definitions::currentScreen->begin();
 	
 	// Construct the irComm class
 	irComm = new IRComm();
+
+	// FOR TESTING:
+	// Send a bit
+	irComm->sendBit(ONE_BIT);
+	
 	for(;;)
 	{
 		// Refresh screen
@@ -183,7 +190,7 @@ int main()
 #ifdef DEBUG
 			//Serial.println("refresh");
 #endif
-			Definitions::currentScreen->refresh();
+			//Definitions::currentScreen->refresh();
 			startRefresh = 0;
 			refreshDone = 1;
 		}else{
