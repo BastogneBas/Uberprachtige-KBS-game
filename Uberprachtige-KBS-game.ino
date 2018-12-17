@@ -173,7 +173,7 @@ int main()
 	Definitions::currentScreen->begin();
 	
 	// Construct the irComm class
-	irComm = new IRComm();
+	//irComm = new IRComm();
 	for(;;)
 	{
 		// Refresh screen

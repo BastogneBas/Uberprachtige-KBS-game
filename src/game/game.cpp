@@ -8,7 +8,7 @@
 #include "../ArduinoNunchuk/ArduinoNunchuk.h"
 #include "bomb.h"
 
-//#define DEBUG 1
+#define DEBUG 1
 
 gameScreen::gameScreen()
 {
@@ -109,7 +109,7 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 		newY++;
 	}
 
-	if (newY != p2Y || newX != p2X)
+	if ((peep == 1 && (newY != p1Y || newX != p1X)) || (peep == 2 && (newY != p2Y || newX != p2X)))
 	{
 
 		if (!(level.getObjectAt(newX, newY) & mapObject::block) &&
@@ -180,11 +180,11 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
     for (int x = -2; x <= 2; x++) {
         if (x != 0) {
 #ifdef DEBUG
-            Serial.println((!(x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block)), BIN);
-            Serial.println((!(x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
+            Serial.println( (!(x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block)), BIN);
+            Serial.println( (!(x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
 #endif
-            if(    ((x < 0) && !((level.getObjectAt(explX + x + 1, explY)) & mapObject::block))
-                || ((x > 0) && !((level.getObjectAt(explX + x - 1, explY)) & mapObject::block)))
+            if(    ((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block))
+                || ((x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)))
             {
                 if (    ((x < 0) && !((level.getObjectAt(explX + x + 1, explY)) & mapObject::barrel))
                     ||  ((x > 0) && !((level.getObjectAt(explX + x - 1, explY)) & mapObject::barrel)))
@@ -384,8 +384,8 @@ void gameScreen::refresh() {
 
 
 //#ifdef DEBUG
-        //level.printMap();
-        //Serial.println();
+        level.printMap();
+        Serial.println();
 //#endif
         Definitions::tft->setCursor(0, 210);
         Definitions::tft->setTextSize(1);
