@@ -21,4 +21,4 @@ public:
 
 private:
 };
-#endif //UBERPRACHTIGE_KBS_GAME_INSTRUCTIONSCREEN_H
+#endif

@@ -29,5 +29,5 @@ private:
 
 };
 
-#endif //UBERPRACHTIGE_KBS_GAME_HIGHSCORESCREEN_H
+#endif
 

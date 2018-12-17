@@ -1,3 +1,5 @@
+#include "../../screen.h"
+
 #ifndef UBERPRACHTIGE_KBS_GAME_HOMESCREEN_H
 #define UBERPRACHTIGE_KBS_GAME_HOMESCREEN_H
 
@@ -27,6 +29,4 @@ private:
 
 };
 
-#endif UBERPRACHTIGE_KBS_GAME_HOMESCREEN_H
-
-
+#endif
