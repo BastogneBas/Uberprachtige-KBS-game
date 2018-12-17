@@ -5,7 +5,7 @@ class screen
 {
   public:
 	//virtual Scherm()=0;
-	//virtual ~Scherm()=0;
+	virtual ~screen()=default;
 
 	// Loads and shows the screen
 	virtual void begin();
