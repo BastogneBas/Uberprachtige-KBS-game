@@ -7,37 +7,42 @@
 /* Level constructor
  * Creates a level from predefined barrel locations.
  */
-Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
-{	Definitions::println("level.cpp:11");
+Level::Level(const uint16_t barrels[Definitions::gameHeight], String name)
+{	
 	// Copy barrel locations from current level to ram
 	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
-	{	Definitions::println("level.cpp:14");
+	{	
 		this->barrels[i] = barrels[i];
 	}
 	// And set the name of the current level
 	this->name = name;
 }
 
+/* Returns the X value of the bomb specified */
 uint8_t Level::getBombX(int index)
 {
     return this->bombX[index];
 }
 
+/* Returns the Y value of the bomb specified */
 uint8_t Level::getBombY(int index)
 {
     return this->bombY[index];
 }
 
+/* Returns the time, the specified bomb was placed */
 uint32_t Level::getBombTime(int index)
 {
     return this->bombTime[index];
 }
 
+/* Returns by which peep the specified bomb was placed */
 uint8_t Level::getBombPeep(int index)
 {
     return this->bombPeep[index];
 }
 
+/* Sets the value of a bomb at the specified index */
 void Level::setBomb(int index, uint8_t x, uint8_t y, uint32_t time, uint8_t peep)
 {
     bombX[index] = x;
@@ -65,7 +70,7 @@ Level::Level(String name)
 	this->name = name;
 }
 
-// Dofault constructor
+/* Default constructor */
 Level::Level()
 {
 };
@@ -75,6 +80,7 @@ Level::~Level()
 {
 }
 
+/* Initializes the screen and displays it */
 void Level::begin()
 {
 	uint8_t width = Definitions::gameWidth + 1, height =
@@ -108,14 +114,9 @@ void Level::begin()
 			{
 				setObjectAt(x + 1, y + 1, mapObject::barrel);
 			}
-			else
-			{
-				//setObjectAt(y, x,mapObject::air);
-			}
 			markObjectAt(x + 1, y + 1, mapObject::needsRedraw);
 		}
 	}
-	//while(1);
 }
 
 // Returns the barrel locations
@@ -130,9 +131,10 @@ String Level::getName()
 	return this->name;
 }
 
+/
 void Level::printMap()
 {
-//#ifdef DEBUG
+#ifdef DEBUG
 	for (uint8_t y = 0; y <= Definitions::gameHeight + 1; y++)
 	{
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
@@ -145,40 +147,36 @@ void Level::printMap()
 		}
 		Serial.println();
 	}
-//#endif
+#endif
 }
 
 uint16_t Level::getObjectAt(uint8_t x, uint8_t y)
 {
-	//printMap();
 	return map[y][x];
 }
 
+void Level::setObjectAt(uint8_t x, uint8_t y, uint16_t object)
+{
+	this->setObjectAt(x, y, object, false);
+}
+
 void Level::setObjectAt(uint8_t x, uint8_t y, uint16_t object,
-						uint8_t drawn = false)
+						uint8_t drawn)
 {
 	if (!drawn)
 		map[y][x] = (object | mapObject::needsRedraw);
 	else
 		map[y][x] = (object & ~(mapObject::needsRedraw));
-	//printMap();
-	//Serial.println();
-	//delay(15);
 }
 
 void Level::markObjectAt(uint8_t x, uint8_t y, uint16_t flag)
 {
 	map[y][x] |= flag;
-	//printMap();
-	//Serial.println();
-	//delay(15);
 }
 
 void Level::unmarkObjectAt(uint8_t x, uint8_t y, uint16_t flag)
 {
-	//Serial.println(map[y][x], BIN);
 	map[y][x] &= ~flag;
-	//Serial.println(map[y][x], BIN);
 }
 
 void Level::drawMap()
@@ -193,13 +191,12 @@ void Level::drawMap()
 			uint16_t Redraw =
 				(getObjectAt(x, y) & mapObject::needsRedraw) ==
 				mapObject::needsRedraw;
-			//Serial.println(Redraw);
 			setObjectAt(x, y, currentObject, true);
 			if (Redraw)
 			{
 				if (!(currentObject & mapObject::air))
 				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+			uint16_t _x = x * 16, _y = y * 16;
 #ifdef DEBUG
 					Serial.println("Draw air");
 #endif
@@ -380,51 +377,6 @@ void Level::drawMap()
 						}
 					}
 				}
-				/*if (currentObject & mapObject::explosion)
-                {
-                    uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
-                    Serial.println("Draw explosion center");
-                    for (uint16_t j = 0; j < _h; j++, _y++)
-                    {
-                        for (uint16_t i = 0; i < _w; i++)
-                        {
-                            Definitions::tft->writePixel(_x + i, _y,
-                                                         pgm_read_word
-                                                                 (&explosion2Center
-                                                                 [j * _w + i]));
-                        }
-                    }
-                }
-                if (currentObject & mapObject::explosionH)
-                {
-                    uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
-                    Serial.println("Draw explosion horizontal");
-                    for (uint16_t j = 0; j < _h; j++, _y++)
-                    {
-                        for (uint16_t i = 0; i < _w; i++)
-                        {
-                            Definitions::tft->writePixel(_x + i, _y,
-                                                         pgm_read_word
-                                                                 (&explosion2H
-                                                                 [j * _w + i]));
-                        }
-                    }
-                }
-                if (currentObject & mapObject::explosionV)
-                {
-                    uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
-                    Serial.println("Draw explosion vertical");
-                    for (uint16_t j = 0; j < _h; j++, _y++)
-                    {
-                        for (uint16_t i = 0; i < _w; i++)
-                        {
-                            Definitions::tft->writePixel(_x + i, _y,
-                                                         pgm_read_word
-                                                                 (&explosion2V
-                                                                 [j * _w + i]));
-                        }
-                    }
-                }*/
 				if (currentObject & mapObject::peep1)
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
