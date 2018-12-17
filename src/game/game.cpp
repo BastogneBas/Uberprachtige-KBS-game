@@ -16,9 +16,9 @@ gameScreen::gameScreen()
 
 gameScreen::gameScreen(Level level)
 {
-	Serial.println("Ik ben nu bij gamescreen");
+	//Serial.println("Ik ben nu bij gamescreen");
 	this->level = level;
-	Serial.println("Ik ben nu bij gamescreen");
+	//Serial.println("Ik ben nu bij gamescreen");
 }
 
 int p2Y = 0, p2X = 0;
@@ -180,8 +180,12 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
     for (int x = -2; x <= 2; x++) {
         if (x != 0) {
 #ifdef DEBUG
-            Serial.println( (!(x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block)), BIN);
-            Serial.println( (!(x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
+			Serial.print("x: ");
+			Serial.print(x);
+			Serial.print("\t");
+            Serial.print( ((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block)) , BIN);
+			Serial.print("\t");
+            Serial.println( ((x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
 #endif
             if(    ((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block))
                 || ((x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)))
@@ -383,10 +387,10 @@ void gameScreen::refresh() {
 
 
 
-//#ifdef DEBUG
+#ifdef DEBUG
         level.printMap();
         Serial.println();
-//#endif
+#endif
         Definitions::tft->setCursor(0, 210);
         Definitions::tft->setTextSize(1);
         Definitions::tft->setTextColor(ILI9341_RED, ILI9341_BLACK);
