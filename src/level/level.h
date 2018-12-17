@@ -58,7 +58,7 @@ class Level
 {
   public:
 	// Constructors
-	Level(uint16_t barrels[Definitions::gameHeight], String name);
+	Level(const uint16_t barrels[Definitions::gameHeight], String name);
 	Level(String name);
 	Level();
 	~Level();
@@ -69,8 +69,8 @@ class Level
 	String getName();
 
 	uint16_t getObjectAt(uint8_t x, uint8_t y);
-	void setObjectAt(uint8_t x, uint8_t y, uint16_t object, uint8_t drawn =
-					 false);
+	void setObjectAt(uint8_t x, uint8_t y, uint16_t object);
+	void setObjectAt(uint8_t x, uint8_t y, uint16_t object, uint8_t drawn);
 	void markObjectAt(uint8_t x, uint8_t y, uint16_t flag);
 	void unmarkObjectAt(uint8_t x, uint8_t y, uint16_t flag);
 	void drawMap();
