@@ -4,6 +4,10 @@
 #include "src/level/levelDefs.h"
 #include "src/homeScreen/homeScreen.h"
 #include <avr/io.h>
+#include "src/IRComm/IRComm.h"
+
+// initialize the IR Communications class
+IRComm *irComm;
 
 // If we are debugging, uncomment this. Then there will be Serial communication.
 #define DEBUG
@@ -19,17 +23,35 @@ screen *Definitions::currentScreen;
 
 static int startRefresh = 0, refreshDone = 1;
 
+// Send Timer compare interrupt
 ISR(TIMER0_COMPA_vect)
 {
-	if (startRefresh)
-		PORTD |= (1 << PORTD4);
-	else
-		PORTD &= ~(1 << PORTD4);
+	// If a bit wants to be sent...
+	if(irComm->bitSendEnabled)
+	{
+		// If the counter has reached the amount of pulses...
+		// ...for the specified bit to be sent...
+		if(irComm->bitSendCounter >= irComm->bitSendType)
+		{
+			// Disable the 'let-through' pin for the IR LED
+			PORTD |= (1 << PORTD4);
+		}
 
-	if (refreshDone)
-		PORTD |= (1 << PORTD7);
-	else
-		PORTD &= ~(1 << PORTD7);
+		// Add one to pulsecounter
+		irComm->bitSendCounter++;
+
+		// If the bit is completely sent...
+		// (a bit is sent over 100 pulses)
+		if(irComm->bitSendCounter == 100)
+		{
+			// Signal that the bit is completely sent
+			irComm->bitSendComplete = 1;
+			// Reset the counter
+			irComm->bitSendCounter = 0;
+			// Disable the sending of a bit
+			irComm->bitSendEnabled = 0;
+		}
+	}
 }
 
 ISR(TIMER1_COMPA_vect)
@@ -44,29 +66,78 @@ ISR(TIMER1_COMPA_vect)
 	//Definitions::currentScreen->refresh();
 }
 
+// Receive timer compare interrupt
+ISR(TIMER2_COMPA_vect)
+{
+	if(irComm->bitReceiveEnabled)
+	{
+		irComm->bitReceiveCounter++;
+	}
+}
+
 //ISR(_VECTOR(0)){
 //	DDRD |= (1 << DDD4);
 //	PORTD |= (1 << PORTD4);
 //}
 
+// Receival Pin Change Interrupt
+ISR(PCINT1_vect)
+{
+	// If Analog PIN A3 is high
+	if(PORTC & (1 << PORTC3))
+	{
+		// Enable digital pin 2
+		PORTD |= (1 << PORTD2);
+	}
+	else
+	{
+		// Disable digital pin 2
+		PORTD &= ~(1 << PORTD2);
+	}
+
+	// If the receiving of a bit is enabled
+	if(irComm->bitReceiveEnabled)
+	{
+		// If the receiving of a bit has started
+		if(!irComm->bitReceiveStarted)
+		{
+			// Enable Digital PIN 7
+			PORTD |= (1 << PORTD7);
+			// Reset the receive counter
+			irComm->bitReceiveCounter = 0;
+			// Indicate that the receiving has started
+			irComm->bitReceiveStarted = 1;
+		}
+		// If the state of the bit hasn't changed yet
+		else if(!irComm->bitReceiveChanged)
+		{
+			// Disable digital PIN 7
+			PORTD &= ~(1 << PORTD7);
+			// Indicate that the state of the bit has changed
+			irComm->bitReceiveChanged = irComm->bitReceiveCounter;
+			// Indicate that the receiving is complete
+			irComm->bitReceiveComplete = true;
+			// Disable the receiving of a bit
+			irComm->bitReceiveEnabled = false;
+		}
+	}
+}
+
 int main()
 {
-	// TODO: replace with own initialisation.
-	// Default Arduino initialisation.
-//#warning Needs to be replaced
-	DDRD |= (1 << DDD2) | (1 << DDD3) | (1 << DDD4) | (1 << DDD5) | (1 << DDD7);
+	DDRB |= (1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4) | (1 << DDB5);
+	DDRD |= (1 << DDD0) | (1 << DDD1) | (1 << DDD2) | (1 << DDD3) | (1 << DDD4) | (1 << DDD5) | (1 << DDD6) | (1 << DDD7);
+
 	//PORTD = 0xFF;
 	//_delay_ms(10);
 	//PORTD = 0x00;
-	if(MCUSR & (1 << WDRF))
-		PORTD |= (1 << PORTD2);
-	if(MCUSR & (1 << EXTRF))
-		PORTD |= (1 << PORTD3);
-	if(MCUSR & (1 << PORF))
-		PORTD |= (1 << PORTD4);
-	if(MCUSR)
-		PORTD |= (1 << PORTD5);
 
+	PORTB = 0;
+	PORTD |= (1 << PORTD4);
+
+	// TODO: replace with own initialisation.
+	// Default Arduino initialisation.
+	//#warning Needs to be replaced
 	init();
 
 	// Turn on Serial communication if we are debugging
@@ -100,12 +171,9 @@ int main()
 	// Opening the homeScreen
 	Definitions::currentScreen = new homeScreen();
 	Definitions::currentScreen->begin();
-
-	//sei();
-
 	
-	
-
+	// Construct the irComm class
+	irComm = new IRComm();
 	for(;;)
 	{
 		// Refresh screen
