@@ -7,7 +7,7 @@
 /* Level constructor
  * Creates a level from predefined barrel locations.
  */
-Level::Level(const uint16_t barrels[Definitions::gameHeight], String name)
+Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 {	
 	// Copy barrel locations from current level to ram
 	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
@@ -139,12 +139,12 @@ void Level::printMap()
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
 		{
 			if(map[y][x] <= 0xF){
-				Serial.print(" ");
+				Definitions::print(" ");
 			}
-			Serial.print(map[y][x], HEX);
-			Serial.print(" ");
+			Definitions::print(map[y][x], HEX);
+			Definitions::print(" ");
 		}
-		Serial.println();
+		Definitions::println();
 	}
 //#endif
 }
@@ -197,7 +197,7 @@ void Level::drawMap()
 				{
 			uint16_t _x = x * 16, _y = y * 16;
 #ifdef DEBUG
-					Serial.println("Draw air");
+					Definitions::println("Draw air");
 #endif
 					Definitions::tft->writeFillRect(_x, _y, 16, 16,
 													ILI9341_BLACK);
@@ -206,7 +206,7 @@ void Level::drawMap()
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw block");
+					Definitions::println("Draw block");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -223,7 +223,7 @@ void Level::drawMap()
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw barrel");
+					Definitions::println("Draw barrel");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -241,7 +241,7 @@ void Level::drawMap()
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw bomb");
+					Definitions::println("Draw bomb");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -259,7 +259,7 @@ void Level::drawMap()
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw explosion H");
+					Definitions::println("Draw explosion H");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -276,7 +276,7 @@ void Level::drawMap()
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw explosion V");
+					Definitions::println("Draw explosion V");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -293,7 +293,7 @@ void Level::drawMap()
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw explosion");
+					Definitions::println("Draw explosion");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -311,7 +311,7 @@ void Level::drawMap()
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw bomb");
+					Definitions::println("Draw bomb");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -329,7 +329,7 @@ void Level::drawMap()
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw explosion H");
+					Definitions::println("Draw explosion H");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -346,7 +346,7 @@ void Level::drawMap()
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw explosion V");
+					Definitions::println("Draw explosion V");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -363,7 +363,7 @@ void Level::drawMap()
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw explosion");
+					Definitions::println("Draw explosion");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -380,7 +380,7 @@ void Level::drawMap()
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw peep1");
+					Definitions::println("Draw peep1");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{
@@ -397,7 +397,7 @@ void Level::drawMap()
 				{
 			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
-					Serial.println("Draw peep2");
+					Definitions::println("Draw peep2");
 #endif
 					for (uint16_t j = 0; j < _h; j++, _y++)
 					{

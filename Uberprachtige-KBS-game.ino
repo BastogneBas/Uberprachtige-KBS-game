@@ -12,7 +12,7 @@
 IRComm *irComm;
 
 // If we are debugging, uncomment this. Then there will be Serial communication.
-//#define DEBUG
+#define DEBUG
 
 // The tft needs to be redefined here, for some reason.
 Adafruit_ILI9341 *Definitions::tft;
@@ -130,15 +130,10 @@ int main()
 	//PORTD |= (1 << PORTD4);
 
 	// TODO: replace with own initialisation.
+	// SEE: https://github.com/arduino/ArduinoCore-avr/blob/b084848f2eaf9ccb3ac9a64ac5492d91df4706bf/cores/arduino/wiring.c#L241
 	// Default Arduino initialisation.
-	//#warning Needs to be replaced
+#warning Needs to be replaced
 	init();
-
-	// Turn on Serial communication if we are debugging
-#ifdef DEBUG
-	Serial.begin(500000);
-	Serial.println("Welkom!");
-#endif
 
 	//cli();
 	TCCR0A = (0<<COM0A1) | (0<<COM0A0) | (0<<COM0B1) | (0<<COM0B0) | (1<<WGM01) | (1<<WGM00);
@@ -159,9 +154,14 @@ int main()
 		Definitions::tft->setRotation(1);
 		Definitions::tft->fillScreen(ILI9341_BLACK);
 
-		// Initialize the Nunchuk for player 1
-		Definitions::nunchuk = new ArduinoNunchuk();
-		Definitions::nunchuk->init();
+	// Turn on Serial communication if we are debugging
+#ifdef DEBUG
+	Definitions::println("Welkom!");
+#endif
+
+	// Initialize the Nunchuk for player 1
+	Definitions::nunchuk = new ArduinoNunchuk();
+	Definitions::nunchuk->init();
 
 		// Opening the homeScreen
 		Definitions::currentScreen = new homeScreen();

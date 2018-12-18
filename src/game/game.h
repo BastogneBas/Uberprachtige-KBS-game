@@ -13,13 +13,7 @@ class gameScreen:public screen
 	void begin();
 	void end();
 	void refresh();
-	void checkNunchuck();
   private:
-	void drawPeep1(uint16_t x, uint16_t y);
-	void drawPeep2(uint16_t x, uint16_t y);
-	void drawBarrel(uint16_t x, uint16_t y);
-	void drawBlock(uint16_t x, uint16_t y);
-	void drawBomb (uint16_t x, uint16_t y);
 	void movePeep (int peep, uint16_t x, uint16_t y);
     void placeBomb (int peep, uint16_t x, uint16_t y);
     void drawExplosion (int peep, uint16_t explX, uint16_t explY);

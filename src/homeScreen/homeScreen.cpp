@@ -10,7 +10,6 @@
 #include "../../staticDefinitions.cpp"
 #include "homeScreen.h"
 #include "../lvlSelectScreen/lvlSelectScreen.h"
-//#include "../instructionScreen/instructionScreen.h"
 #include "../highScoreScreen/highScoreScreen.h"
 #include "../../screen.h"
 
@@ -27,7 +26,7 @@ void homeScreen::begin()
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 
 	// For loop that makes the three buttons in the homeScreen
-	for (uint8_t i = 1; i <= 3; i++)
+	for (uint8_t i = 1; i <= 2; i++)
 	{
 		// Setting the values for the fist button
 		Definitions::tft->drawRect(39, homeScreen::yRect, 242, 42, ILI9341_DARKGREY);
@@ -44,12 +43,9 @@ void homeScreen::begin()
 		{
 			Definitions::tft->print("Levels");
 		}
-		else if (i == 2)
+		else
 		{
 			Definitions::tft->print("High-scores");
-		} else
-		{
-			Definitions::tft->print("Instructions");
 		}
 
 		// Adding 50 to the variables, so the buttons will be underneath each other
@@ -57,6 +53,19 @@ void homeScreen::begin()
 		homeScreen::yFill += 50;
 		homeScreen::cursor += 50;
 	}
+
+	// Writing some instructions
+	Definitions::tft->setTextColor(ILI9341_WHITE);
+	Definitions::tft->setTextSize(1);
+
+	Definitions::tft->setCursor(40,180);
+	Definitions::tft->print("Z-button:    knop selecteren/bom neerleggen");
+
+	Definitions::tft->setCursor(40,200);
+	Definitions::tft->print("C-button:    vorige mmenu");
+
+	Definitions::tft->setCursor(40,220);
+	Definitions::tft->print("Joystick:    Bewegen door menu's/game");
 
 	// Enabling pixel writing
 	Definitions::tft->startWrite();
@@ -103,7 +112,7 @@ void homeScreen::refresh()
 	{
 		// Checking if buttonSelect (variable that holds the current buttonValue)
 		// isn't >= 3. This will check if the button is at or past the last button
-		if (!(homeScreen::buttonSelect >= 3))
+		if (!(homeScreen::buttonSelect >= 2))
 		{
 			// If it isn't, it means that the last button hasn't been reached yet, so we can increment it
 			homeScreen::buttonSelect++;
@@ -165,7 +174,6 @@ void homeScreen::repaint(uint8_t buttonSelect)
 	{
 		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_DARKGREY);
 		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_WHITE);
-		Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_DARKGREY);
 
 
 		Definitions::tft->setTextColor(ILI9341_BLACK);
@@ -176,22 +184,6 @@ void homeScreen::repaint(uint8_t buttonSelect)
 		Definitions::tft->setCursor(55, 140);
 		Definitions::tft->print("High-scores");
 
-		Definitions::tft->setTextColor(ILI9341_BLACK);
-		Definitions::tft->setCursor(55, 190);
-		Definitions::tft->print("Instructions");
-	}
-	else if (buttonSelect == 3)
-	{
-		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_DARKGREY);
-		Definitions::tft->drawRect(39, 179, 242, 42, ILI9341_WHITE);
-
-		Definitions::tft->setTextColor(ILI9341_BLACK);
-		Definitions::tft->setCursor(55, 140);
-		Definitions::tft->print("High-scores");
-
-		Definitions::tft->setTextColor(ILI9341_RED);
-		Definitions::tft->setCursor(55, 190);
-		Definitions::tft->print("Instructions");
 	}
 }
 
@@ -212,10 +204,6 @@ void homeScreen::newScreen(uint8_t buttonSelect)
 		else if (buttonSelect == 2)
 		{
 			Definitions::currentScreen = new highScoreScreen();
-		}
-		else if (buttonSelect == 3)
-		{
-			//Definitions::currentScreen = new instructionScreen();
 		}
 
 		// Opening the new window

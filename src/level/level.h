@@ -58,7 +58,7 @@ class Level
 {
   public:
 	// Constructors
-	Level(const uint16_t barrels[Definitions::gameHeight], String name);
+	Level(uint16_t barrels[Definitions::gameHeight], String name);
 	Level(String name);
 	Level();
 	~Level();
