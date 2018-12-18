@@ -85,7 +85,7 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 	//Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
 
 	// check if nunchuk is left, if true go to left
-	if (nunX <= 90 && (nunY > 100 && nunY < 150))	// && p2X > 1)
+	if (nunX <= 90)	// && p2X > 1)
 	{
 		newX--;
 	}

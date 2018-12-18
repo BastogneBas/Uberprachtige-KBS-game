@@ -216,10 +216,8 @@ void lvlSelectScreen::startGame(uint8_t selectedButton)
 		// The same things happen with the other buttons
 		if (selectedButton == 1)
 		{
-			Serial.print("Currentscreen: ");
 			Serial.println((uint16_t)Definitions::currentScreen, HEX);
 			Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(0));
-			Serial.println("Daar");
 			Definitions::currentScreen->begin();
 
 		}
