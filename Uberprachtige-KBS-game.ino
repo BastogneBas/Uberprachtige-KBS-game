@@ -6,6 +6,8 @@
 #include <avr/io.h>
 #include "src/IRComm/IRComm.h"
 
+//#define IRDEBUG
+
 // initialize the IR Communications class
 IRComm *irComm;
 
@@ -62,7 +64,9 @@ ISR(TIMER1_COMPA_vect)
 	}
 	
 	//Serial.println("refresh");
-	//Definitions::currentScreen->refresh();
+	//#ifndef IRDEBUG
+		//Definitions::currentScreen->refresh();
+	//#endif
 }
 
 // Receive timer compare interrupt
@@ -82,43 +86,31 @@ ISR(TIMER2_COMPA_vect)
 // Receival Pin Change Interrupt
 ISR(PCINT1_vect)
 {
-	PORTD ^= (1 << PORTD2);
-	// If Analog PIN A3 is high
-	if(PORTC & (1 << PORTC3))
-	{
-		// Enable digital pin 2
-		PORTD |= (1 << PORTD2);
-	}
-	else
-	{
-		// Disable digital pin 2
-		PORTD &= ~(1 << PORTD2);
-	}
-
-	// If the receiving of a bit is enabled
+	#ifdef IRDEBUG
+		PORTD ^= (1 << PORTD2);
+	#endif
+	// If the receiving has been enabled
 	if(irComm->bitReceiveEnabled)
 	{
-		// If the receiving of a bit has started
+		// If the receive hasn't started yet
 		if(!irComm->bitReceiveStarted)
 		{
-			// Enable Digital PIN 7
-			PORTD |= (1 << PORTD7);
-			// Reset the receive counter
-			irComm->bitReceiveCounter = 0;
-			// Indicate that the receiving has started
-			irComm->bitReceiveStarted = 1;
+			#ifdef IRDEBUG
+				PORTD |= (1 << PORTD3);
+			#endif
+			// Indicate that the receive has started
+			irComm->startReceive();
 		}
-		// If the state of the bit hasn't changed yet
-		else if(!irComm->bitReceiveChanged)
+		else
 		{
-			// Disable digital PIN 7
-			PORTD &= ~(1 << PORTD7);
-			// Indicate that the state of the bit has changed
+			#ifdef IRDEBUG
+				PORTD ^= (1 << PORTD5);
+			#endif
+			// The message has ended...
+			// Save at which count the receive has stopped
 			irComm->bitReceiveChanged = irComm->bitReceiveCounter;
-			// Indicate that the receiving is complete
-			irComm->bitReceiveComplete = true;
-			// Disable the receiving of a bit
-			irComm->bitReceiveEnabled = false;
+			// Process the data
+			irComm->handleReceive();
 		}
 	}
 }
@@ -159,30 +151,34 @@ int main()
 	TIMSK1 = (1<<OCF1A);
 
 	// Initialize the tft
-	Definitions::tft =
-		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
-	Definitions::tft->begin();
-	yield();
-	Definitions::tft->setRotation(1);
-	Definitions::tft->fillScreen(ILI9341_BLACK);
+	#ifndef IRDEBUG
+		Definitions::tft =
+			new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
+		Definitions::tft->begin();
+		yield();
+		Definitions::tft->setRotation(1);
+		Definitions::tft->fillScreen(ILI9341_BLACK);
 
-	// Initialize the Nunchuk for player 1
-	Definitions::nunchuk = new ArduinoNunchuk();
-	Definitions::nunchuk->init();
+		// Initialize the Nunchuk for player 1
+		Definitions::nunchuk = new ArduinoNunchuk();
+		Definitions::nunchuk->init();
 
-	// Opening the homeScreen
-	Definitions::currentScreen = new homeScreen();
-	Definitions::currentScreen->begin();
-	
+		// Opening the homeScreen
+		Definitions::currentScreen = new homeScreen();
+		Definitions::currentScreen->begin();
+	#endif	
+
 	// Construct the irComm class
 	irComm = new IRComm();
 
-	// FOR TESTING:
-	// Send a bit
-	irComm->sendBit(ONE_BIT);
-	
+	#ifdef IRDEBUG
+		irComm->bitReceiveEnabled = 1;
+		irComm->sendBit(ONE_BIT);
+	#endif
+
 	for(;;)
 	{
+		//irComm->sendBit(ONE_BIT);
 		// Refresh screen
 		if(startRefresh){
 			refreshDone = 0;
@@ -190,7 +186,9 @@ int main()
 #ifdef DEBUG
 			//Serial.println("refresh");
 #endif
-			Definitions::currentScreen->refresh();
+			#ifndef IRDEBUG
+				Definitions::currentScreen->refresh();
+			#endif
 			startRefresh = 0;
 			refreshDone = 1;
 		}else{

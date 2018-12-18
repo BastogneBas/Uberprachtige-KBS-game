@@ -1,6 +1,9 @@
 #include "IRComm.h"
 #include <util/delay.h>
 #include <Wire.h>
+
+#define DEBUG
+
 IRComm::IRComm()
 {
 	/// Initialize the send timer
@@ -60,25 +63,30 @@ void IRComm::sendBit(uint8_t sendType)
 	PORTC &= ~(1 << PORTC1);
 }
 
+// Reset the receival and indicate that it has started
 void IRComm::startReceive(){
 	bitReceiveChanged = 0;
-	bitReceiveStarted = 0;
+	bitReceiveStarted = 1;
 	bitReceiveCounter = 0;
 	bitReceiveComplete = 0;
 	bitReceiveEnabled = 1;
 }
 
-uint8_t IRComm::handleReceive()
+// Process the received data
+void IRComm::handleReceive()
 {
-	typeReceived = bitReceiveChanged;
-	//Wire.beginTransmission(56);
-	//Wire.write(255);
-	//Wire.endTransmission();
+	// Stop the receival of data
+	bitReceiveStarted = 0;
+	//bitReceiveEnabled = 0;
 	
-	PORTB = typeReceived;
-	//PORTB = 1;
-
-	if(typeReceived == ZERO_BIT)
+	#ifdef DEBUG
+		//PORTB = 0b00000001;
+		PORTB = bitReceiveChanged;
+		PORTD &= ~(1 << PORTD3);
+		//PORTD &= ~(1 << PORTD5);
+	#endif
+	
+	/*if(typeReceived == ZERO_BIT)
 		return ZERO_TYPE;
 	else if(typeReceived == ONE_BIT)
 		return ONE_TYPE;
@@ -87,5 +95,5 @@ uint8_t IRComm::handleReceive()
 	else if(typeReceived == STOP_BIT)
 		return STOP_TYPE;
 	else
-		return 10;
+		return 10;*/
 }
