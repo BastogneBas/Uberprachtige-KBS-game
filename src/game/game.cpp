@@ -27,6 +27,7 @@ int p1Y = 0, p1X = 0;
 //uint8_t bomb2X, bomb2Y;
 //uint8_t bombX, bombY;
 int newX, newY;
+uint8_t lives1, lives2;
 
 void gameScreen::begin()
 {
@@ -71,14 +72,23 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 	int nunX = Definitions::nunchuk->analogX;
 	int nunY = Definitions::nunchuk->analogY;
 
+	// if player is 1
 	if (peep == 1)
 	{
+	    // newX is equal to peep location X
         newX = p1X;
+        
+        // newY is equal to peep location Y
         newY = p1Y;
     }
-
+    
+    // if player is 2
 	if (peep == 2) {
+	    
+        // newX is equal to peep location X
 		newX = p2X;
+		
+        // newY is equal to peep location Y
 		newY = p2Y;
 	}
 
@@ -108,15 +118,18 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 		//p2Y++;
 		newY++;
 	}
-
+    
+	// check which peep and new location is not equal to peep location
 	if ((peep == 1 && (newY != p1Y || newX != p1X)) || (peep == 2 && (newY != p2Y || newX != p2X)))
 	{
-
+        // if true check if there is no block and no barrel and no bomb
 		if (!(level.getObjectAt(newX, newY) & mapObject::block) &&
 			!(level.getObjectAt(newX, newY) & mapObject::barrel) &&
 			!((level.getObjectAt(newX, newY) & mapObject::bomb) && !(level.getObjectAt(newX, newY) & mapObject::explosion)))
 		{
+		    // if player is 2
 			if (peep == 2){
+			    // player 2 is moving to new location
 			level.unmarkObjectAt(p2X, p2Y, mapObject::peep2);
 			level.markObjectAt(p2X, p2Y, mapObject::needsRedraw);
 			level.markObjectAt(newX, newY, mapObject::peep2);
@@ -125,8 +138,10 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 			p2X = newX;
 			p2Y = newY;
 			}
-
+            
+			// if player is 1
 			if (peep == 1){
+			    // player 1 is moving to new location
 				level.unmarkObjectAt(p1X, p1Y, mapObject::peep1);
 				level.markObjectAt(p1X, p1Y, mapObject::needsRedraw);
 				level.markObjectAt(newX, newY, mapObject::peep1);
@@ -156,12 +171,14 @@ void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y)
 {
 
 	//level.setBomb(0, x, y, )
+	// check which peep places the bomb
 	if (peep == 1) {
         level.markObjectAt(x, y, mapObject::bombPeep1);
     }
     if (peep == 2) {
         level.markObjectAt(x, y, mapObject::bombPeep2);
     }
+    // now there is a bom placed
 	level.markObjectAt(x, y, mapObject::bomb);
 	level.markObjectAt(x, y, mapObject::needsRedraw);
 
@@ -178,6 +195,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
 
 
     for (int x = -2; x <= 2; x++) {
+        // if x is not equal to 0
         if (x != 0) {
 #ifdef DEBUG
 			Serial.print("x: ");
@@ -187,22 +205,30 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
 			Serial.print("\t");
             Serial.println( ((x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
 #endif
+            // if place before explosion is no block
             if(    ((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block))
                 || ((x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)))
             {
+                // and place before is no barrel
                 if (    ((x < 0) && !((level.getObjectAt(explX + x + 1, explY)) & mapObject::barrel))
                     ||  ((x > 0) && !((level.getObjectAt(explX + x - 1, explY)) & mapObject::barrel)))
                 {
+                    // and the exact place is no block
                     if (!(level.getObjectAt(explX + x, explY) & mapObject::block)) {
+                        // if player is 1
                         if (peep == 1){
+                            // it is an explosion of peep1 bomb
                             level.markObjectAt(explX + x, explY, mapObject::bombPeep1);
                         }
-
+                        
+                        // if player is 2
                         if (peep == 2)
                         {
+                            // it is an explosion of peep2 bomb
                             level.markObjectAt(explX + x, explY, mapObject::bombPeep2);
                         }
-
+                        
+                        // the location is now an explosion horizontal and location is no barrel anymore
                         level.markObjectAt(explX + x, explY, mapObject::explosion);
                         level.markObjectAt(explX + x, explY, mapObject::explosionH);
                         level.markObjectAt(explX + x, explY, mapObject::needsRedraw);
@@ -210,16 +236,22 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
                     }
                 }
             }
+            // when x is equal to 0
         } else {
+            // if player is 1
             if (peep == 1)
-            {
+            {   
+                // it is a bomb of player 1
                 level.markObjectAt(explX + x, explY, mapObject::bombPeep1);
             }
-
+            
+            // if player is 2
             if (peep == 2)
             {
+                // it is a bomb of player 2
                 level. markObjectAt(explX + x, explY, mapObject::bombPeep2);
             }
+            // it is an explosion center and on the location is not a bomb anymore --> bom has exploded!
             level.markObjectAt(explX, explY, mapObject::explosion);
             level.markObjectAt(explX, explY, mapObject::needsRedraw);
             level.unmarkObjectAt(explX, explY, mapObject::bomb);
@@ -228,25 +260,33 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
 
 
     for (int y = -2; y <= 2; y++) {
-
+    // if y is not equal to 0
         if (y != 0) {
+            // check if place before is no block
             if (    ((y < 0) && !((level.getObjectAt(explX, explY + y + 1)) & mapObject::block))
                 ||  ((y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::block))) {
-
+                
+                // check if place before is no barrel
                 if (    ((y < 0) && !((level.getObjectAt(explX, explY + y + 1)) & mapObject::barrel))
                     ||  ((y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::barrel))) {
-
+                    
+                    // check if the exact location is no block
                     if (!(level.getObjectAt(explX, explY + y) & mapObject::block)) {
-
+                        
+                        // if player is 1
                         if (peep == 1)
                         {
+                            // explosion is of player 1 bomb
                             level.markObjectAt(explX, explY + y, mapObject::bombPeep1);
                         }
-
+                        
+                        // if player is 2
                         if (peep == 2)
                         {
+                            // explosion is of bomb peep 2
                             level.markObjectAt(explX, explY + y, mapObject::bombPeep2);
                         }
+                        // all the location are a explosion and no barrel anymore
                         level.markObjectAt(explX, explY + y, mapObject::explosion);
                         level.markObjectAt(explX, explY + y, mapObject::explosionV);
                         level.markObjectAt(explX, explY + y, mapObject::needsRedraw);
@@ -254,17 +294,23 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
                     }
                 }
             }
+            // x is equal to 0
         } else {
-
+            
+            // if player is 1
             if (peep == 1)
             {
+                // explosion is of player 1 bomb
                 level.markObjectAt(explX, explY + y, mapObject::bombPeep1);
             }
-
+            
+            // if player is 2
             if (peep == 2)
             {
+                // explosion is of bomb player 2 
                 level.markObjectAt(explX, explY + y, mapObject::bombPeep2);
             }
+            // all the locations are an explosion and a bomb --> center of explosion
             level.markObjectAt(explX, explY, mapObject::bomb);
             level.markObjectAt(explX, explY, mapObject::explosion);
             level.markObjectAt(explX, explY, mapObject::needsRedraw);
@@ -276,13 +322,17 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
 {
     for (int x = -2; x <= 2; x++)
     {
+        // remove the explosion
         level.unmarkObjectAt(explX + x, explY, mapObject::explosion);
 		level.unmarkObjectAt(explX + x, explY, mapObject::explosionH);
         level.unmarkObjectAt(explX + x, explY, mapObject::bomb);
         level.unmarkObjectAt(explX + x, explY, mapObject::bombPeep2);
         level.unmarkObjectAt(explX + x, explY, mapObject::bombPeep1);
 
+        // if there is no block
         if (!(level.getObjectAt (explX + x, explY) & mapObject::block)){
+            
+            // drawair instead
             level.markObjectAt (explX + x, explY, mapObject::air);
             level.markObjectAt (explX + x, explY, mapObject::needsRedraw);
         }
@@ -290,13 +340,16 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
 
     for (int y = -2; y <= 2; y++)
     {
+        // remove explosion
         level.unmarkObjectAt(explX , explY + y, mapObject::explosion);
 		level.unmarkObjectAt(explX, explY + y, mapObject::explosionV);
         level.unmarkObjectAt(explX, explY + y, mapObject::bomb);
         level.unmarkObjectAt(explX, explY + y, mapObject::bombPeep2);
         level.unmarkObjectAt(explX, explY + y, mapObject::bombPeep1);
-
+        
+        // when it is no block
         if (!(level.getObjectAt (explX, explY + y) & mapObject::block)){
+            // location change into air
             level.markObjectAt (explX, explY + y, mapObject::air);
             level.markObjectAt (explX, explY + y, mapObject::needsRedraw);
         }
@@ -384,6 +437,8 @@ void gameScreen::refresh() {
     } else {
         movePeep(1, p1X, p1Y);
     }
+
+    lives();
 
 
 
