@@ -10,7 +10,7 @@
 IRComm *irComm;
 
 // If we are debugging, uncomment this. Then there will be Serial communication.
-//#define DEBUG
+#define DEBUG
 
 // The tft needs to be redefined here, for some reason.
 Adafruit_ILI9341 *Definitions::tft;
@@ -142,12 +142,6 @@ int main()
 	//#warning Needs to be replaced
 	init();
 
-	// Turn on Serial communication if we are debugging
-#ifdef DEBUG
-	Serial.begin(500000);
-	Serial.println("Welkom!");
-#endif
-
 	//cli();
 	TCCR0A = (0<<COM0A1) | (0<<COM0A0) | (0<<COM0B1) | (0<<COM0B0) | (1<<WGM01) | (1<<WGM00);
 	TCCR0B = (0<<WGM02)  | (0<<CS02) | (1<<CS01) | (0<<CS00);
@@ -165,6 +159,11 @@ int main()
 	yield();
 	Definitions::tft->setRotation(1);
 	Definitions::tft->fillScreen(ILI9341_BLACK);
+
+	// Turn on Serial communication if we are debugging
+#ifdef DEBUG
+	Definitions::println("Welkom!");
+#endif
 
 	// Initialize the Nunchuk for player 1
 	Definitions::nunchuk = new ArduinoNunchuk();

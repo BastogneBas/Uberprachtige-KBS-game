@@ -16,9 +16,7 @@ gameScreen::gameScreen()
 
 gameScreen::gameScreen(Level level)
 {
-	//Serial.println("Ik ben nu bij gamescreen");
 	this->level = level;
-	//Serial.println("Ik ben nu bij gamescreen");
 }
 
 int p2Y = 0, p2X = 0;
@@ -200,12 +198,13 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
         // if x is not equal to 0
         if (x != 0) {
 #ifdef DEBUG
-			Serial.print("x: ");
-			Serial.print(x);
-			Serial.print("\t");
-            Serial.print( ((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block)) , BIN);
-			Serial.print("\t");
-            Serial.println( ((x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
+			Definitions::setTextDebug();
+			Definitions::print("x: ");
+			Definitions::print(x);
+			Definitions::print("\t");
+			Definitions::print( ((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block)) , BIN);
+			Definitions::print("\t");
+           	Definitions::println( ((x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)), BIN);
 #endif
             // if place before explosion is no block
             if(    ((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block))
@@ -372,7 +371,8 @@ void gameScreen::refresh() {
     //if ((RefreshCnt % 5) == 0)
     {
 #ifdef DEBUG
-        Serial.println("Refresh");
+		Definitions::setTextDebug();
+		Definitions::println("Refresh");
 #endif
         Definitions::nunchuk->update();
         if (Definitions::nunchuk->zButton && level.getBombX(0) == 0 && level.getBombTime(0) == 0 &&
@@ -397,12 +397,12 @@ void gameScreen::refresh() {
                 drawExplosion(1, level.getBombX(0), level.getBombY(0));
                 drawExplosion(2, level.getBombX(1), level.getBombY(1));
 
-                Definitions::tft->print("BombTime: ");
-                Definitions::tft->print(level.getBombTime(0) + 12);
-                Definitions::tft->println("  ");
-                Definitions::tft->print("ExplTime: ");
-                Definitions::tft->print(level.getBombTime(0) + 24);
-                Definitions::tft->println("      ");
+                Definitions::print("BombTime: ");
+                Definitions::print(level.getBombTime(0) + 12);
+                Definitions::println("  ");
+                Definitions::print("ExplTime: ");
+                Definitions::print(level.getBombTime(0) + 24);
+                Definitions::println("      ");
 
             }
         }
@@ -441,15 +441,13 @@ void gameScreen::refresh() {
     }
     
 #ifdef DEBUG
-        level.printMap();
-        Serial.println();
+        //level.printMap();
+		//Definitions::println();
 #endif
-        Definitions::tft->setCursor(0, 210);
-        Definitions::tft->setTextSize(1);
-        Definitions::tft->setTextColor(ILI9341_RED, ILI9341_BLACK);
-        Definitions::tft->print("frame: ");
-        Definitions::tft->println(RefreshCnt);
-        level.drawMap();
+	Definitions::setTextDebug();
+	Definitions::print("frame: ");
+	Definitions::println(RefreshCnt);
+	level.drawMap();
 }
 
 void gameScreen::drawPeep1(uint16_t x, uint16_t y)
