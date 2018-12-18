@@ -138,8 +138,9 @@ int main()
 	//PORTD |= (1 << PORTD4);
 
 	// TODO: replace with own initialisation.
+	// SEE: https://github.com/arduino/ArduinoCore-avr/blob/b084848f2eaf9ccb3ac9a64ac5492d91df4706bf/cores/arduino/wiring.c#L241
 	// Default Arduino initialisation.
-	//#warning Needs to be replaced
+#warning Needs to be replaced
 	init();
 
 	//cli();
