@@ -171,8 +171,8 @@ int main()
 	Definitions::nunchuk->init();
 
 	// Opening the homeScreen
-	//Definitions::currentScreen = new homeScreen();
-	//Definitions::currentScreen->begin();
+	Definitions::currentScreen = new homeScreen();
+	Definitions::currentScreen->begin();
 	
 	// Construct the irComm class
 	irComm = new IRComm();
