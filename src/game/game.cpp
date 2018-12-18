@@ -31,6 +31,8 @@ uint8_t lives1, lives2;
 
 void gameScreen::begin()
 {
+    lives1 == 3;
+    lives2 == 3;
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 	level.begin();
 	//level.printMap();
@@ -77,17 +79,17 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 	{
 	    // newX is equal to peep location X
         newX = p1X;
-        
+
         // newY is equal to peep location Y
         newY = p1Y;
     }
-    
+
     // if player is 2
 	if (peep == 2) {
-	    
+
         // newX is equal to peep location X
 		newX = p2X;
-		
+
         // newY is equal to peep location Y
 		newY = p2Y;
 	}
@@ -118,7 +120,7 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 		//p2Y++;
 		newY++;
 	}
-    
+
 	// check which peep and new location is not equal to peep location
 	if ((peep == 1 && (newY != p1Y || newX != p1X)) || (peep == 2 && (newY != p2Y || newX != p2X)))
 	{
@@ -138,7 +140,7 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 			p2X = newX;
 			p2Y = newY;
 			}
-            
+
 			// if player is 1
 			if (peep == 1){
 			    // player 1 is moving to new location
@@ -220,14 +222,14 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
                             // it is an explosion of peep1 bomb
                             level.markObjectAt(explX + x, explY, mapObject::bombPeep1);
                         }
-                        
+
                         // if player is 2
                         if (peep == 2)
                         {
                             // it is an explosion of peep2 bomb
                             level.markObjectAt(explX + x, explY, mapObject::bombPeep2);
                         }
-                        
+
                         // the location is now an explosion horizontal and location is no barrel anymore
                         level.markObjectAt(explX + x, explY, mapObject::explosion);
                         level.markObjectAt(explX + x, explY, mapObject::explosionH);
@@ -240,11 +242,11 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
         } else {
             // if player is 1
             if (peep == 1)
-            {   
+            {
                 // it is a bomb of player 1
                 level.markObjectAt(explX + x, explY, mapObject::bombPeep1);
             }
-            
+
             // if player is 2
             if (peep == 2)
             {
@@ -265,21 +267,21 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
             // check if place before is no block
             if (    ((y < 0) && !((level.getObjectAt(explX, explY + y + 1)) & mapObject::block))
                 ||  ((y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::block))) {
-                
+
                 // check if place before is no barrel
                 if (    ((y < 0) && !((level.getObjectAt(explX, explY + y + 1)) & mapObject::barrel))
                     ||  ((y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::barrel))) {
-                    
+
                     // check if the exact location is no block
                     if (!(level.getObjectAt(explX, explY + y) & mapObject::block)) {
-                        
+
                         // if player is 1
                         if (peep == 1)
                         {
                             // explosion is of player 1 bomb
                             level.markObjectAt(explX, explY + y, mapObject::bombPeep1);
                         }
-                        
+
                         // if player is 2
                         if (peep == 2)
                         {
@@ -296,18 +298,18 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) {
             }
             // x is equal to 0
         } else {
-            
+
             // if player is 1
             if (peep == 1)
             {
                 // explosion is of player 1 bomb
                 level.markObjectAt(explX, explY + y, mapObject::bombPeep1);
             }
-            
+
             // if player is 2
             if (peep == 2)
             {
-                // explosion is of bomb player 2 
+                // explosion is of bomb player 2
                 level.markObjectAt(explX, explY + y, mapObject::bombPeep2);
             }
             // all the locations are an explosion and a bomb --> center of explosion
@@ -331,7 +333,7 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
 
         // if there is no block
         if (!(level.getObjectAt (explX + x, explY) & mapObject::block)){
-            
+
             // drawair instead
             level.markObjectAt (explX + x, explY, mapObject::air);
             level.markObjectAt (explX + x, explY, mapObject::needsRedraw);
@@ -346,7 +348,7 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
         level.unmarkObjectAt(explX, explY + y, mapObject::bomb);
         level.unmarkObjectAt(explX, explY + y, mapObject::bombPeep2);
         level.unmarkObjectAt(explX, explY + y, mapObject::bombPeep1);
-        
+
         // when it is no block
         if (!(level.getObjectAt (explX, explY + y) & mapObject::block)){
             // location change into air
@@ -437,11 +439,7 @@ void gameScreen::refresh() {
     } else {
         movePeep(1, p1X, p1Y);
     }
-
-    lives();
-
-
-
+    
 #ifdef DEBUG
         level.printMap();
         Serial.println();
