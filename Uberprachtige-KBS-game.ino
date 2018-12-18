@@ -190,7 +190,7 @@ int main()
 #ifdef DEBUG
 			//Serial.println("refresh");
 #endif
-			//Definitions::currentScreen->refresh();
+			Definitions::currentScreen->refresh();
 			startRefresh = 0;
 			refreshDone = 1;
 		}else{
