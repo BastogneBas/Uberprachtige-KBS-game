@@ -125,40 +125,6 @@ class Definitions
 	}
 
 	/* END PRINTs */
-
-	static void bmpDraw(char *filename, int16_t x, int16_t y)
-	{
-		if (filename[0] == 'B' && filename[4] == 'K')
-		{
-			/*for(int16_t j=0,bindex=0;j<h;j++,y++){
-			   tft->startWrite();
-			   for(int16_t i=0;i<w;i++,bindex+=3){
-			   uint8_t r = pgm_read_byte(&blokje[bindex]);
-			   uint8_t g = pgm_read_byte(&blokje[bindex+1]);
-			   uint8_t b = pgm_read_byte(&blokje[bindex+2]);
-			   tft->writePixel(x+i, y, tft->color565(r,g,b));
-			   }
-			   tft->endWrite();
-			   } */
-			tft->drawRGBBitmap(x, y, blokje, SpriteWidth, SpriteHeight);
-		}
-		if (filename[0] == 'B' && filename[5] == 'L')
-		{
-			//tft->fillRect(x, y, 15, 15, ILI9341_MAROON);
-			tft->drawRGBBitmap(x, y, ton, SpriteWidth, SpriteHeight);
-
-		}
-		if (filename[0] == 'P' && filename[4] == '1')
-		{
-			//tft->fillRect(x, y, 15, 15, ILI9341_BLUE);
-			tft->drawRGBBitmap(x, y, peep1, SpriteWidth, SpriteHeight);
-		}
-		if (filename[0] == 'P' && filename[4] == '2')
-		{
-			//tft->fillRect(x, y, 15, 15, ILI9341_RED);
-			tft->drawRGBBitmap(x, y, peep2, SpriteWidth, SpriteHeight);
-		}
-	}
 };
 
 #endif
