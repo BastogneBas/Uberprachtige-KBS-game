@@ -211,7 +211,9 @@ int main()
 
 	for(;;)
 	{
+	#ifdef IR
 		irComm->sendBit(ONE_BIT);
+	#endif
 		//irComm->sendBit(ONE_BIT);
 		// Refresh screen
 		if(startRefresh){
