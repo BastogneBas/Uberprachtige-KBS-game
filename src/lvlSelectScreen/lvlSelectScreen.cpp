@@ -115,8 +115,8 @@ void lvlSelectScreen::refresh()
 		// If true, we will return to the previous screen (= homeScreen)
 		// Will close the current screen, and call the new screen
 		// selectedButton will also be set to 0
-		Definitions::currentScreen = new homeScreen();
-		Definitions::currentScreen->begin();
+		delete Definitions::currentScreen;
+		asm volatile ("  jmp 0");
 
 
 	}

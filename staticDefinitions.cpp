@@ -10,6 +10,9 @@
 
 //#define IR 1
 
+//#define RECEIVER 1
+//#define SENDER 1
+
 #define PEEP 1
 //#define PEEP = 2
 #if PEEP == 1
@@ -32,9 +35,18 @@ class Definitions
 	static const uint8_t SpriteHeight = 16;
 	static const uint8_t SpriteWidth = 16;
 
+#if PEEP == 1
+	static const uint8_t currentPlayer = 1;
+#elif PEEP == 2
+	static const uint8_t currentPlayer = 2;
+#endif
+
 	static Adafruit_ILI9341 *tft;
 	static ArduinoNunchuk *nunchuk;
 	static screen *currentScreen;
+
+	static Stream *irComm;
+
 
 	/* Set the text position at 0,0 and color at white on black
 	 * FOR DEBUGGING */

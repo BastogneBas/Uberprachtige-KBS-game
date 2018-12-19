@@ -9,6 +9,7 @@
 // Other includes
 #include "../../staticDefinitions.cpp"
 #include "highScoreScreen.h"
+//#include "../endScreen/endScreen.h"
 #include "../homeScreen/homeScreen.h"
 #include "../../screen.h"
 
@@ -105,17 +106,20 @@ void highScoreScreen::refresh()
 {
 	Definitions::nunchuk->update();
 
+	// Checking if the cButton is being pushed
 	if (Definitions::nunchuk->cButton)
 	{
-		// Deleting current screen
+		// Deleting the currentScreen
 		delete Definitions::currentScreen;
 
-		Definitions::currentScreen = new homeScreen();
-		Definitions::currentScreen->begin();
+		// Jumping to the first line of the program to reset all the processes
+		asm volatile ("  jmp 0");
+
 	}
 }
 
 void highScoreScreen::end() {
+
 
 }
 
