@@ -5,6 +5,7 @@
 #include "game.h"
 #include "../level/level.h"
 #include "../level/levelDefs.h"
+//#include "../endScreen/endScreen.h"
 #include "../ArduinoNunchuk/ArduinoNunchuk.h"
 #include "bomb.h"
 
@@ -359,6 +360,13 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
 
 void gameScreen::end()
 {
+//	// Opening the homeScreen
+//	delete Definitions::currentScreen;
+//	asm volatile ("  jmp 0");
+//
+//	Definitions::currentScreen = new endScreen(12054, 8456);
+//	Definitions::currentScreen->begin();
+
 }
 
 uint32_t RefreshCnt = 0;

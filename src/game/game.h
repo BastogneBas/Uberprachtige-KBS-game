@@ -5,7 +5,7 @@
 #ifndef SPELSCHERM_H
 #define SPELSCHERM_H
 
-class gameScreen:public screen
+class gameScreen: public screen
 {
   public:
 	gameScreen();

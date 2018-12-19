@@ -35,6 +35,12 @@ class Definitions
 	static const uint8_t SpriteHeight = 16;
 	static const uint8_t SpriteWidth = 16;
 
+#if PEEP == 1
+	static const uint8_t currentPlayer = 1;
+#elif PEEP == 2
+	static const uint8_t currentPlayer = 2;
+#endif
+
 	static Adafruit_ILI9341 *tft;
 	static ArduinoNunchuk *nunchuk;
 	static screen *currentScreen;
