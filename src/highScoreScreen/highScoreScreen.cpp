@@ -109,8 +109,10 @@ void highScoreScreen::refresh()
 	// Checking if the cButton is being pushed
 	if (Definitions::nunchuk->cButton)
 	{
-
+		// Deleting the currentScreen
 		delete Definitions::currentScreen;
+
+		// Jumping to the first line of the program to reset all the processes
 		asm volatile ("  jmp 0");
 
 	}

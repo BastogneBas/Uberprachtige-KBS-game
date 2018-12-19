@@ -28,6 +28,7 @@ int p1Y = 0, p1X = 0;
 int newX, newY;
 uint8_t lives1, lives2;
 
+
 void gameScreen::begin()
 {
     lives1 == 3;
@@ -360,13 +361,20 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
 
 void gameScreen::end()
 {
-//	// Opening the homeScreen
-//	delete Definitions::currentScreen;
-//	asm volatile ("  jmp 0");
-//
-//	Definitions::currentScreen = new endScreen(12054, 8456);
-//	Definitions::currentScreen->begin();
+	// Calling void to write the endScreen
+	gameScreen::writeEndScreen();
 
+	while(Definitions::nunchuk->cButton == 0)
+	{
+		if (Definitions::nunchuk->cButton)
+		{
+			// Deleting the currentScreen
+			delete Definitions::currentScreen;
+
+			// Jumping to the first line of the program to reset all the processes
+			asm volatile ("  jmp 0");
+		}
+	}
 }
 
 uint32_t RefreshCnt = 0;
@@ -456,4 +464,71 @@ void gameScreen::refresh() {
 	Definitions::print("frame: ");
 	Definitions::println(RefreshCnt);
 	level.drawMap();
+}
+
+void gameScreen::writeEndScreen()
+{
+	// Setting title
+	Definitions::tft->setCursor(10, 10);
+	Definitions::tft->setTextSize(3);
+	Definitions::tft->setTextColor(ILI9341_BLACK);
+
+	/*
+	 * If statements for setting the title and some text
+	 * The winner gets congratulated
+	 */
+
+	// First we check if the currentPlayer did win the game
+	if ((gameScreen::scoreP1 > gameScreen::scoreP2 && Definitions::currentPlayer == 1) ||
+		(gameScreen::scoreP2 > gameScreen::scoreP1 && Definitions::currentPlayer == 2))
+	{
+		// Making the background green
+		Definitions::tft->fillScreen(ILI9341_GREEN);
+
+		// If so, it will be shown on the screen
+		Definitions::tft->println("Gewonnen :)");
+	}
+		// Else, it means that the player did lose the game
+	else
+	{
+		Definitions::tft->fillScreen(ILI9341_RED);
+		Definitions::tft->println("Verloren :(");
+	}
+
+	// Setting title for when the scores are equal
+	if (gameScreen::scoreP1 == gameScreen::scoreP2)
+	{
+		// Making the background orange
+		Definitions::tft->setCursor(10, 10);
+		Definitions::tft->fillScreen(ILI9341_ORANGE);
+
+		Definitions::tft->println("Gelijkspel");
+	}
+
+	// Showing the scores
+	Definitions::tft->setCursor(10, 50);
+	Definitions::tft->setTextSize(2);
+	Definitions::tft->println("Uw score:");
+
+	Definitions::tft->setCursor(10, 70);
+	Definitions::tft->println("Score p2:");
+
+	if (Definitions::currentPlayer == 1)
+	{
+		Definitions::tft->setCursor(150, 50);
+		Definitions::tft->setTextSize(2);
+		Definitions::tft->print(gameScreen::scoreP1);
+
+		Definitions::tft->setCursor(150, 70);
+		Definitions::tft->print(gameScreen::scoreP2);
+	}
+	else
+	{
+		Definitions::tft->setCursor(150, 50);
+		Definitions::tft->setTextSize(2);
+		Definitions::tft->print(gameScreen::scoreP2);
+
+		Definitions::tft->setCursor(150, 70);
+		Definitions::tft->print(gameScreen::scoreP1);
+	}
 }
