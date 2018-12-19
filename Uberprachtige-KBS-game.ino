@@ -11,7 +11,7 @@
 
 // Used for when debugging Infrared Comms
 // Used to not destroy work of others while working on IR :)
-//#define IRDEBUG
+#define IRDEBUG
 
 // initialize the IR Communications class
 // If we are debugging, uncomment this. Then there will be Serial communication.
@@ -29,7 +29,9 @@ screen *Definitions::currentScreen;
 // IRcomm needs to be redefined here
 Stream *Definitions::irComm;
 
-
+#ifdef IR
+	IRComm *irComm;
+#endif
 
 static int startRefresh = 0, refreshDone = 1;
 
