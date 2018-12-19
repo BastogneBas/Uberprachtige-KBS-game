@@ -9,8 +9,9 @@
 //#define IRDEBUG
 
 // initialize the IR Communications class
+#ifdef IR
 IRComm *irComm;
-
+#endif
 // If we are debugging, uncomment this. Then there will be Serial communication.
 #define DEBUG
 
@@ -25,9 +26,11 @@ screen *Definitions::currentScreen;
 
 static int startRefresh = 0, refreshDone = 1;
 
+
 // Send Timer compare interrupt
 ISR(TIMER0_COMPA_vect)
 {
+#ifdef IR
 	// If a bit wants to be sent...
 	if(irComm->bitSendEnabled)
 	{
@@ -54,7 +57,9 @@ ISR(TIMER0_COMPA_vect)
 			irComm->bitSendEnabled = 0;
 		}
 	}
+#endif
 }
+
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -72,10 +77,12 @@ ISR(TIMER1_COMPA_vect)
 // Receive timer compare interrupt
 ISR(TIMER2_COMPA_vect)
 {
+#ifdef IR
 	if(irComm->bitReceiveEnabled)
 	{
 		irComm->bitReceiveCounter++;
 	}
+#endif
 }
 
 //ISR(_VECTOR(0)){
@@ -88,7 +95,8 @@ ISR(PCINT1_vect)
 {
 	#ifdef IRDEBUG
 		PORTD ^= (1 << PORTD2);
-	#endif
+    #endif
+#ifdef IR
 	// If the receiving has been enabled
 	if(irComm->bitReceiveEnabled)
 	{
@@ -113,6 +121,7 @@ ISR(PCINT1_vect)
 			irComm->handleReceive();
 		}
 	}
+#endif
 }
 
 int main()
@@ -167,14 +176,15 @@ int main()
 		Definitions::currentScreen = new homeScreen();
 		Definitions::currentScreen->begin();
 	#endif	
-
+#ifdef IR
 	// Construct the irComm class
 	irComm = new IRComm();
 
 	#ifdef IRDEBUG
 		irComm->bitReceiveEnabled = 1;
 		irComm->sendBit(ONE_BIT);
-	#endif
+    #endif
+#endif
 
 	for(;;)
 	{

@@ -8,6 +8,8 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#define IR 1
+
 #define PEEP 1
 //#define PEEP = 2
 #if PEEP == 1
