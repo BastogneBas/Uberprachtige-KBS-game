@@ -29,9 +29,6 @@ screen *Definitions::currentScreen;
 // IRcomm needs to be redefined here
 Stream *Definitions::irComm;
 
-#ifdef IR
-	IRComm *irComm;
-#endif
 
 static int startRefresh = 0, refreshDone = 1;
 
