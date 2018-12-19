@@ -27,7 +27,7 @@ class IRComm
 {
   public:
 	IRComm();
-	
+
 	// Variables defined based on what frequencies we are using
 #if PWMFREQ == 38
 	uint8_t SENDTOP = 209;
@@ -46,7 +46,7 @@ class IRComm
 	uint8_t recTimerOverflow = 0;
 
 #else
-	#error Invalid PWM Frequency
+#error Invalid PWM Frequency
 #endif
 
 	// Variable definitions
@@ -65,7 +65,7 @@ class IRComm
 	void sendBit(uint8_t sendType);
 	void startReceive();
 	void handleReceive();
-  
+
   protected:
 
   private:

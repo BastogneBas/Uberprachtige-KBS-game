@@ -3,11 +3,11 @@
 #ifndef UBERPRACHTIGE_KBS_GAME_HOMESCREEN_H
 #define UBERPRACHTIGE_KBS_GAME_HOMESCREEN_H
 
-class homeScreen: public screen
+class homeScreen:public screen
 {
 	// Defining all the public functions and variables
 	// The instructions of the functions can be found in the homeScreen.cpp file
-public:
+  public:
 	homeScreen();
 	void begin();
 	void refresh();
@@ -25,7 +25,7 @@ public:
 	// Variables for writing the sprite
 	uint16_t _x = 9, _y = 5, _w = 16, _h = 16;
 
-private:
+  private:
 
 };
 

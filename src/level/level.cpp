@@ -8,10 +8,10 @@
  * Creates a level from predefined barrel locations.
  */
 Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
-{	
+{
 	// Copy barrel locations from current level to ram
 	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
-	{	
+	{
 		this->barrels[i] = barrels[i];
 	}
 	// And set the name of the current level
@@ -21,35 +21,37 @@ Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 /* Returns the X value of the bomb specified */
 uint8_t Level::getBombX(int index)
 {
-    return this->bombX[index];
+	return this->bombX[index];
 }
 
 /* Returns the Y value of the bomb specified */
 uint8_t Level::getBombY(int index)
 {
-    return this->bombY[index];
+	return this->bombY[index];
 }
 
 /* Returns the time, the specified bomb was placed */
 uint32_t Level::getBombTime(int index)
 {
-    return this->bombTime[index];
+	return this->bombTime[index];
 }
 
 /* Returns by which peep the specified bomb was placed */
 uint8_t Level::getBombPeep(int index)
 {
-    return this->bombPeep[index];
+	return this->bombPeep[index];
 }
 
 /* Sets the value of a bomb at the specified index */
-void Level::setBomb(int index, uint8_t x, uint8_t y, uint32_t time, uint8_t peep)
+void Level::setBomb(int index, uint8_t x, uint8_t y, uint32_t time,
+					uint8_t peep)
 {
-    bombX[index] = x;
-    bombY[index] = y;
-    bombTime[index] = time;
-    bombPeep[index] = peep;
+	bombX[index] = x;
+	bombY[index] = y;
+	bombTime[index] = time;
+	bombPeep[index] = peep;
 }
+
 /* Level constructor
  * Creates a level with random barrel locations
  */
@@ -61,10 +63,9 @@ Level::Level(String name)
 	// For each line use a random uint16_t for barrel locations, and turn off the where no barrel can be placed
 	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
 	{
-		this->barrels[i] =
-			(((uint16_t) random(0xFFFF)) &
-			//(((uint16_t)0xFFFF) & 
-			 ~(LevelDefs::YouCantPlaceBarrelsHere[i]));
+		this->barrels[i] = (((uint16_t) random(0xFFFF)) &
+							//(((uint16_t)0xFFFF) & 
+							~(LevelDefs::YouCantPlaceBarrelsHere[i]));
 	}
 	// Set the name of the level
 	this->name = name;
@@ -109,7 +110,7 @@ void Level::begin()
 	{
 		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
 		{
-			uint16_t mask = (1 << (Definitions::gameWidth-1)) >> x;
+			uint16_t mask = (1 << (Definitions::gameWidth - 1)) >> x;
 			if (getBarrels()[y] & (mask))
 			{
 				setObjectAt(x + 1, y + 1, mapObject::barrel);
@@ -138,7 +139,8 @@ void Level::printMap()
 	{
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
 		{
-			if(map[y][x] <= 0xF){
+			if (map[y][x] <= 0xF)
+			{
 				Definitions::print(" ");
 			}
 			Definitions::print(map[y][x], HEX);
@@ -195,7 +197,7 @@ void Level::drawMap()
 			{
 				if (!(currentObject & mapObject::air))
 				{
-			uint16_t _x = x * 16, _y = y * 16;
+					uint16_t _x = x * 16, _y = y * 16;
 #ifdef DEBUG
 					Definitions::println("Draw air");
 #endif
@@ -204,7 +206,7 @@ void Level::drawMap()
 				}
 				if (currentObject & mapObject::block)
 				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
 					Definitions::println("Draw block");
 #endif
@@ -221,7 +223,7 @@ void Level::drawMap()
 				}
 				if (currentObject & mapObject::barrel)
 				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
 					Definitions::println("Draw barrel");
 #endif
@@ -237,9 +239,11 @@ void Level::drawMap()
 					}
 				}
 
-				if (currentObject & mapObject::bomb && !(currentObject & mapObject::explosion) && currentObject & mapObject::bombPeep2)
+				if (currentObject & mapObject::bomb
+					&& !(currentObject & mapObject::explosion)
+					&& currentObject & mapObject::bombPeep2)
 				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
 					Definitions::println("Draw bomb");
 #endif
@@ -250,14 +254,16 @@ void Level::drawMap()
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
 														 (&bomb2Idle
-														 //(&explosion2Center
+														  //(&explosion2Center
 														  [j * _w + i]));
 						}
 					}
 				}
-				if (currentObject & mapObject::explosion && !(currentObject & mapObject::explosionV) && currentObject & mapObject::bombPeep2)
+				if (currentObject & mapObject::explosion
+					&& !(currentObject & mapObject::explosionV)
+					&& currentObject & mapObject::bombPeep2)
 				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
 					Definitions::println("Draw explosion H");
 #endif
@@ -272,9 +278,11 @@ void Level::drawMap()
 						}
 					}
 				}
-				if (currentObject & mapObject::explosion && (currentObject & mapObject::explosionV) && currentObject & mapObject::bombPeep2)
+				if (currentObject & mapObject::explosion
+					&& (currentObject & mapObject::explosionV)
+					&& currentObject & mapObject::bombPeep2)
 				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
 					Definitions::println("Draw explosion V");
 #endif
@@ -289,9 +297,11 @@ void Level::drawMap()
 						}
 					}
 				}
-                if (currentObject & mapObject::bomb && currentObject & mapObject::explosion && currentObject & mapObject::bombPeep2)
+				if (currentObject & mapObject::bomb
+					&& currentObject & mapObject::explosion
+					&& currentObject & mapObject::bombPeep2)
 				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
 					Definitions::println("Draw explosion");
 #endif
@@ -307,7 +317,9 @@ void Level::drawMap()
 					}
 				}
 
-				if (currentObject & mapObject::bomb && !(currentObject & mapObject::explosion) && currentObject & mapObject::bombPeep1)
+				if (currentObject & mapObject::bomb
+					&& !(currentObject & mapObject::explosion)
+					&& currentObject & mapObject::bombPeep1)
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
@@ -319,13 +331,15 @@ void Level::drawMap()
 						{
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
-																 (&bomb1Idle
-																		 //(&explosion2Center
-																 [j * _w + i]));
+														 (&bomb1Idle
+														  //(&explosion2Center
+														  [j * _w + i]));
 						}
 					}
 				}
-				if (currentObject & mapObject::explosion && !(currentObject & mapObject::explosionV) && currentObject & mapObject::bombPeep1)
+				if (currentObject & mapObject::explosion
+					&& !(currentObject & mapObject::explosionV)
+					&& currentObject & mapObject::bombPeep1)
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
@@ -337,12 +351,14 @@ void Level::drawMap()
 						{
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
-																 (&explosion1H
-																 [j * _w + i]));
+														 (&explosion1H
+														  [j * _w + i]));
 						}
 					}
 				}
-				if (currentObject & mapObject::explosion && (currentObject & mapObject::explosionV) && currentObject & mapObject::bombPeep1)
+				if (currentObject & mapObject::explosion
+					&& (currentObject & mapObject::explosionV)
+					&& currentObject & mapObject::bombPeep1)
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
@@ -354,12 +370,14 @@ void Level::drawMap()
 						{
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
-																 (&explosion1V
-																 [j * _w + i]));
+														 (&explosion1V
+														  [j * _w + i]));
 						}
 					}
 				}
-				if (currentObject & mapObject::bomb && currentObject & mapObject::explosion && currentObject & mapObject::bombPeep1)
+				if (currentObject & mapObject::bomb
+					&& currentObject & mapObject::explosion
+					&& currentObject & mapObject::bombPeep1)
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
@@ -371,14 +389,14 @@ void Level::drawMap()
 						{
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
-																 (&explosion1Center
-																 [j * _w + i]));
+														 (&explosion1Center
+														  [j * _w + i]));
 						}
 					}
 				}
 				if (currentObject & mapObject::peep1)
 				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
 					Definitions::println("Draw peep1");
 #endif
@@ -395,7 +413,7 @@ void Level::drawMap()
 				}
 				if (currentObject & mapObject::peep2)
 				{
-			uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
+					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
 #ifdef DEBUG
 					Definitions::println("Draw peep2");
 #endif

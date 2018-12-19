@@ -2,9 +2,9 @@
 #ifndef UBERPRACHTIGE_KBS_GAME_HIGHSCORESCREEN_H
 #define UBERPRACHTIGE_KBS_GAME_HIGHSCORESCREEN_H
 
-class highScoreScreen: public screen
+class highScoreScreen:public screen
 {
-public:
+  public:
 	highScoreScreen();
 	void begin();
 	void refresh();
@@ -19,14 +19,13 @@ public:
 	uint16_t scorep2;
 
 	// Defining arrays for the highScores
-	uint16_t highScoresP1[5] = {1065, 5848, 854, 12254, 5651};
-	uint16_t highScoresP2[5] = {2654, 8795, 12546, 4846, 8515};
+	uint16_t highScoresP1[5] = { 1065, 5848, 854, 12254, 5651 };
+	uint16_t highScoresP2[5] = { 2654, 8795, 12546, 4846, 8515 };
 
 
-private:
+  private:
 	// Defining variables
 
 };
 
 #endif
-

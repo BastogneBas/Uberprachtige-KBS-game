@@ -78,7 +78,8 @@ class Level
 
 	//Bomb getBomb(int index);
 	//void setBomb(int index, Bomb bomb);
-	void setBomb(int index, uint8_t x, uint8_t y, uint32_t time, uint8_t peep);
+	void setBomb(int index, uint8_t x, uint8_t y, uint32_t time,
+				 uint8_t peep);
 	uint8_t getBombX(int index);
 	uint8_t getBombY(int index);
 	uint32_t getBombTime(int index);
@@ -95,7 +96,7 @@ class Level
 	 */
 	 uint16_t barrels[Definitions::gameHeight] = { 0 };
 
-	uint16_t map[Definitions::gameHeight+2][Definitions::gameWidth+2] = {
+	uint16_t map[Definitions::gameHeight + 2][Definitions::gameWidth + 2] = {
 		{0},
 		{0},
 		{0},
@@ -111,10 +112,10 @@ class Level
 		{0}
 	};
 
-	uint8_t bombX[2] = {0};
-	uint8_t bombY[2] = {0};
-	uint32_t bombTime[2] = {0};
-	uint8_t bombPeep[2] = {0};
+	uint8_t bombX[2] = { 0 };
+	uint8_t bombY[2] = { 0 };
+	uint32_t bombTime[2] = { 0 };
+	uint8_t bombPeep[2] = { 0 };
 
 	// The name of the level
 	String name;

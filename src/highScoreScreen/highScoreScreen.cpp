@@ -1,6 +1,6 @@
 // Including libs for enabling the screen
-#include "../Adafruit_GFX_Library/Adafruit_GFX.h"		// Core graphics library
-#include "../Adafruit_ILI9341/Adafruit_ILI9341.h"		// Hardware-specific library
+#include "../Adafruit_GFX_Library/Adafruit_GFX.h"	// Core graphics library
+#include "../Adafruit_ILI9341/Adafruit_ILI9341.h"	// Hardware-specific library
 #include <SPI.h>
 
 // Including nunchuck libs
@@ -37,7 +37,7 @@ void highScoreScreen::begin()
 	Definitions::tft->drawLine(190, 65, 190, 240, ILI9341_WHITE);
 
 	// Draw rectangle around the lines
-	Definitions::tft->drawRect(10,0,300,240,ILI9341_WHITE);
+	Definitions::tft->drawRect(10, 0, 300, 240, ILI9341_WHITE);
 
 	// Drawing players
 	Definitions::tft->setCursor(20, 45);
@@ -66,24 +66,32 @@ void highScoreScreen::begin()
 			for (uint8_t j = 0; j <= 4 - a; j++)
 			{
 				// If statement that checks if the current index > the index +1
-				if (highScoreScreen::highScoresP1[j] > highScoreScreen::highScoresP1[j + 1])
+				if (highScoreScreen::highScoresP1[j] >
+					highScoreScreen::highScoresP1[j + 1])
 				{
 					// If so, the variable score will be set to the index value.
-					highScoreScreen::scorep1 = highScoreScreen::highScoresP1[j];
+					highScoreScreen::scorep1 =
+						highScoreScreen::highScoresP1[j];
 
 					// The index value will be set to index value + 1
-					highScoreScreen::highScoresP1[j] = highScoreScreen::highScoresP1[j + 1];
+					highScoreScreen::highScoresP1[j] =
+						highScoreScreen::highScoresP1[j + 1];
 
 					// And the index value + 1 will be set to the index value
-					highScoreScreen::highScoresP1[j + 1] = highScoreScreen::scorep1;
+					highScoreScreen::highScoresP1[j + 1] =
+						highScoreScreen::scorep1;
 				}
 
 				// The same things happen with the highscores for p2
-				if (highScoreScreen::highScoresP2[j] > highScoreScreen::highScoresP2[j + 1])
+				if (highScoreScreen::highScoresP2[j] >
+					highScoreScreen::highScoresP2[j + 1])
 				{
-					highScoreScreen::scorep2 = highScoreScreen::highScoresP2[j];
-					highScoreScreen::highScoresP2[j] = highScoreScreen::highScoresP2[j + 1];
-					highScoreScreen::highScoresP2[j + 1] = highScoreScreen::scorep2;
+					highScoreScreen::scorep2 =
+						highScoreScreen::highScoresP2[j];
+					highScoreScreen::highScoresP2[j] =
+						highScoreScreen::highScoresP2[j + 1];
+					highScoreScreen::highScoresP2[j + 1] =
+						highScoreScreen::scorep2;
 				}
 			}
 		}
@@ -118,11 +126,13 @@ void highScoreScreen::refresh()
 	}
 }
 
-void highScoreScreen::end() {
+void highScoreScreen::end()
+{
 
 
 }
 
-void highScoreScreen::checkNunchuck() {
+void highScoreScreen::checkNunchuck()
+{
 
 }

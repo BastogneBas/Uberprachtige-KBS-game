@@ -1,6 +1,6 @@
 // Including libs for enabling the screen
-#include "../Adafruit_GFX_Library/Adafruit_GFX.h"		// Core graphics library
-#include "../Adafruit_ILI9341/Adafruit_ILI9341.h"		// Hardware-specific library
+#include "../Adafruit_GFX_Library/Adafruit_GFX.h"	// Core graphics library
+#include "../Adafruit_ILI9341/Adafruit_ILI9341.h"	// Hardware-specific library
 #include <SPI.h>
 
 // Including nunchuck libs
@@ -29,8 +29,10 @@ void homeScreen::begin()
 	for (uint8_t i = 1; i <= 2; i++)
 	{
 		// Setting the values for the fist button
-		Definitions::tft->drawRect(39, homeScreen::yRect, 242, 42, ILI9341_DARKGREY);
-		Definitions::tft->fillRect(40, homeScreen::yFill, 240, 40, ILI9341_YELLOW);
+		Definitions::tft->drawRect(39, homeScreen::yRect, 242, 42,
+								   ILI9341_DARKGREY);
+		Definitions::tft->fillRect(40, homeScreen::yFill, 240, 40,
+								   ILI9341_YELLOW);
 
 		// Setting the colors
 		Definitions::tft->setCursor(55, homeScreen::cursor);
@@ -58,13 +60,13 @@ void homeScreen::begin()
 	Definitions::tft->setTextColor(ILI9341_WHITE);
 	Definitions::tft->setTextSize(1);
 
-	Definitions::tft->setCursor(40,180);
+	Definitions::tft->setCursor(40, 180);
 	Definitions::tft->print("Z-button:    knop selecteren/bom neerleggen");
 
-	Definitions::tft->setCursor(40,200);
+	Definitions::tft->setCursor(40, 200);
 	Definitions::tft->print("C-button:    vorige mmenu");
 
-	Definitions::tft->setCursor(40,220);
+	Definitions::tft->setCursor(40, 220);
 	Definitions::tft->print("Joystick:    Bewegen door menu's/game");
 
 	// Enabling pixel writing
@@ -76,13 +78,18 @@ void homeScreen::begin()
 	{
 		for (uint16_t i = 0; i < homeScreen::_w; i++)
 		{
-			for (uint8_t subY = 0; subY < 3; subY++) {
-				for (uint8_t subX = 0; subX < 3; subX++) {
+			for (uint8_t subY = 0; subY < 3; subY++)
+			{
+				for (uint8_t subX = 0; subX < 3; subX++)
+				{
 
-					Definitions::tft->writePixel((homeScreen::_x + i) * 3 + subX, homeScreen::_y * 3 + subY,
-												 pgm_read_word
-														 (&peep1
-														 [j * homeScreen::_w + i]));
+					Definitions::tft->writePixel((homeScreen::_x + i) * 3 +
+												 subX,
+												 homeScreen::_y * 3 + subY,
+												 pgm_read_word(&peep1
+															   [j *
+																homeScreen::
+																_w + i]));
 				}
 			}
 		}
@@ -92,7 +99,7 @@ void homeScreen::begin()
 	Definitions::tft->endWrite();
 
 	// Writing the game title
-	Definitions::tft->setCursor(85,30);
+	Definitions::tft->setCursor(85, 30);
 	Definitions::tft->setTextColor(ILI9341_ORANGE);
 	Definitions::tft->setTextSize(2);
 	Definitions::tft->print("SpElEn MeT vUuR");
@@ -137,7 +144,8 @@ void homeScreen::refresh()
 
 	// If statement that will check if the zButton is being pushed
 	// and if buttonSelect != 0. With the zButton we can select button in the menu
-	if ((Definitions::nunchuk->zButton) && (!(homeScreen::buttonSelect == 0)))
+	if ((Definitions::nunchuk->zButton)
+		&& (!(homeScreen::buttonSelect == 0)))
 	{
 		// If true, the newScreen function will be called. This function
 		// Will close the current screen, and call the new screen
@@ -214,11 +222,12 @@ void homeScreen::newScreen(uint8_t buttonSelect)
 	homeScreen::buttonSelect = 0;
 }
 
-void homeScreen::end() {
+void homeScreen::end()
+{
 
 }
 
-void homeScreen::checkNunchuck() {
+void homeScreen::checkNunchuck()
+{
 
 }
-

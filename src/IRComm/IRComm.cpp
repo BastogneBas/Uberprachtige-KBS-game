@@ -26,7 +26,7 @@ IRComm::IRComm()
  * Compares with RECTOP (defined in IRComm.h)
  * Runs at the frequency defined in staticDefinitions.cpp
  * Runs without prescaler
-*/	
+*/
 	TCCR2A = (1 << COM2A0) | (1 << WGM20) | (1 << WGM21);
 	TCCR0B = (1 << CS20) | (1 << WGM22);
 	OCR2A = RECTOP;
@@ -68,12 +68,12 @@ void IRComm::sendBit(uint8_t sendType)
 	bitSendEnabled = 1;
 
 	// Wait for the bit to be completely sent
-	while(!bitSendComplete)
+	while (!bitSendComplete)
 	{
-	#ifdef DEBUG
+#ifdef DEBUG
 		// Enable digital PIN 1 to indicate that the bit is still sending
 		PORTC |= (1 << PORTC1);
-	#endif
+#endif
 
 		// Do something useless, because the arduino can't handle empty whiles for some reason
 		PORTB = PORTB;
@@ -86,7 +86,8 @@ void IRComm::sendBit(uint8_t sendType)
 }
 
 // Reset the receival and indicate that it has started
-void IRComm::startReceive(){
+void IRComm::startReceive()
+{
 	bitReceiveChanged = 0;
 	bitReceiveStarted = 1;
 	bitReceiveCounter = 0;
@@ -100,7 +101,7 @@ void IRComm::handleReceive()
 	// Stop the receival of data
 	bitReceiveStarted = 0;
 	bitReceiveEnabled = 0;
-	
+
 #ifdef DEBUG
 	PORTB = bitReceiveChanged;
 	PORTD &= ~(1 << PORTD3);

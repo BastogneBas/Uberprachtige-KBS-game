@@ -1,9 +1,9 @@
 #ifndef UBERPRACHTIGE_KBS_GAME_LVLSELECTSCREEN_H
 #define UBERPRACHTIGE_KBS_GAME_LVLSELECTSCREEN_H
 
-class lvlSelectScreen: public screen
+class lvlSelectScreen:public screen
 {
-public:
+  public:
 	lvlSelectScreen();
 	void begin();
 	void refresh();
@@ -18,7 +18,7 @@ public:
 	// Defining variables to fill the screen with
 	uint8_t yRect = 29, yFill = 30, cursor = 40;
 
-private:
+  private:
 
 };
 

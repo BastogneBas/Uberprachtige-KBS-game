@@ -1,6 +1,6 @@
 // Including libs for enabling the screen
-#include "../Adafruit_GFX_Library/Adafruit_GFX.h"		// Core graphics library
-#include "../Adafruit_ILI9341/Adafruit_ILI9341.h"		// Hardware-specific library
+#include "../Adafruit_GFX_Library/Adafruit_GFX.h"	// Core graphics library
+#include "../Adafruit_ILI9341/Adafruit_ILI9341.h"	// Hardware-specific library
 #include <SPI.h>
 
 // Including nunchuck libs
@@ -30,8 +30,10 @@ void lvlSelectScreen::begin()
 	for (uint8_t i = 1; i <= 4; i++)
 	{
 		// Setting the values for the fist button
-		Definitions::tft->drawRect(19, lvlSelectScreen::yRect, 242, 42, ILI9341_DARKGREY);
-		Definitions::tft->fillRect(20, lvlSelectScreen::yFill, 240, 40, ILI9341_YELLOW);
+		Definitions::tft->drawRect(19, lvlSelectScreen::yRect, 242, 42,
+								   ILI9341_DARKGREY);
+		Definitions::tft->fillRect(20, lvlSelectScreen::yFill, 240, 40,
+								   ILI9341_YELLOW);
 
 		// Setting the colors
 		Definitions::tft->setCursor(35, lvlSelectScreen::cursor);
@@ -167,7 +169,7 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 		Definitions::tft->setTextColor(ILI9341_BLACK);
 		Definitions::tft->setCursor(35, 140);
 		Definitions::tft->print("Level 3");
-}
+	}
 	else if (selectedButton == 3)
 	{
 		Definitions::tft->drawRect(19, 79, 242, 42, ILI9341_DARKGREY);
@@ -216,20 +218,24 @@ void lvlSelectScreen::startGame(uint8_t selectedButton)
 		// The same things happen with the other buttons
 		if (selectedButton == 1)
 		{
-			Definitions::println((uint16_t)Definitions::currentScreen, HEX);
-			Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(0));
+			Definitions::println((uint16_t) Definitions::currentScreen,
+								 HEX);
+			Definitions::currentScreen =
+				new gameScreen(LevelDefs::getLevel(0));
 			Definitions::currentScreen->begin();
 
 		}
 		else if (selectedButton == 2)
 		{
-			Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(1));
+			Definitions::currentScreen =
+				new gameScreen(LevelDefs::getLevel(1));
 			Definitions::currentScreen->begin();
 
 		}
 		else if (selectedButton == 3)
 		{
-			Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(2));
+			Definitions::currentScreen =
+				new gameScreen(LevelDefs::getLevel(2));
 			Definitions::currentScreen->begin();
 
 		}
@@ -251,4 +257,3 @@ void lvlSelectScreen::checkNunchuck()
 {
 
 }
-
