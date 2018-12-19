@@ -33,7 +33,19 @@ Stream *Definitions::irComm;
 static int startRefresh = 0, refreshDone = 1;
 
 
-// Send Timer compare interrupt
+/* --Compare interrupt for send timer--
+ * Makes sure that pulses are sent over the proper frequency
+ * Keeps a counter of amount of overflows
+ * First checks if sending of a bit is actually enabled
+ * Then checks if the counter equals the amount of pulses for the bit to be sent
+ * If it sent the bit type that wanted to be sent...
+ * Disable the LED
+ * 
+ * A bit will always be sent in under 100 pulses
+ * The amount of pulses for every bit type is defined in IRComm.h
+ * If the counter reached 100, the bit is done sending
+ * This will end the sending of the bit
+*/
 ISR(TIMER0_COMPA_vect)
 {
 #ifdef IR
@@ -44,7 +56,7 @@ ISR(TIMER0_COMPA_vect)
 		// ...for the specified bit to be sent...
 		if(irComm->bitSendCounter >= irComm->bitSendType)
 		{
-			// Disable the 'let-through' pin for the IR LED, blovking the PWM signal
+			// Disable the 'let-through' pin for the IR LED, blocking the PWM signal
 			PORTD |= (1 << PORTD4);
 		}
 
@@ -80,7 +92,12 @@ ISR(TIMER1_COMPA_vect)
 	//#endif
 }
 
-// Receive timer compare interrupt
+/* --Compare interrupt for receive timer--
+ * When a bit is being received, a pin change interrupt will happen
+ * This will enable the counter for this timer interrupt
+ * This timer will count 'pulses' at the frequency of the sender
+ * For more info, see the comment at the pin change interrupt
+*/
 ISR(TIMER2_COMPA_vect)
 {
 #ifdef IR
