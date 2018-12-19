@@ -9,6 +9,8 @@
 #include <Stream.h>
 #include <HardwareSerial_private.h>
 
+// Used for when debugging Infrared Comms
+// Used to not destroy work of others while working on IR :)
 //#define IRDEBUG
 
 // initialize the IR Communications class
@@ -209,6 +211,7 @@ int main()
 
 	for(;;)
 	{
+		irComm->sendBit(ONE_BIT);
 		//irComm->sendBit(ONE_BIT);
 		// Refresh screen
 		if(startRefresh){
