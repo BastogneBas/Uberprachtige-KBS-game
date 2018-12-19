@@ -8,7 +8,7 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-#define IR 1
+//#define IR 1
 
 #define PEEP 1
 //#define PEEP = 2
@@ -46,7 +46,7 @@ class Definitions
 
 	/* BEGIN PRINTs */
 	/* SEE: https://github.com/arduino/ArduinoCore-avr/blob/all-master/cores/arduino/Print.h */
-	static void print(const String &s){
+	static void print(const String s){
 		tft->print(s);
 	}
 
@@ -59,15 +59,15 @@ class Definitions
 	}
 
 	static void print(unsigned char b, int base){
-		tft->print((unsigned long) b, base);
+		tft->print(b, base);
 	}
 
 	static void print(int n, int base){
-		tft->print((long) n, base);
+		tft->print(n, base);
 	}
 
 	static void print(unsigned int n, int base){
-		tft->print((unsigned long) n, base);
+		tft->print(n, base);
 	}
 
 	static void print(long n, int base){
@@ -85,6 +85,7 @@ class Definitions
 	static void print(bool b, int base){
 		tft->print(b, base);
 	}
+	//static auto& print = static_cast<void>(tft->print);
 
 	static void println(void){
 		tft->println();

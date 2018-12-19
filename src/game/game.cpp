@@ -95,25 +95,25 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 	//Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
 
 	// check if nunchuk is left, if true go to left
-	if (nunX <= 90)	// && p2X > 1)
+	if (nunX <= 70 && (nunY > 50 && nunY < 200))	// && p2X > 1)
 	{
 		newX--;
 	}
 
 	// check if nunchuk is right, if true go to right
-	if (nunX >= 150 && (nunY > 100 && nunY < 150))	// && p2X < Definitions::gameWidth)
+	else if (nunX >= 170 && (nunY > 50 && nunY < 200))	// && p2X < Definitions::gameWidth)
 	{
 		newX++;
 	}
 	// check if nunchuk is up, if true go up
-	if ((nunX > 100 && nunX < 150) && nunY >= 150)	// && p2Y > 1)
+	else if ((nunX > 50 && nunX < 200) && nunY >= 170)	// && p2Y > 1)
 	{
 		// Nunchuck Y is inverted.
 		//p2Y--;
 		newY--;
 	}
 
-	if ((nunX > 100 && nunX < 150) && nunY <= 90)	// && p2Y < Definitions::gameHeight)
+	else if ((nunX > 50 && nunX < 200) && nunY <= 70)	// && p2Y < Definitions::gameHeight)
 	{
 		//p2Y++;
 		newY++;
@@ -368,7 +368,7 @@ void gameScreen::refresh() {
     RefreshCnt++;
     uint8_t getPlacedTime;
 
-    //if ((RefreshCnt % 5) == 0)
+    if ((RefreshCnt % 4) == 0)
     {
 #ifdef DEBUG
 		Definitions::setTextDebug();
@@ -431,7 +431,6 @@ void gameScreen::refresh() {
 
             }
         }
-    }
 
     if (Definitions::nunchuk->cButton)
     {
@@ -445,7 +444,17 @@ void gameScreen::refresh() {
 		//Definitions::println();
 #endif
 	Definitions::setTextDebug();
-	Definitions::print("frame: ");
-	Definitions::println(RefreshCnt);
+	Definitions::tft->setCursor(0,210);
+	Definitions::tft->print("frame: ");
+	Definitions::tft->println(RefreshCnt);
+	Definitions::tft->setCursor(240,0);
+	Definitions::tft->print("x:  ");
+	Definitions::tft->print(Definitions::nunchuk->analogX);
+	Definitions::tft->print("   ");
+	Definitions::tft->setCursor(240,8);
+	Definitions::tft->print("y:  ");
+	Definitions::tft->print((unsigned int)Definitions::nunchuk->analogY);
+	Definitions::print("  ");
 	level.drawMap();
+	}
 }
