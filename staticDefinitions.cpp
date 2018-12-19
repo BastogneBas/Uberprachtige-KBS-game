@@ -8,7 +8,10 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-#define IR 1
+//#define IR 1
+
+//#define RECEIVER 1
+//#define SENDER 1
 
 #define PEEP 1
 //#define PEEP = 2
@@ -35,6 +38,9 @@ class Definitions
 	static Adafruit_ILI9341 *tft;
 	static ArduinoNunchuk *nunchuk;
 	static screen *currentScreen;
+
+	static Stream *irComm;
+
 
 	/* Set the text position at 0,0 and color at white on black
 	 * FOR DEBUGGING */

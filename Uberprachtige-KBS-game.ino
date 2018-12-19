@@ -5,13 +5,13 @@
 #include "src/homeScreen/homeScreen.h"
 #include <avr/io.h>
 #include "src/IRComm/IRComm.h"
+#include <HardwareSerial.h>
+#include <Stream.h>
+#include <HardwareSerial_private.h>
 
 //#define IRDEBUG
 
 // initialize the IR Communications class
-#ifdef IR
-IRComm *irComm;
-#endif
 // If we are debugging, uncomment this. Then there will be Serial communication.
 #define DEBUG
 
@@ -23,6 +23,11 @@ ArduinoNunchuk *Definitions::nunchuk;
 
 // Pointer to the current visible screen.
 screen *Definitions::currentScreen;
+
+// IRcomm needs to be redefined here
+Stream *Definitions::irComm;
+
+
 
 static int startRefresh = 0, refreshDone = 1;
 
@@ -184,6 +189,22 @@ int main()
 		irComm->bitReceiveEnabled = 1;
 		irComm->sendBit(ONE_BIT);
     #endif
+#else
+		Definitions::irComm = new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C, &UDR0);
+	((HardwareSerial*)(Definitions::irComm))->begin(500000);
+
+	#ifdef PEEP == 1
+		char mystr[5] = "1hello";
+		Definitions::irComm->write(mystr, 5);
+		delay (1000);
+
+	#else
+		char mystr[10];
+		Definitions::irComm->readBytes(mystr, 5);
+		Definitions::irComm->println(mystr);
+		delay(1000);
+    #endif
+
 #endif
 
 	for(;;)
