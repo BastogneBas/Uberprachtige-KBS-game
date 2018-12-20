@@ -5,7 +5,6 @@
 #include "game.h"
 #include "../level/level.h"
 #include "../level/levelDefs.h"
-//#include "../endScreen/endScreen.h"
 #include "../ArduinoNunchuk/ArduinoNunchuk.h"
 #include "bomb.h"
 
@@ -507,7 +506,7 @@ void gameScreen::refresh()
 	RefreshCnt++;
 	uint8_t getPlacedTime;
 
-	if ((RefreshCnt % 4) == 0)
+	if ((RefreshCnt % 3) == 0)
 	{
 #ifdef DEBUG
 		Definitions::setTextDebug();
@@ -538,7 +537,7 @@ void gameScreen::refresh()
 			//placed = true;
 		}
 
-		if (RefreshCnt >= level.getBombTime(0) + 12)
+		if (RefreshCnt >= level.getBombTime(0) + 48)
 		{
 			if (((level.
 				  getObjectAt(level.getBombX(0),
@@ -581,7 +580,7 @@ void gameScreen::refresh()
 //        }
 
 
-		if (RefreshCnt >= level.getBombTime(0) + 24)
+		if (RefreshCnt >= level.getBombTime(0) + 92)
 		{
 			if ((level.
 				 getObjectAt(level.getBombX(0),
@@ -707,11 +706,13 @@ void gameScreen::writeEndScreen()
 void gameScreen::drawLives()
 {
 
+	// Setting value so the lives can be written down
 	uint16_t x = 305;
 
+	// If statements that checks if any lives have already been taken away
 	if (livesP1 < 3)
 	{
-
+		// For loop that overwrites the lives if P1 has been hit
 		for (int i = 3 - livesP1; i > 0; i--)
 		{
 			Definitions::tft->fillCircle(x, 30, 10, ILI9341_BLACK);
@@ -719,8 +720,10 @@ void gameScreen::drawLives()
 		}
 	}
 
+	// Resetting the value
 	x = 305;
 
+	// Same thing happens for P2
 	if (livesP2 < 3)
 	{
 
@@ -731,8 +734,11 @@ void gameScreen::drawLives()
 		}
 	}
 
+	// If statement that checks if one of the players has no lives left
+	// If so, the endScreen will be called and the game is over :)
 	if (livesP1 == 0 || livesP2 == 0)
 	{
 		end();
 	}
 }
+
