@@ -78,7 +78,6 @@ ISR(TIMER0_COMPA_vect)
 #endif
 }
 
-
 ISR(TIMER1_COMPA_vect)
 {
 	if (refreshDone)
@@ -86,7 +85,6 @@ ISR(TIMER1_COMPA_vect)
 		//PORTD |= (1 << PORTD5);
 		startRefresh = 1;
 	}
-
 	//Serial.println("refresh");
 	//#ifndef IRDEBUG
 	//Definitions::currentScreen->refresh();
@@ -225,22 +223,22 @@ int main()
 	irComm->sendBit(ONE_BIT);
 #endif
 #else
-	Definitions::irComm =
-		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
-						   &UDR0);
-	((HardwareSerial *) (Definitions::irComm))->begin(9600);
+//	Definitions::irComm =
+//		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
+//						   &UDR0);
+//	((HardwareSerial *) (Definitions::irComm))->begin(9600);
 
-#if PEEP == 1
-	char mystr[] = "1hello";
-	Definitions::irComm->print(mystr);
-	//delay (1000);
-
-#else
-	char mystr[10];
-	Definitions::irComm->readBytes(mystr, 5);
-	Definitions::irComm->println(mystr);
-	//delay(1000);
-#endif
+//#if PEEP == 1
+//	char mystr[] = "1hello";
+//	Definitions::irComm->print(mystr);
+//	//delay (1000);
+//
+//#else
+//	char mystr[10];
+//	Definitions::irComm->readBytes(mystr, 5);
+//	Definitions::irComm->println(mystr);
+//	//delay(1000);
+//#endif
 
 #endif
 
