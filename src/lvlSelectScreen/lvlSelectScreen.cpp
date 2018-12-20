@@ -62,65 +62,66 @@ void lvlSelectScreen::begin()
 	lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
 }
 
+// Defining refreshcount variable
+uint32_t refreshCount = 0;
+
 // Void for refreshing the levelSelectScreen
 void lvlSelectScreen::refresh()
 {
-	// Updating the nunchuk values
-	Definitions::nunchuk->update();
+	refreshCount++;
 
-	// If statement that checks if the nunchuk joystick is pushed down
-	if (Definitions::nunchuk->analogY < 50)
-	{
-		// Checking if buttonSelect (variable that holds the current buttonValue)
-		// isn't >= 4. This will check if the button is at or past the last button
-		if (!(lvlSelectScreen::selectedButton >= 4))
-		{
-			// If it isn't, it means that the last button hasn't been reached yet, so we can increment it
-			lvlSelectScreen::selectedButton++;
+	if ((refreshCount % 5)== 0) {
+		// Updating the nunchuk values
+		Definitions::nunchuk->update();
+
+		// If statement that checks if the nunchuk joystick is pushed down
+		if (Definitions::nunchuk->analogY < 50) {
+			// Checking if buttonSelect (variable that holds the current buttonValue)
+			// isn't >= 4. This will check if the button is at or past the last button
+			if (!(lvlSelectScreen::selectedButton >= 4)) {
+				// If it isn't, it means that the last button hasn't been reached yet, so we can increment it
+				lvlSelectScreen::selectedButton++;
+			}
+			// Else, we only have to repaint the button, which must be done every time
+			lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
 		}
-		// Else, we only have to repaint the button, which must be done every time
-		lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
-	}
 
-	// If statement that checks if the nunchuk joystick is pushed down
-	else if (Definitions::nunchuk->analogY > 200)
-	{
-		// The same thing happens if the joystick is being pushed up
-		// If buttonSelect isn't smaller or equal to 0 OR buttonSelect isn't 1
-		if (!(lvlSelectScreen::selectedButton <= 1))
-		{
-			// Then it is possible to decrement the value (button hasn't reached the bottom yet)
-			lvlSelectScreen::selectedButton--;
+			// If statement that checks if the nunchuk joystick is pushed down
+		else if (Definitions::nunchuk->analogY > 200) {
+			// The same thing happens if the joystick is being pushed up
+			// If buttonSelect isn't smaller or equal to 0 OR buttonSelect isn't 1
+			if (!(lvlSelectScreen::selectedButton <= 1)) {
+				// Then it is possible to decrement the value (button hasn't reached the bottom yet)
+				lvlSelectScreen::selectedButton--;
+			}
+			// Else, we only have to repaint the button, which must be done every time
+			lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
 		}
-		// Else, we only have to repaint the button, which must be done every time
-		lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
-	}
 
 
-	// If statement that will check if the zButton is being pushed
-	// and if buttonSelect != 0. With the zButton we can select button in the menu
-	if ((Definitions::nunchuk->zButton))
-	{
+		// If statement that will check if the zButton is being pushed
+		// and if buttonSelect != 0. With the zButton we can select button in the menu
+		if ((Definitions::nunchuk->zButton)) {
 
-		// If true, the newScreen function will be called. This function
-		// Will close the current screen, and call the new screen
-		lvlSelectScreen::startGame(lvlSelectScreen::selectedButton);
+			// If true, the newScreen function will be called. This function
+			// Will close the current screen, and call the new screen
+			lvlSelectScreen::startGame(lvlSelectScreen::selectedButton);
 
-	}
+		}
 
-	// If statement that will check if the cButton is being pushed
-	if (Definitions::nunchuk->cButton)
-	{
-		// First, delete pointer to the current screen
-		delete Definitions::currentScreen;
+		// If statement that will check if the cButton is being pushed
+		if (Definitions::nunchuk->cButton) {
+			// First, delete pointer to the current screen
+			delete Definitions::currentScreen;
 
-		// If true, we will return to the previous screen (= homeScreen)
-		// Will close the current screen, and call the new screen
-		// selectedButton will also be set to 0
-		delete Definitions::currentScreen;
-		asm volatile ("  jmp 0");
+			// If true, we will return to the previous screen (= homeScreen)
+			// Will close the current screen, and call the new screen
+			// selectedButton will also be set to 0
+			delete Definitions::currentScreen;
+			asm volatile ("  jmp 0");
 
 
+		}
 	}
 }
 
