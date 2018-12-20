@@ -15,7 +15,7 @@
 
 // initialize the IR Communications class
 // If we are debugging, uncomment this. Then there will be Serial communication.
-#define DEBUG
+//#define DEBUG
 
 // The tft needs to be redefined here, for some reason.
 Adafruit_ILI9341 *Definitions::tft;
@@ -231,14 +231,14 @@ int main()
 	((HardwareSerial *) (Definitions::irComm))->begin(9600);
 
 #if PEEP == 1
-	char mystr[] = "1hello";
-	Definitions::irComm->print(mystr);
+//	char mystr[] = "1hello";
+//	Definitions::irComm->print(mystr);
 	//delay (1000);
 
 #else
-	char mystr[10];
-	Definitions::irComm->readBytes(mystr, 5);
-	Definitions::irComm->println(mystr);
+//	char mystr[10];
+//	Definitions::irComm->readBytes(mystr, 5);
+//	Definitions::irComm->println(mystr);
 	//delay(1000);
 #endif
 
