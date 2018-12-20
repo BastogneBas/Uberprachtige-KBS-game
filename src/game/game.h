@@ -15,6 +15,8 @@ class gameScreen:public screen
 	void refresh();
 	void writeEndScreen();
 	void drawLives();
+	void drawTimer();
+
   private:
 	void movePeep(int peep, uint16_t x, uint16_t y);
 	void placeBomb(int peep, uint16_t x, uint16_t y);
@@ -25,7 +27,8 @@ class gameScreen:public screen
 	uint8_t livesP2 = 3;
 	uint16_t scoreP1 = 12545;
 	uint16_t scoreP2 = 5426;
-
+	uint16_t timeCounter = 0;
+	uint16_t currentTime = 180;
 };
 
 #endif

@@ -79,7 +79,7 @@ void gameScreen::begin()
 		Definitions::tft->fillCircle(i, 30, 10, ILI9341_RED);
 		Definitions::tft->fillCircle(i, 75, 10, ILI9341_RED);
 	}
-
+	drawTimer();
 }
 
 
@@ -634,6 +634,13 @@ void gameScreen::refresh()
 		drawLives();
 		//gameScreen::drawLives();
 	}
+	timeCounter++;
+	if(timeCounter == 27)
+	{
+		currentTime--;
+		drawTimer();
+		timeCounter = 0;
+	}
 }
 
 void gameScreen::writeEndScreen()
@@ -742,3 +749,16 @@ void gameScreen::drawLives()
 	}
 }
 
+void gameScreen::drawTimer()
+{
+	Definitions::tft->setTextColor(ILI9341_WHITE, ILI9341_BLACK);	
+	Definitions::tft->setCursor(240, 100);
+	Definitions::tft->setTextSize(1);
+	
+	Definitions::tft->print("Tijd: ");
+	Definitions::tft->print(currentTime);
+	Definitions::tft->println(" ");
+
+	if(currentTime == 0)
+		end();
+}
