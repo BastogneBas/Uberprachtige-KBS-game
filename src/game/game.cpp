@@ -79,7 +79,10 @@ void gameScreen::begin()
 		Definitions::tft->fillCircle(i, 30, 10, ILI9341_RED);
 		Definitions::tft->fillCircle(i, 75, 10, ILI9341_RED);
 	}
+	
+	currentTime = 180;
 	drawTimer();
+	drawScore();
 }
 
 
@@ -279,6 +282,8 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 										 explY) & mapObject::peep1))
 						{
 							livesP1--;
+							scoreP2 += 1000;
+							drawScore();
 						}
 
 						// The same things happen for player 2
@@ -287,6 +292,8 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 										 explY) & mapObject::peep2))
 						{
 							livesP2--;
+							scoreP1 += 1000;
+							drawScore();
 						}
 
 						// the location is now an explosion horizontal and location is no barrel anymore
@@ -384,6 +391,8 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 										 explY + y) & mapObject::peep1))
 						{
 							livesP1--;
+							scoreP1 += 1000;
+							drawScore();
 						}
 
 						// The same things happen for player 2
@@ -392,6 +401,8 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 										 explY + y) & mapObject::peep2))
 						{
 							livesP2--;
+							scoreP1 += 1000;
+							drawScore();
 						}
 						// all the location are a explosion and no barrel anymore
 						level.markObjectAt(explX, explY + y,
@@ -414,12 +425,16 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 			if ((level.getObjectAt(explX, explY) & mapObject::peep1))
 			{
 				livesP1--;
+				scoreP2 += 1000;
+				drawScore();
 			}
 
 			// The same things happen for player 2
 			if ((level.getObjectAt(explX, explY) & mapObject::peep2))
 			{
 				livesP2--;
+				scoreP1 += 1000;
+				drawScore();
 			}
 
 			// if player is 1
@@ -485,6 +500,10 @@ void gameScreen::drawAir(uint16_t explX, uint16_t explY)
 
 void gameScreen::end()
 {
+	// Check who won the game
+	checkWinner();
+	// Add some extra's to the scores
+	calculateEndScores();
 	// Calling void to write the endScreen
 	gameScreen::writeEndScreen();
 
@@ -635,7 +654,8 @@ void gameScreen::refresh()
 		//gameScreen::drawLives();
 	}
 	timeCounter++;
-	if(timeCounter == 27)
+
+	if(timeCounter >= 27)
 	{
 		currentTime--;
 		drawTimer();
@@ -655,30 +675,33 @@ void gameScreen::writeEndScreen()
 	 * The winner gets congratulated
 	 */
 
-	// First we check if the currentPlayer did win the game
-	if ((scoreP1 > scoreP2 && Definitions::currentPlayer == 1) ||
-		(scoreP2 > scoreP1 && Definitions::currentPlayer == 2))
+	// If the match is tied
+	if(winner == 0)
+	{
+		// Making the background orange
+		Definitions::tft->fillScreen(ILI9341_ORANGE);
+		Definitions::tft->setCursor(10, 10);
+		Definitions::tft->println("Gelijkspel");
+		
+	}
+	// If the current player won
+	else if((winner == 1 && Definitions::currentPlayer == 1) ||
+			(winner == 2 && Definitions::currentPlayer == 2))
 	{
 		// Making the background green
 		Definitions::tft->fillScreen(ILI9341_GREEN);
 
 		// If so, it will be shown on the screen
 		Definitions::tft->println("Gewonnen :)");
+		
 	}
-	// Else, it means that the player did lose the game
-	else
+	// If the current player lost
+	else if((winner == 1 && Definitions::currentPlayer == 2) ||
+			(winner == 2 && Definitions::currentPlayer == 1))
 	{
 		Definitions::tft->fillScreen(ILI9341_RED);
 		Definitions::tft->println("Verloren :(");
-	}
-
-	// Setting title for when the scores are equal
-	if (scoreP1 == scoreP2)
-	{
-		// Making the background orange
-		Definitions::tft->fillScreen(ILI9341_ORANGE);
-		Definitions::tft->setCursor(10, 10);
-		Definitions::tft->println("Gelijkspel");
+		
 	}
 
 	// Showing the scores
@@ -707,6 +730,13 @@ void gameScreen::writeEndScreen()
 		Definitions::tft->setCursor(150, 70);
 		Definitions::tft->print(scoreP1);
 	}
+	
+	// Print end time
+	Definitions::tft->setCursor(10, 90);
+	Definitions::tft->println("Eindtijd:");
+	
+	Definitions::tft->setCursor(180, 90);
+	Definitions::tft->print(currentTime);
 }
 
 // Function to show the lives realtime
@@ -743,8 +773,14 @@ void gameScreen::drawLives()
 
 	// If statement that checks if one of the players has no lives left
 	// If so, the endScreen will be called and the game is over :)
-	if (livesP1 == 0 || livesP2 == 0)
+	if (livesP1 == 0)
 	{
+		deadPlayer = 1;
+		end();
+	}
+	else if (livesP2 == 0)
+	{
+		deadPlayer = 2;
 		end();
 	}
 }
@@ -760,5 +796,75 @@ void gameScreen::drawTimer()
 	Definitions::tft->println(" ");
 
 	if(currentTime == 0)
+	{
+		winner = 0;
 		end();
+	}
+}
+
+void gameScreen::drawScore()
+{
+	Definitions::tft->setTextColor(ILI9341_WHITE, ILI9341_BLACK);	
+	Definitions::tft->setCursor(240, 110);
+	Definitions::tft->setTextSize(1);
+	Definitions::tft->print("Scores:");
+	
+	Definitions::tft->setCursor(240, 120);	
+	Definitions::tft->print("P1: ");
+	Definitions::tft->print(scoreP1);
+	Definitions::tft->println(" ");
+	
+	Definitions::tft->setCursor(240, 130);
+	Definitions::tft->print("P2: ");
+	Definitions::tft->print(scoreP2);
+	Definitions::tft->println(" ");
+}
+
+// Adds or removes a bonus to the players' score based on if they won or lost
+void gameScreen::calculateEndScores()
+{
+	// If the game is tied, give both players a bonus
+	if(winner == 0)
+	{
+		scoreP1 += ((currentTime * 10) + (livesP1 * 100));
+		scoreP2 += ((currentTime * 10) + (livesP2 * 100));
+	}
+	// If player 1 won, give them a bonus
+	else if(winner == 1)
+	{
+		scoreP1 += ((currentTime * 10) + (livesP1 * 100));
+		scoreP2 -= ((currentTime * 10) - (livesP2 * 100));
+	}
+	// If player 2 won, give them a bonus
+	else if(winner == 2)
+	{
+		scoreP1 -= ((currentTime * 10) - (livesP1 * 100));
+		scoreP2 += ((currentTime * 10) + (livesP2 * 100));
+	}
+}
+
+// Check who won the game
+void gameScreen::checkWinner()
+{
+	// If the game is over and the timer hasn't reached zero yet...
+	// ...a player has died, so the player who's dead has lost the game
+	if(!currentTime == 0)
+	{
+		if(deadPlayer == 1)
+			winner = 2;
+		else if(deadPlayer == 2)
+			winner = 1;
+		else
+			winner = 0;
+	}
+	// If the timer has reached 0 though, the winner will be based on score
+	else
+	{
+		if(scoreP1 > scoreP2)
+			winner = 1;
+		else if(scoreP1 < scoreP2)
+			winner = 2;
+		else if(scoreP1 == scoreP2)
+			winner = 0;
+	}
 }

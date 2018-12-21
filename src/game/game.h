@@ -16,6 +16,9 @@ class gameScreen:public screen
 	void writeEndScreen();
 	void drawLives();
 	void drawTimer();
+	void drawScore();
+	void checkWinner();
+	void calculateEndScores();
 
   private:
 	void movePeep(int peep, uint16_t x, uint16_t y);
@@ -25,10 +28,12 @@ class gameScreen:public screen
 	Level level;
 	uint8_t livesP1 = 3;
 	uint8_t livesP2 = 3;
-	uint16_t scoreP1 = 12545;
-	uint16_t scoreP2 = 5426;
+	uint16_t scoreP1 = 4000;
+	uint16_t scoreP2 = 4000;
 	uint16_t timeCounter = 0;
 	uint16_t currentTime = 180;
+	uint8_t deadPlayer = 0;
+	uint8_t winner = 0;
 };
 
 #endif
