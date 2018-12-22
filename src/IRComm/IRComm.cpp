@@ -3,6 +3,18 @@
 #include <Wire.h>
 #include "../../staticDefinitions.cpp"
 
+#if PWMFREQ == 38
+uint8_t IRComm::SENDTOP = 209;
+uint8_t IRComm::RECTOP = 142;
+uint8_t IRComm::recTimerOverflow = 0;
+#elif PWMFREQ == 56
+uint8_t SENDTOP = 142;
+uint8_t RECTOP = 209;
+uint8_t recTimerOverflow = 0;
+#else
+#error Invalid PWM frequency
+#endif
+
 IRComm::IRComm()
 {
 /* --Initialize the send timer--

@@ -4,11 +4,12 @@
 #include "Sprites.h"
 #include "src/ArduinoNunchuk/ArduinoNunchuk.h"
 #include "screen.h"
+#include "src/IRComm/IRComm.h"
 
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-//#define IR 1
+#define IR 1
 
 //#define RECEIVER 1
 //#define SENDER 1
@@ -46,7 +47,11 @@ class Definitions
 	static ArduinoNunchuk *nunchuk;
 	static screen *currentScreen;
 
+#ifdef IR
+	static IRComm *irComm;
+#else
 	static Stream *irComm;
+#endif
 
 
 

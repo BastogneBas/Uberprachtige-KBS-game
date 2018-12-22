@@ -1,7 +1,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stddef.h>
-#include "../../staticDefinitions.cpp"
+#include <Stream.h>
+//#include "../../staticDefinitions.cpp"
 
 #ifndef IRCOMM_H
 #define IRCOMM_H
@@ -19,25 +20,22 @@
 #define STOP_TYPE		3
 
 // Indicates that debugging on a single Arduino is enabled
-#define SOLODEBUG
+//#define SOLODEBUG
 
 // PWMFREQ is defined in Static Definations, based on which player is playing
 
-class IRComm
+class IRComm: public Stream
 {
   public:
 	IRComm();
 
 	// Variables defined based on what frequencies we are using
-#if PWMFREQ == 38
+	uint8_t SENDTOP;
+	uint8_t RECTOP;
+	extern uint8_t recTimerOverflow;
+/*#if PWMFREQ == 38
 	uint8_t SENDTOP = 209;
-
-#ifdef SOLODEBUG
-	uint8_t RECTOP = 209;
-#else
 	uint8_t RECTOP = 142;
-#endif
-
 	uint8_t recTimerOverflow = 0;
 
 #elif PWMFREQ == 56
@@ -47,7 +45,7 @@ class IRComm
 
 #else
 #error Invalid PWM Frequency
-#endif
+#endif*/
 
 	// Variable definitions
 	uint8_t bitSendEnabled = 0;
@@ -65,6 +63,11 @@ class IRComm
 	void sendBit(uint8_t sendType);
 	void startReceive();
 	void handleReceive();
+
+	size_t write(uint8_t);
+	int available();
+	int read();
+	int peek();
 
   protected:
 

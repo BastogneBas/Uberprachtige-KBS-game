@@ -27,7 +27,11 @@ ArduinoNunchuk *Definitions::nunchuk;
 screen *Definitions::currentScreen;
 
 // IRcomm needs to be redefined here
+#ifdef IR
+IRComm *Definitions::irComm;
+#else
 Stream *Definitions::irComm;
+#endif
 
 
 static int startRefresh = 0, refreshDone = 1;
@@ -50,29 +54,29 @@ ISR(TIMER0_COMPA_vect)
 {
 #ifdef IR
 	// If a bit wants to be sent...
-	if (irComm->bitSendEnabled)
+	if (Definitions::irComm->bitSendEnabled)
 	{
 		// If the counter has reached the amount of pulses...
 		// ...for the specified bit to be sent...
-		if (irComm->bitSendCounter >= irComm->bitSendType)
+		if (Definitions::irComm->bitSendCounter >= Definitions::irComm->bitSendType)
 		{
 			// Disable the 'let-through' pin for the IR LED, blocking the PWM signal
 			PORTD |= (1 << PORTD4);
 		}
 
 		// Add one to pulsecounter
-		irComm->bitSendCounter++;
+		Definitions::irComm->bitSendCounter++;
 
 		// If the bit is completely sent...
 		// (a bit is sent over 100 pulses)
-		if (irComm->bitSendCounter == 100)
+		if (Definitions::irComm->bitSendCounter == 100)
 		{
 			// Signal that the bit is completely sent
-			irComm->bitSendComplete = 1;
+			Definitions::irComm->bitSendComplete = 1;
 			// Reset the counter
-			irComm->bitSendCounter = 0;
+			Definitions::irComm->bitSendCounter = 0;
 			// Disable the sending of a bit
-			irComm->bitSendEnabled = 0;
+			Definitions::irComm->bitSendEnabled = 0;
 		}
 	}
 #endif
@@ -100,9 +104,9 @@ ISR(TIMER1_COMPA_vect)
 ISR(TIMER2_COMPA_vect)
 {
 #ifdef IR
-	if (irComm->bitReceiveEnabled)
+	if (Definitions::irComm->bitReceiveEnabled)
 	{
-		irComm->bitReceiveCounter++;
+		Definitions::irComm->bitReceiveCounter++;
 	}
 #endif
 }
@@ -115,39 +119,29 @@ ISR(TIMER2_COMPA_vect)
 // Receival Pin Change Interrupt
 ISR(PCINT1_vect)
 {
-#ifdef IRDEBUG
-	PORTD ^= (1 << PORTD2);
-#endif
 #ifdef IR
 	// If the receiving has been enabled
-	if (irComm->bitReceiveEnabled)
+	if (Definitions::irComm->bitReceiveEnabled)
 	{
 		// If the receive hasn't started yet
-		if (!irComm->bitReceiveStarted)
+		if (!Definitions::irComm->bitReceiveStarted)
 		{
-#ifdef IRDEBUG
-			PORTD |= (1 << PORTD3);
-#endif
 			// Indicate that the receive has started
-			irComm->startReceive();
+			Definitions::irComm->startReceive();
 		}
 		else
 		{
-#ifdef IRDEBUG
-			PORTD ^= (1 << PORTD5);
-#endif
 			// The message has ended...
 			// Save at which count the receive has stopped
-			irComm->bitReceiveChanged = irComm->bitReceiveCounter;
+			Definitions::irComm->bitReceiveChanged = Definitions::irComm->bitReceiveCounter;
 			// Process the data
-			irComm->handleReceive();
+			Definitions::irComm->handleReceive();
 		}
 	}
 #endif
 }
 
-int main()
-{
+void own_init(){
 	DDRB |=
 		(1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4)
 		| (1 << DDB5);
@@ -157,20 +151,7 @@ int main()
 	DDRC |= (1 << DDC1);
 
 	PORTC |= (1 << PORTC3);
-	//PORTD = 0xFF;
-	//_delay_ms(10);
-	//PORTD = 0x00;
-
-	PORTB = 0;
-	//PORTD |= (1 << PORTD4);
-
-	// TODO: replace with own initialisation.
-	// SEE: https://github.com/arduino/ArduinoCore-avr/blob/b084848f2eaf9ccb3ac9a64ac5492d91df4706bf/cores/arduino/wiring.c#L241
-	// Default Arduino initialisation.
-#warning Needs to be replaced
-	//init();
-
-	//cli();
+	
 	TCCR0A =
 		(0 << COM0A1) | (0 << COM0A0) | (0 << COM0B1) | (0 << COM0B0) | (1
 																		 <<
@@ -192,8 +173,20 @@ int main()
 	TIMSK1 = (1 << OCF1A);
 
 	sei();
+	
+}
+
+int main()
+{
+	PORTB = 0;
+
+	// TODO: replace with own initialisation.
+	// SEE: https://github.com/arduino/ArduinoCore-avr/blob/b084848f2eaf9ccb3ac9a64ac5492d91df4706bf/cores/arduino/wiring.c#L241
+	// Default Arduino initialisation.
+#warning Needs to be replaced
+	own_init();
+
 	// Initialize the tft
-#ifndef IRDEBUG
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
 	Definitions::tft->begin();
@@ -213,15 +206,12 @@ int main()
 	// Opening the homeScreen
 	Definitions::currentScreen = new homeScreen();
 	Definitions::currentScreen->begin();
-#endif
 #ifdef IR
 	// Construct the irComm class
-	irComm = new IRComm();
+	Definitions::irComm = new IRComm();
 
-#ifdef IRDEBUG
-	irComm->bitReceiveEnabled = 1;
-	irComm->sendBit(ONE_BIT);
-#endif
+	Definitions::irComm->bitReceiveEnabled = 1;
+	Definitions::irComm->sendBit(ONE_BIT);
 #else
 //	Definitions::irComm =
 //		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
@@ -245,7 +235,7 @@ int main()
 	for (;;)
 	{
 #ifdef IR
-		irComm->sendBit(ONE_BIT);
+		Definitions::irComm->sendBit(ONE_BIT);
 #endif
 		//irComm->sendBit(ONE_BIT);
 		// Refresh screen
@@ -253,12 +243,7 @@ int main()
 		{
 			refreshDone = 0;
 			//PORTD |= (1 << PORTD6);
-#ifdef DEBUG
-			//Serial.println("refresh");
-#endif
-#ifndef IRDEBUG
 			Definitions::currentScreen->refresh();
-#endif
 			startRefresh = 0;
 			refreshDone = 1;
 		}
