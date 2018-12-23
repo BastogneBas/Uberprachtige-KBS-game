@@ -32,7 +32,7 @@ class IRComm: public Stream
 	// Variables defined based on what frequencies we are using
 	uint8_t SENDTOP;
 	uint8_t RECTOP;
-	extern uint8_t recTimerOverflow;
+	uint8_t recTimerOverflow;
 /*#if PWMFREQ == 38
 	uint8_t SENDTOP = 209;
 	uint8_t RECTOP = 142;

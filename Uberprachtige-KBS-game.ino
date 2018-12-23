@@ -138,6 +138,12 @@ ISR(PCINT1_vect)
 			Definitions::irComm->handleReceive();
 		}
 	}
+	if(PORTC & (1 << PORTC3))
+		PORTB |= (1 << PORTB4);
+	else
+		PORTB &= ~(1 << PORTB4);
+	Serial.println("PCINT!");
+#warning IR
 #endif
 }
 
@@ -150,7 +156,7 @@ void own_init(){
 		| (1 << DDD6) | (1 << DDD7);
 	DDRC |= (1 << DDC1);
 
-	PORTC |= (1 << PORTC3);
+	PORTC |= (1 << PORTC3) | (1 << PORTC2);
 	
 	TCCR0A =
 		(0 << COM0A1) | (0 << COM0A0) | (0 << COM0B1) | (0 << COM0B0) | (1
@@ -186,6 +192,7 @@ int main()
 #warning Needs to be replaced
 	own_init();
 
+#ifndef IR
 	// Initialize the tft
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
@@ -199,6 +206,7 @@ int main()
 	Definitions::println("Welkom!");
 #endif
 
+#warning not IR
 	// Initialize the Nunchuk for player 1
 	Definitions::nunchuk = new ArduinoNunchuk();
 	Definitions::nunchuk->init();
@@ -206,7 +214,10 @@ int main()
 	// Opening the homeScreen
 	Definitions::currentScreen = new homeScreen();
 	Definitions::currentScreen->begin();
+#endif
+
 #ifdef IR
+	Serial.begin(500000);
 	// Construct the irComm class
 	Definitions::irComm = new IRComm();
 
@@ -235,8 +246,11 @@ int main()
 	for (;;)
 	{
 #ifdef IR
-		Definitions::irComm->sendBit(ONE_BIT);
+		if(!(PINC & (1 << PINC2))){
+			Definitions::irComm->sendBit(ONE_BIT);
+		}
 #endif
+#ifndef IR
 		//irComm->sendBit(ONE_BIT);
 		// Refresh screen
 		if (startRefresh)
@@ -262,6 +276,7 @@ int main()
 		   PORTD &= ~(1 << PORTD6);
 		   } */
 		//delay(100);
+#endif
 	}
 	PORTB = 0xFF;
 	PORTD = 0xFF;

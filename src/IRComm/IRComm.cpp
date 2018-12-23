@@ -3,18 +3,6 @@
 #include <Wire.h>
 #include "../../staticDefinitions.cpp"
 
-#if PWMFREQ == 38
-uint8_t IRComm::SENDTOP = 209;
-uint8_t IRComm::RECTOP = 142;
-uint8_t IRComm::recTimerOverflow = 0;
-#elif PWMFREQ == 56
-uint8_t SENDTOP = 142;
-uint8_t RECTOP = 209;
-uint8_t recTimerOverflow = 0;
-#else
-#error Invalid PWM frequency
-#endif
-
 IRComm::IRComm()
 {
 /* --Initialize the send timer--
@@ -50,7 +38,21 @@ IRComm::IRComm()
 	PCICR = (1 << PCIE1);
 	// Enable pin change interrupts on Analog PIN 3
 	PCMSK1 = (1 << PCINT11);
+	sei();
+
+	#if PWMFREQ == 38
+	IRComm::SENDTOP = 209;
+	IRComm::RECTOP = 142;
+	IRComm::recTimerOverflow = 0;
+	#elif PWMFREQ == 56
+	SENDTOP = 142;
+	RECTOP = 209;
+	recTimerOverflow = 0;
+	#else
+	#error Invalid PWM frequency
+	#endif
 }
+
 
 void IRComm::sendBit(uint8_t sendType)
 {
@@ -118,4 +120,20 @@ void IRComm::handleReceive()
 	PORTB = bitReceiveChanged;
 	PORTD &= ~(1 << PORTD3);
 #endif
+}
+
+size_t IRComm::write(uint8_t byte){
+	return 0;
+}
+
+int IRComm::available(){
+	return 0;
+}
+
+int IRComm::read(){
+	return 0;
+}
+
+int IRComm::peek(){
+	return 0;
 }
