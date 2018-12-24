@@ -123,8 +123,10 @@ void IRComm::receiveBit()
 		}
 		else
 		{
-			//asm volatile ("nop");
-			Serial.print("");
+			/* We need to do something in our loop for some reason, so we set
+			 * the Power Reduction Register to the value of itself... */
+			PRR = PRR;
+			continue;
 		}
 	}
 }
@@ -136,6 +138,8 @@ uint8_t IRComm::handleReceive()
 	bitReceiveEnabled = 0;
 	bitReceiveComplete = 1;
 	uint8_t diff = bitReceiveChanged-bitReceiveStarted;
+	Serial.print(diff);
+	Serial.print("\t");
 	if((diff >= 20) && (diff <= 30))
 	{
 		return 0;
@@ -152,6 +156,17 @@ uint8_t IRComm::handleReceive()
 }
 
 size_t IRComm::write(uint8_t byte){
+	Serial.println(byte, BIN);
+	sendBit(START_BIT);
+	sendBit((byte>>7) ? ONE_BIT : ZERO_BIT);
+	sendBit((byte>>6) ? ONE_BIT : ZERO_BIT);
+	sendBit((byte>>5) ? ONE_BIT : ZERO_BIT);
+	sendBit((byte>>4) ? ONE_BIT : ZERO_BIT);
+	sendBit((byte>>3) ? ONE_BIT : ZERO_BIT);
+	sendBit((byte>>2) ? ONE_BIT : ZERO_BIT);
+	sendBit((byte>>1) ? ONE_BIT : ZERO_BIT);
+	sendBit((byte>>0) ? ONE_BIT : ZERO_BIT);
+	sendBit(STOP_BIT);
 	return 0;
 }
 

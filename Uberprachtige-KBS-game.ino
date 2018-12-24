@@ -162,19 +162,6 @@ void own_init(){
 
 	PORTC |= (1 << PORTC3) | (1 << PORTC2);
 	
-	TCCR0A =
-		(0 << COM0A1) |
-		(0 << COM0A0) |
-		(0 << COM0B1) |
-		(0 << COM0B0) |
-		(1 << WGM01)  |
-		(1 << WGM00)  ;
-	TCCR0B = 
-		(0 << WGM02) |
-		(0 << CS02)  | 
-		(1 << CS01)  |
-		(0 << CS00)  ;
-
 
 	TCCR1A =
 		(0 << COM1A1) |
@@ -242,9 +229,9 @@ int main()
 	Serial.println("Hallo");
 	//Serial.println(OCR0A);
 	//Definitions::irComm->bitReceiveEnabled = 1;
-#if PEEP == 1
+#if PEEP == 2
 	Definitions::irComm->sendBit(ONE_BIT);
-#elif PEEP == 2
+#elif PEEP == 1
 	//Definitions::irComm->startReceive();
 	Definitions::irComm->receiveBit();
 #endif
@@ -271,15 +258,20 @@ int main()
 	for (;;)
 	{
 #ifdef IR
-#if PEEP == 1
-		if(!(PINC & (1 << PINC2))){
+#if PEEP == 2
+		if(Serial.available()){
+			Definitions::irComm->write(Serial.read());
+		}
+		/*if(!(PINC & (1 << PINC2))){
 		if(!(PINC & (1 << PINC0))){
-			Definitions::irComm->sendBit(ONE_BIT);
+			//Definitions::irComm->sendBit(ONE_BIT);
+			Definitions::irComm->write(0xff);
 		} else {
-			Definitions::irComm->sendBit(ZERO_BIT);
+			//Definitions::irComm->sendBit(ZERO_BIT);
+			Definitions::irComm->write(0x00);
 		}
-		}
-#elif PEEP == 2
+		}*/
+#elif PEEP == 1
 		if(Definitions::irComm->bitReceiveComplete){
 			//Serial.println("Complete");
 			//Definitions::irComm->startReceive();
