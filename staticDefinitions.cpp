@@ -14,7 +14,7 @@
 //#define RECEIVER 1
 //#define SENDER 1
 
-#define PEEP 2
+#define PEEP 1
 //#define PEEP = 2
 #if PEEP == 1
 #define PWMFREQ 38

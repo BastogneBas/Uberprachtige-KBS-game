@@ -87,11 +87,6 @@ void IRComm::sendBit(uint8_t sendType)
 	// Wait for the bit to be completely sent
 	while (!bitSendComplete)
 	{
-#ifdef DEBUG
-		// Enable digital PIN 1 to indicate that the bit is still sending
-		PORTC |= (1 << PORTC1);
-#endif
-
 		// Do something useless, because the arduino can't handle empty whiles for some reason
 		PORTB = PORTB;
 	}
@@ -111,14 +106,16 @@ void IRComm::startReceive()
 	bitReceiveEnabled = 1;
 }
 
-void IRComm::receiveBit()
+uint8_t IRComm::receiveBit()
 {
 	startReceive();
 	while(true)
 	{
 		if(bitReceiveStarted && bitReceiveChanged)
 		{
-			Serial.println(handleReceive());
+			uint8_t ret = handleReceive();
+			Serial.println(ret);
+			return ret;
 			break;
 		}
 		else
@@ -138,15 +135,27 @@ uint8_t IRComm::handleReceive()
 	bitReceiveEnabled = 0;
 	bitReceiveComplete = 1;
 	uint8_t diff = bitReceiveChanged-bitReceiveStarted;
-	Serial.print(diff);
-	Serial.print("\t");
+	//Serial.print(bitReceiveStarted);
+	//Serial.print("\t");
+	//Serial.print(bitReceiveChanged);
+	//Serial.print("\t");
+	//Serial.print(diff);
+	//Serial.print("\t");
 	if((diff >= 20) && (diff <= 30))
 	{
-		return 0;
+		return ZERO_BIT;
 	}
 	else if ((diff >= 40) && (diff <= 50))
 	{
-		return 1;
+		return ONE_BIT;
+	}
+	else if ((diff >= 60) && (diff <= 70))
+	{
+		return STOP_BIT;
+	}
+	else if ((diff >= 80) && (diff <= 90))
+	{
+		return START_BIT;
 	}
 	else
 	{
@@ -157,15 +166,19 @@ uint8_t IRComm::handleReceive()
 
 size_t IRComm::write(uint8_t byte){
 	Serial.println(byte, BIN);
+	Serial.println((uint8_t)((byte>>7)<<0), BIN);
+	Serial.println((uint8_t)((byte>>6)<<1), BIN);
+	Serial.println((uint8_t)((byte>>1)<<6), BIN);
+	Serial.println((uint8_t)((byte>>0)<<7), BIN);
 	sendBit(START_BIT);
-	sendBit((byte>>7) ? ONE_BIT : ZERO_BIT);
-	sendBit((byte>>6) ? ONE_BIT : ZERO_BIT);
-	sendBit((byte>>5) ? ONE_BIT : ZERO_BIT);
-	sendBit((byte>>4) ? ONE_BIT : ZERO_BIT);
-	sendBit((byte>>3) ? ONE_BIT : ZERO_BIT);
-	sendBit((byte>>2) ? ONE_BIT : ZERO_BIT);
-	sendBit((byte>>1) ? ONE_BIT : ZERO_BIT);
-	sendBit((byte>>0) ? ONE_BIT : ZERO_BIT);
+	sendBit((uint8_t)((byte>>0)<<7) ? ZERO_BIT : ONE_BIT);
+	sendBit((uint8_t)((byte>>1)<<6) ? ZERO_BIT : ONE_BIT);
+	sendBit((uint8_t)((byte>>2)<<5) ? ZERO_BIT : ONE_BIT);
+	sendBit((uint8_t)((byte>>3)<<4) ? ZERO_BIT : ONE_BIT);
+	sendBit((uint8_t)((byte>>4)<<3) ? ZERO_BIT : ONE_BIT);
+	sendBit((uint8_t)((byte>>5)<<2) ? ZERO_BIT : ONE_BIT);
+	sendBit((uint8_t)((byte>>6)<<1) ? ZERO_BIT : ONE_BIT);
+	sendBit((uint8_t)((byte>>7)<<0) ? ZERO_BIT : ONE_BIT);
 	sendBit(STOP_BIT);
 	return 0;
 }
@@ -175,7 +188,48 @@ int IRComm::available(){
 }
 
 int IRComm::read(){
-	return 0;
+	uint8_t index = 0;
+	uint8_t character = 0;
+	uint8_t byteHasStarted = false;
+	for(;;)
+	{
+		uint8_t bit = receiveBit();
+		if (bit == 80 && index == 0 && byteHasStarted == false)
+		{
+			byteHasStarted = true;
+		}
+		else if (bit == 80 && index != 0 && byteHasStarted == false)
+		{
+			Serial.print("Randomly received START_BIT at ");
+			Serial.println(index);
+		}
+		else if (bit != 80 && index == 0 && byteHasStarted == false)
+		{
+			Serial.println("Wait, this isn't a START_BIT");
+		}
+		else if (bit == 40)
+		{
+			character |= (1 << (6-index));
+			index++;
+		}
+		else if (bit == 20)
+		{
+			character |= 0; // Basically does nothing
+			index++;
+		}
+		else if (bit == 60 && index == 7)
+		{
+			break;
+		}
+		else if (bit == 60 && index != 7)
+		{
+			Serial.print("Hmmm, the byte is sent, but we only have ");
+			Serial.print(index);
+			Serial.println("bits");
+		}
+	}
+	Serial.println(character, BIN);
+	return character;
 }
 
 int IRComm::peek(){

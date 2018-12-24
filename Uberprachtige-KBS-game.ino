@@ -107,6 +107,12 @@ ISR(TIMER2_COMPA_vect)
 	if (Definitions::irComm->bitReceiveEnabled)
 	{
 		Definitions::irComm->bitReceiveCounter++;
+		if(Definitions::irComm->bitReceiveStarted && 
+			(Definitions::irComm->bitReceiveCounter - Definitions::irComm->bitReceiveStarted) > 95)
+		{
+			// Timed out...
+			Definitions::irComm->bitReceiveStarted = 0;
+		}
 	}
 	//Serial.println(PINC & (1 << PINC3));
 	//Serial.println(Definitions::irComm->bitReceiveCounter);
@@ -139,11 +145,11 @@ ISR(PCINT1_vect)
 			// Process the data
 			//Definitions::irComm->handleReceive();
 		}
-	}
 	if(PINC & (1 << PINC3))
 		PORTB &= ~(1 << PORTB4);
 	else
 		PORTB |= (1 << PORTB4);
+	}
 	//Serial.println(Definitions::irComm->bitReceiveStarted);
 	//Serial.println(Definitions::irComm->bitReceiveChanged);
 	//Serial.println();
@@ -275,7 +281,8 @@ int main()
 		if(Definitions::irComm->bitReceiveComplete){
 			//Serial.println("Complete");
 			//Definitions::irComm->startReceive();
-			Definitions::irComm->receiveBit();
+			//Definitions::irComm->receiveBit();
+			Definitions::irComm->read();
 		}
 #endif
 		//_delay_ms(10);

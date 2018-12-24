@@ -57,20 +57,15 @@ class IRComm: public Stream
 	uint32_t bitReceiveStarted = 0;
 	uint32_t bitReceiveChanged = 0;
 	uint32_t bitReceiveComplete = 0;
-	/* The mode of functioning of timer 1:
-	 * 0 = nothing
-	 * 1 = we are receiving
-	 * 2 = we are sending
-	 */
-	//uint8_t timerMode = 0;
 	uint8_t typeReceived;
 
 	// Function definitions
 	void sendBit(uint8_t sendType);
 	void startReceive();
 	uint8_t handleReceive();
-	void receiveBit();
+	uint8_t receiveBit();
 
+	// Inherited from Stream
 	size_t write(uint8_t);
 	int available();
 	int read();
