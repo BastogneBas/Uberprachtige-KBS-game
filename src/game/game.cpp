@@ -8,7 +8,7 @@
 #include "../ArduinoNunchuk/ArduinoNunchuk.h"
 #include "bomb.h"
 
-#define DEBUG 1
+//#define DEBUG 1
 
 gameScreen::gameScreen()
 {
@@ -229,57 +229,32 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 		{
 
 			// if place before explosion is no block
-			if (((x < 0)
-				 && !(level.
-					  getObjectAt(explX + x + 1,
-								  explY) & mapObject::block)) || ((x > 0)
-																  &&
-																  !(level.
-																	getObjectAt
-																	(explX
-																	 + x -
-																	 1,
-																	 explY)
-																	&
-																	mapObject::
-																	block)))
+			if (	((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block))
+					|| ((x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)))
 			{
 				// and place before is no barrel
-				if (((x < 0)
-					 && !((level.getObjectAt(explX + x + 1, explY)) &
-						  mapObject::barrel)) || ((x > 0)
-												  &&
-												  !((level.
-													 getObjectAt(explX +
-																 x - 1,
-																 explY)) &
-													mapObject::barrel)))
+				if (((x < 0) && !((level.getObjectAt(explX + x + 1, explY)) & mapObject::barrel))
+					|| ((x > 0) && !((level.getObjectAt(explX + x - 1, explY)) & mapObject::barrel)))
 				{
 					// and the exact place is no block
-					if (!
-						(level.
-						 getObjectAt(explX + x, explY) & mapObject::block))
+					if (!(level.getObjectAt(explX + x, explY) & mapObject::block))
 					{
 						// if player is 1
 						if (peep == 1)
 						{
 							// it is an explosion of peep1 bomb
-							level.markObjectAt(explX + x, explY,
-											   mapObject::bombPeep1);
+							level.markObjectAt(explX + x, explY, mapObject::bombPeep1);
 						}
 
 						// if player is 2
 						if (peep == 2)
 						{
 							// it is an explosion of peep2 bomb
-							level.markObjectAt(explX + x, explY,
-											   mapObject::bombPeep2);
+							level.markObjectAt(explX + x, explY, mapObject::bombPeep2);
 						}
 
 						// Check if player 1 is in a blast radius on the xAxis.
-						if ((level.
-							 getObjectAt(explX + x,
-										 explY) & mapObject::peep1))
+						if ((level.getObjectAt(explX + x, explY) & mapObject::peep1))
 						{
 							livesP1--;
 							scoreP2 += 1000;
@@ -287,9 +262,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 						}
 
 						// The same things happen for player 2
-						if ((level.
-							 getObjectAt(explX + x,
-										 explY) & mapObject::peep2))
+						if ((level.getObjectAt(explX + x, explY) & mapObject::peep2))
 						{
 							livesP2--;
 							scoreP1 += 1000;
@@ -297,14 +270,10 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 						}
 
 						// the location is now an explosion horizontal and location is no barrel anymore
-						level.markObjectAt(explX + x, explY,
-										   mapObject::explosion);
-						level.markObjectAt(explX + x, explY,
-										   mapObject::explosionH);
-						level.markObjectAt(explX + x, explY,
-										   mapObject::needsRedraw);
-						level.unmarkObjectAt(explX + x, explY,
-											 mapObject::barrel);
+						level.markObjectAt(explX + x, explY, mapObject::explosion);
+						level.markObjectAt(explX + x, explY, mapObject::explosionH);
+						level.markObjectAt(explX + x, explY, mapObject::needsRedraw);
+						level.unmarkObjectAt(explX + x, explY, mapObject::barrel);
 					}
 				}
 			}
@@ -339,56 +308,30 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 		if (y != 0)
 		{
 			// check if place before is no block
-			if (((y < 0)
-				 && !((level.getObjectAt(explX, explY + y + 1)) &
-					  mapObject::block)) || ((y > 0)
-											 &&
-											 !((level.
-												getObjectAt(explX,
-															explY + y -
-															1)) &
-											   mapObject::block)))
+			if (((y < 0) && !((level.getObjectAt(explX, explY + y + 1)) & mapObject::block))
+				|| ((y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::block)))
 			{
-
 				// check if place before is no barrel
-				if (((y < 0)
-					 && !((level.getObjectAt(explX, explY + y + 1)) &
-						  mapObject::barrel)) || ((y > 0)
-												  &&
-												  !((level.
-													 getObjectAt(explX,
-																 explY +
-																 y -
-																 1)) &
-													mapObject::barrel)))
+				if (((y < 0) && !((level.getObjectAt(explX, explY + y + 1)) & mapObject::barrel))
+					|| ((y > 0) && !((level.getObjectAt(explX, explY + y - 1)) & mapObject::barrel)))
 				{
-
 					// check if the exact location is no block
-					if (!
-						(level.
-						 getObjectAt(explX, explY + y) & mapObject::block))
+					if (!(level.getObjectAt(explX, explY + y) & mapObject::block))
 					{
-
 						// if player is 1
 						if (peep == 1)
 						{
 							// explosion is of player 1 bomb
-							level.markObjectAt(explX, explY + y,
-											   mapObject::bombPeep1);
+							level.markObjectAt(explX, explY + y, mapObject::bombPeep1);
 						}
-
 						// if player is 2
 						if (peep == 2)
 						{
 							// explosion is of bomb peep 2
-							level.markObjectAt(explX, explY + y,
-											   mapObject::bombPeep2);
+							level.markObjectAt(explX, explY + y, mapObject::bombPeep2);
 						}
-
 						// Check if player 1 is in a blast radius on the xAxis.
-						if ((level.
-							 getObjectAt(explX,
-										 explY + y) & mapObject::peep1))
+						if ((level.getObjectAt(explX, explY + y) & mapObject::peep1))
 						{
 							livesP1--;
 							scoreP1 += 1000;
@@ -396,23 +339,17 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 						}
 
 						// The same things happen for player 2
-						if ((level.
-							 getObjectAt(explX,
-										 explY + y) & mapObject::peep2))
+						if ((level.getObjectAt(explX, explY + y) & mapObject::peep2))
 						{
 							livesP2--;
 							scoreP1 += 1000;
 							drawScore();
 						}
 						// all the location are a explosion and no barrel anymore
-						level.markObjectAt(explX, explY + y,
-										   mapObject::explosion);
-						level.markObjectAt(explX, explY + y,
-										   mapObject::explosionV);
-						level.markObjectAt(explX, explY + y,
-										   mapObject::needsRedraw);
-						level.unmarkObjectAt(explX, explY + y,
-											 mapObject::barrel);
+						level.markObjectAt(explX, explY + y, mapObject::explosion);
+						level.markObjectAt(explX, explY + y, mapObject::explosionV);
+						level.markObjectAt(explX, explY + y, mapObject::needsRedraw);
+						level.unmarkObjectAt(explX, explY + y, mapObject::barrel);
 					}
 				}
 			}
@@ -420,7 +357,6 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
 		}
 		else
 		{
-
 			// Check if player 1 is in a blast radius on the xAxis.
 			if ((level.getObjectAt(explX, explY) & mapObject::peep1))
 			{
@@ -558,32 +494,22 @@ void gameScreen::refresh()
 
 		if (RefreshCnt >= level.getBombTime(0) + 48)
 		{
-			if (((level.
-				  getObjectAt(level.getBombX(0),
-							  level.getBombY(0)) & mapObject::bomb)
-				 && !(level.
-					  getObjectAt(level.getBombX(0),
-								  level.
-								  getBombY(0)) & mapObject::explosion))
-				||
-				((level.
-				  getObjectAt(level.getBombX(1),
-							  level.getBombY(1)) & mapObject::bomb)
-				 && !(level.
-					  getObjectAt(level.getBombX(1),
-								  level.
-								  getBombY(1)) & mapObject::explosion)))
+			if (((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
+				&& !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
+				||((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
+				&& !(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion)))
 			{
 				drawExplosion(1, level.getBombX(0), level.getBombY(0));
 				drawExplosion(2, level.getBombX(1), level.getBombY(1));
 
+#ifdef DEBUG
 				Definitions::print("BombTime: ");
 				Definitions::print(level.getBombTime(0) + 12);
 				Definitions::println("  ");
 				Definitions::print("ExplTime: ");
 				Definitions::print(level.getBombTime(0) + 24);
 				Definitions::println("      ");
-
+#endif
 			}
 		}
 
@@ -601,18 +527,10 @@ void gameScreen::refresh()
 
 		if (RefreshCnt >= level.getBombTime(0) + 92)
 		{
-			if ((level.
-				 getObjectAt(level.getBombX(0),
-							 level.getBombY(0)) & mapObject::bomb)
-				&& (level.
-					getObjectAt(level.getBombX(0),
-								level.getBombY(0)) & mapObject::explosion)
-				|| (level.
-					getObjectAt(level.getBombX(1),
-								level.getBombY(1)) & mapObject::bomb)
-				&& (level.
-					getObjectAt(level.getBombX(1),
-								level.getBombY(1)) & mapObject::explosion))
+			if ((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
+				&& (level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion)
+				|| (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
+				&& (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))
 			{
 				drawAir(level.getBombX(0), level.getBombY(0));
 				drawAir(level.getBombX(1), level.getBombY(1));
@@ -634,7 +552,6 @@ void gameScreen::refresh()
 #ifdef DEBUG
 		//level.printMap();
 		//Definitions::println();
-#endif
 		Definitions::setTextDebug();
 		Definitions::tft->setCursor(0, 210);
 		Definitions::tft->print("frame: ");
@@ -645,9 +562,9 @@ void gameScreen::refresh()
 		Definitions::tft->print("   ");
 		Definitions::tft->setCursor(240, 8);
 		Definitions::tft->print("y:  ");
-		Definitions::tft->print((unsigned int) Definitions::nunchuk->
-								analogY);
+		Definitions::tft->print((unsigned int) Definitions::nunchuk->analogY);
 		Definitions::print("  ");
+#endif
 		level.drawMap();
 
 		drawLives();

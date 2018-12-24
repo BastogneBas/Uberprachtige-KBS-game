@@ -1,6 +1,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+/// Defines the screen class
+
 class screen
 {
   public:
@@ -12,7 +14,7 @@ class screen
 	// Saves variables and clears the screen
 	virtual void end();
 	// Refreshes the current frame
-	// Will be run in te infinite while loop
+	// Will be run in the infinite while loop
 	virtual void refresh();
 };
 #endif

@@ -1,19 +1,20 @@
-#include "src/game/game.h"
-#include "screen.h"
-#include "staticDefinitions.cpp"
-#include "src/level/levelDefs.h"
 #include "src/homeScreen/homeScreen.h"
-#include <avr/io.h>
+#include "src/game/game.h"
+#include "src/level/levelDefs.h"
 #include "src/IRComm/IRComm.h"
+#include "staticDefinitions.cpp"
+#include "screen.h"
+#include <avr/io.h>
 #include <HardwareSerial.h>
 #include <Stream.h>
 #include <HardwareSerial_private.h>
 
-// Used for when debugging Infrared Comms
-// Used to not destroy work of others while working on IR :)
+/* Defines if debugging for IR is enabled
+ * Uncomment this to enable debugging
+ * WARNING: May break other screen drawing stuff
+ * Please, only enable when debugging and disable when pushing to git */
 //#define IRDEBUG
 
-// initialize the IR Communications class
 // If we are debugging, uncomment this. Then there will be Serial communication.
 //#define DEBUG
 
@@ -29,7 +30,7 @@ screen *Definitions::currentScreen;
 // IRcomm needs to be redefined here
 Stream *Definitions::irComm;
 
-
+// Reset refreshing
 static int startRefresh = 0, refreshDone = 1;
 
 
@@ -45,10 +46,11 @@ static int startRefresh = 0, refreshDone = 1;
  * The amount of pulses for every bit type is defined in IRComm.h
  * If the counter reached 100, the bit is done sending
  * This will end the sending of the bit
-*/
+ *
+ * (is only enabled when IR is enabled) */
+#ifdef IR
 ISR(TIMER0_COMPA_vect)
 {
-#ifdef IR
 	// If a bit wants to be sent...
 	if (irComm->bitSendEnabled)
 	{
@@ -75,8 +77,8 @@ ISR(TIMER0_COMPA_vect)
 			irComm->bitSendEnabled = 0;
 		}
 	}
-#endif
 }
+#endif
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -96,29 +98,39 @@ ISR(TIMER1_COMPA_vect)
  * This will enable the counter for this timer interrupt
  * This timer will count 'pulses' at the frequency of the sender
  * For more info, see the comment at the pin change interrupt
-*/
+ *
+ * (is only enabled when IR is enabled) */
+#ifdef IR
 ISR(TIMER2_COMPA_vect)
 {
-#ifdef IR
 	if (irComm->bitReceiveEnabled)
 	{
 		irComm->bitReceiveCounter++;
 	}
-#endif
 }
+#endif
 
-//ISR(_VECTOR(0)){
-//  DDRD |= (1 << DDD4);
-//  PORTD |= (1 << PORTD4);
-//}
-
-// Receival Pin Change Interrupt
+/* --Pin Change Interrupt for receive timer--
+ * If a PIN Change Interrupt is found on Analog PIN A3...
+ * ...the receiving of a bit has begun
+ * This is because the receiver will change from a high to a low signal...
+ * ...when it receives something.
+ * 
+ * First, we will check if receiving has been enabled
+ * Then, we will check if the receiving has started yet
+ * If this isn't the case, start the receiving and start a counter
+ * If the receiving has already started however and we got an interrupt...
+ * ...the receiving has ended
+ * This is because the signal will change from low to high after receiving
+ * After receiving, the counted pulses will be processed and we will know what we received
+ *
+ * (is only enabled when IR is enabled) */
+#ifdef IR
 ISR(PCINT1_vect)
 {
 #ifdef IRDEBUG
 	PORTD ^= (1 << PORTD2);
 #endif
-#ifdef IR
 	// If the receiving has been enabled
 	if (irComm->bitReceiveEnabled)
 	{
@@ -143,11 +155,13 @@ ISR(PCINT1_vect)
 			irComm->handleReceive();
 		}
 	}
-#endif
 }
+#endif
 
+// Main function
 int main()
 {
+	// Set PINs to output
 	DDRB |=
 		(1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4)
 		| (1 << DDB5);
@@ -156,13 +170,10 @@ int main()
 		| (1 << DDD6) | (1 << DDD7);
 	DDRC |= (1 << DDC1);
 
+	// Set Analog PIN A3 to HIGH
 	PORTC |= (1 << PORTC3);
-	//PORTD = 0xFF;
-	//_delay_ms(10);
-	//PORTD = 0x00;
-
+	// Set Digital PINs 8 to 13 to LOW
 	PORTB = 0;
-	//PORTD |= (1 << PORTD4);
 
 	// TODO: replace with own initialisation.
 	// SEE: https://github.com/arduino/ArduinoCore-avr/blob/b084848f2eaf9ccb3ac9a64ac5492d91df4706bf/cores/arduino/wiring.c#L241
@@ -170,30 +181,33 @@ int main()
 #warning Needs to be replaced
 	//init();
 
-	//cli();
+	// Initialize Timer 0
 	TCCR0A =
-		(0 << COM0A1) | (0 << COM0A0) | (0 << COM0B1) | (0 << COM0B0) | (1
-																		 <<
-																		 WGM01)
-		| (1 << WGM00);
+		(0 << COM0A1) | (0 << COM0A0) | (0 << COM0B1) | (0 << COM0B0)
+		| (1 << WGM01) | (1 << WGM00);
 	TCCR0B = (0 << WGM02) | (0 << CS02) | (1 << CS01) | (0 << CS00);
-	TCCR1A =
-		(0 << COM1A1) | (0 << COM1A0) | (0 << COM1B1) | (0 << COM1B0) | (0
-																		 <<
-																		 WGM11)
-		| (0 << WGM10);
-	TCCR1B =
-		(0 << ICNC1) | (0 << ICES1) | (0 << WGM13) | (1 << WGM12) | (1 <<
-																	 CS12)
-		| (0 << CS11) | (0 << CS10);
 
+	// Initialize Timer 1
+	TCCR1A =
+		(0 << COM1A1) | (0 << COM1A0) | (0 << COM1B1) | (0 << COM1B0)
+		| (0 << WGM11) | (0 << WGM10);
+	TCCR1B =
+		(0 << ICNC1) | (0 << ICES1) | (0 << WGM13) | (1 << WGM12)
+		| (1 << CS12)	| (0 << CS11) | (0 << CS10);
+
+	// Set timer 1 to compare after 1562 ticks
 	//OCR1A = (uint16_t)6250;
 	OCR1A = (uint16_t) 1562;
+	// Enable timer compare interrupts for timer 1
 	TIMSK1 = (1 << OCF1A);
 
+	// Enable global interupts
 	sei();
-	// Initialize the tft
+
+
+///Only works when not debugging IR
 #ifndef IRDEBUG
+	// Initialize the TFT screen
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
 	Definitions::tft->begin();
@@ -201,8 +215,8 @@ int main()
 	Definitions::tft->setRotation(1);
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 
-	// Turn on Serial communication if we are debugging
 #ifdef DEBUG
+	// Turn on Serial communication if we are debugging	
 	Definitions::println("Welkom!");
 #endif
 
@@ -214,14 +228,16 @@ int main()
 	Definitions::currentScreen = new homeScreen();
 	Definitions::currentScreen->begin();
 #endif
+
 #ifdef IR
 	// Construct the irComm class
 	irComm = new IRComm();
 
-#ifdef IRDEBUG
-	irComm->bitReceiveEnabled = 1;
-	irComm->sendBit(ONE_BIT);
-#endif
+	#ifdef IRDEBUG
+		irComm->bitReceiveEnabled = 1;
+		irComm->sendBit(ONE_BIT);
+	#endif
+///I don't know what this was supposed to do, so I left it --Niels
 #else
 //	Definitions::irComm =
 //		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
@@ -239,33 +255,30 @@ int main()
 //	Definitions::irComm->println(mystr);
 //	//delay(1000);
 //#endif
-
 #endif
 
+	// Loop forever
 	for (;;)
 	{
-#ifdef IR
-		irComm->sendBit(ONE_BIT);
-#endif
-		//irComm->sendBit(ONE_BIT);
-		// Refresh screen
+		// Refresh screen when a refresh has been indicated
 		if (startRefresh)
 		{
 			refreshDone = 0;
-			//PORTD |= (1 << PORTD6);
-#ifdef DEBUG
-			//Serial.println("refresh");
-#endif
+///Only refresh the screen when not debugging IR
 #ifndef IRDEBUG
 			Definitions::currentScreen->refresh();
 #endif
 			startRefresh = 0;
 			refreshDone = 1;
 		}
+		// Otherwise do nothing
 		else
 		{
+			// Does nothing, but the arduino can't handle empty whiles for some reason
 			PORTB = PORTB;
 		}
+
+		///I don't know what this was supposed to do, so I left it --Niels
 		/*if (startRefresh)
 		   PORTD |= (1 << PORTD5);
 		   else
@@ -276,7 +289,6 @@ int main()
 		   else
 		   PORTD &= ~(1 << PORTD6);
 		   } */
-		//delay(100);
 	}
 	PORTB = 0xFF;
 	PORTD = 0xFF;

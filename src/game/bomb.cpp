@@ -1,39 +1,34 @@
-//
-// Created by bianc on 26-11-2018.
-//
-
 #include "bomb.h"
 #include <stdint.h>
 
+// Initialize bomb class
 Bomb::Bomb(uint32_t placedTime, uint8_t x, uint8_t y, uint8_t blastRadius)
 {
-
 	placedTime = getPlacedTime();
 	x = getx();
 	y = gety();
 	blastRadius = getBlastRadius();
-
 }
 
-// get the time of when the bomb was placed
+// Get the time of when the bomb was placed
 uint32_t Bomb::getPlacedTime()
 {
 	return placedTime;
 }
 
-// get position x from bomb
+// Get bomb x-position
 uint8_t Bomb::getx()
 {
 	return x;
 }
 
-// get position y from bomb
+// Get bomb y-position
 uint8_t Bomb::gety()
 {
 	return y;
 }
 
-// get how many blocks a bomb can
+// Get bomb range
 uint8_t Bomb::getBlastRadius()
 {
 	return blastRadius;

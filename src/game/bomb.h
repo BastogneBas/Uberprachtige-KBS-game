@@ -1,16 +1,16 @@
-//
-// Created by bianc on 26-11-2018.
-//
 #include <stdint.h>
 
 #ifndef BOMB_H
 #define BOMB_H
 
+// Define bomb class
 class Bomb
 {
   public:
-	Bomb(uint32_t placedTime, uint8_t x, uint8_t y, uint8_t blastRadius =
-		 3);
+	// Define functions
+	Bomb(uint32_t placedTime, uint8_t x, uint8_t y, uint8_t blastRadius = 3);
+
+	// Define variables
 	uint32_t getPlacedTime();
 	uint8_t getx();
 	uint8_t gety();
@@ -18,11 +18,12 @@ class Bomb
 	uint8_t getPeep();
 
   private:
-	 uint32_t placedTime;
+	// Define variables
+	uint32_t placedTime;
 	uint8_t x;
 	uint8_t y;
 	uint8_t blastRadius;
 	uint8_t peep;
 };
 
-#endif							//BOMB_H
+#endif
