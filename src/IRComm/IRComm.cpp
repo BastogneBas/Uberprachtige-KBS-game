@@ -5,6 +5,18 @@
 
 IRComm::IRComm()
 {
+	#if PWMFREQ == 38
+	IRComm::SENDTOP = 209;
+	IRComm::RECTOP = 142;
+	IRComm::recTimerOverflow = 0;
+	#elif PWMFREQ == 56
+	IRComm::SENDTOP = 142;
+	IRComm::RECTOP = 209;
+	IRComm::recTimerOverflow = 0;
+	#else
+	#error Invalid PWM frequency
+	#endif
+
 /* --Initialize the send timer--
  * Uses Timer0
  * Toggles OC0A (Digital PIN 6) on compare match
@@ -28,7 +40,7 @@ IRComm::IRComm()
  * Runs without prescaler
 */
 	TCCR2A = (1 << COM2A0) | (1 << WGM20) | (1 << WGM21);
-	TCCR0B = (1 << CS20) | (1 << WGM22);
+	TCCR2B = (1 << CS20) | (1 << WGM22);
 	OCR2A = RECTOP;
 	// Enable timer2 compare interrupts
 	TIMSK2 = (1 << OCIE2A);
@@ -39,23 +51,14 @@ IRComm::IRComm()
 	// Enable pin change interrupts on Analog PIN 3
 	PCMSK1 = (1 << PCINT11);
 	sei();
-
-	#if PWMFREQ == 38
-	IRComm::SENDTOP = 209;
-	IRComm::RECTOP = 142;
-	IRComm::recTimerOverflow = 0;
-	#elif PWMFREQ == 56
-	SENDTOP = 142;
-	RECTOP = 209;
-	recTimerOverflow = 0;
-	#else
-	#error Invalid PWM frequency
-	#endif
 }
 
 
 void IRComm::sendBit(uint8_t sendType)
 {
+		PORTC |= (1 << PORTC1);
+		Serial.print("Send ");
+		Serial.println(sendType);
 /* --Sending a bit--
  * Uses timer0 as defined above
  * Timer0 will always be running and comparing...
@@ -63,7 +66,7 @@ void IRComm::sendBit(uint8_t sendType)
  * If a bit will be sent/the signal will be let through to the LED...
  * ...is defined by the enabling or disabling of Digital PIN 4
  *
- * If PIN4 is high, the LED doesn have a connection to ground...
+ * If PIN4 is high, the LED doesn't have a connection to ground...
  * ...which means that the LED won't be burning
  * If PIN4 is low however, the LED will burn at the defined frequency
  *
@@ -93,33 +96,59 @@ void IRComm::sendBit(uint8_t sendType)
 		PORTB = PORTB;
 	}
 
-#ifdef DEBUG
 	// Disable digital PIN 1 to indicate that the sending is done
 	PORTC &= ~(1 << PORTC1);
-#endif
+	Serial.println("Send complete");
 }
 
 // Reset the receival and indicate that it has started
 void IRComm::startReceive()
 {
 	bitReceiveChanged = 0;
-	bitReceiveStarted = 1;
+	bitReceiveStarted = 0;
 	bitReceiveCounter = 0;
 	bitReceiveComplete = 0;
 	bitReceiveEnabled = 1;
 }
 
+void IRComm::receiveBit()
+{
+	startReceive();
+	while(true)
+	{
+		if(bitReceiveStarted && bitReceiveChanged)
+		{
+			Serial.println(handleReceive());
+			break;
+		}
+		else
+		{
+			//asm volatile ("nop");
+			Serial.print("");
+		}
+	}
+}
+
 // Process the received data
-void IRComm::handleReceive()
+uint8_t IRComm::handleReceive()
 {
 	// Stop the receival of data
-	bitReceiveStarted = 0;
 	bitReceiveEnabled = 0;
+	bitReceiveComplete = 1;
+	uint8_t diff = bitReceiveChanged-bitReceiveStarted;
+	if((diff >= 20) && (diff <= 30))
+	{
+		return 0;
+	}
+	else if ((diff >= 40) && (diff <= 50))
+	{
+		return 1;
+	}
+	else
+	{
+		return -1;
+	}
 
-#ifdef DEBUG
-	PORTB = bitReceiveChanged;
-	PORTD &= ~(1 << PORTD3);
-#endif
 }
 
 size_t IRComm::write(uint8_t byte){

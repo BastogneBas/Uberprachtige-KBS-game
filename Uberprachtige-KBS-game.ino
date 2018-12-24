@@ -108,6 +108,9 @@ ISR(TIMER2_COMPA_vect)
 	{
 		Definitions::irComm->bitReceiveCounter++;
 	}
+	//Serial.println(PINC & (1 << PINC3));
+	//Serial.println(Definitions::irComm->bitReceiveCounter);
+	//Serial.println(OCR2A);
 #endif
 }
 
@@ -126,8 +129,7 @@ ISR(PCINT1_vect)
 		// If the receive hasn't started yet
 		if (!Definitions::irComm->bitReceiveStarted)
 		{
-			// Indicate that the receive has started
-			Definitions::irComm->startReceive();
+			Definitions::irComm->bitReceiveStarted = Definitions::irComm->bitReceiveCounter;
 		}
 		else
 		{
@@ -135,14 +137,16 @@ ISR(PCINT1_vect)
 			// Save at which count the receive has stopped
 			Definitions::irComm->bitReceiveChanged = Definitions::irComm->bitReceiveCounter;
 			// Process the data
-			Definitions::irComm->handleReceive();
+			//Definitions::irComm->handleReceive();
 		}
 	}
-	if(PORTC & (1 << PORTC3))
-		PORTB |= (1 << PORTB4);
-	else
+	if(PINC & (1 << PINC3))
 		PORTB &= ~(1 << PORTB4);
-	Serial.println("PCINT!");
+	else
+		PORTB |= (1 << PORTB4);
+	//Serial.println(Definitions::irComm->bitReceiveStarted);
+	//Serial.println(Definitions::irComm->bitReceiveChanged);
+	//Serial.println();
 #warning IR
 #endif
 }
@@ -159,24 +163,38 @@ void own_init(){
 	PORTC |= (1 << PORTC3) | (1 << PORTC2);
 	
 	TCCR0A =
-		(0 << COM0A1) | (0 << COM0A0) | (0 << COM0B1) | (0 << COM0B0) | (1
-																		 <<
-																		 WGM01)
-		| (1 << WGM00);
-	TCCR0B = (0 << WGM02) | (0 << CS02) | (1 << CS01) | (0 << CS00);
+		(0 << COM0A1) |
+		(0 << COM0A0) |
+		(0 << COM0B1) |
+		(0 << COM0B0) |
+		(1 << WGM01)  |
+		(1 << WGM00)  ;
+	TCCR0B = 
+		(0 << WGM02) |
+		(0 << CS02)  | 
+		(1 << CS01)  |
+		(0 << CS00)  ;
+
+
 	TCCR1A =
-		(0 << COM1A1) | (0 << COM1A0) | (0 << COM1B1) | (0 << COM1B0) | (0
-																		 <<
-																		 WGM11)
-		| (0 << WGM10);
+		(0 << COM1A1) |
+		(0 << COM1A0) |
+		(0 << COM1B1) |
+		(0 << COM1B0) |
+		(0 << WGM11)  |
+		(0 << WGM10)  ;
 	TCCR1B =
-		(0 << ICNC1) | (0 << ICES1) | (0 << WGM13) | (1 << WGM12) | (1 <<
-																	 CS12)
-		| (0 << CS11) | (0 << CS10);
+		(0 << ICNC1) |
+		(0 << ICES1) |
+		(0 << WGM13) |
+		(1 << WGM12) |
+		(1 << CS12)  |
+		(0 << CS11)  |
+		(0 << CS10)  ;
 
 	//OCR1A = (uint16_t)6250;
 	OCR1A = (uint16_t) 1562;
-	TIMSK1 = (1 << OCF1A);
+	TIMSK1 = (1 << OCIE1A);
 
 	sei();
 	
@@ -221,8 +239,15 @@ int main()
 	// Construct the irComm class
 	Definitions::irComm = new IRComm();
 
-	Definitions::irComm->bitReceiveEnabled = 1;
+	Serial.println("Hallo");
+	//Serial.println(OCR0A);
+	//Definitions::irComm->bitReceiveEnabled = 1;
+#if PEEP == 1
 	Definitions::irComm->sendBit(ONE_BIT);
+#elif PEEP == 2
+	//Definitions::irComm->startReceive();
+	Definitions::irComm->receiveBit();
+#endif
 #else
 //	Definitions::irComm =
 //		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
@@ -246,9 +271,22 @@ int main()
 	for (;;)
 	{
 #ifdef IR
+#if PEEP == 1
 		if(!(PINC & (1 << PINC2))){
+		if(!(PINC & (1 << PINC0))){
 			Definitions::irComm->sendBit(ONE_BIT);
+		} else {
+			Definitions::irComm->sendBit(ZERO_BIT);
 		}
+		}
+#elif PEEP == 2
+		if(Definitions::irComm->bitReceiveComplete){
+			//Serial.println("Complete");
+			//Definitions::irComm->startReceive();
+			Definitions::irComm->receiveBit();
+		}
+#endif
+		//_delay_ms(10);
 #endif
 #ifndef IR
 		//irComm->sendBit(ONE_BIT);
