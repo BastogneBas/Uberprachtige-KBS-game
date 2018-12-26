@@ -14,7 +14,21 @@
 //#define RECEIVER 1
 //#define SENDER 1
 
-#define PEEP 1
+// First two are used for compilation with -DP1 or -DP2
+#ifdef P1
+	#pragma message "Compiling for PEEP 1"
+	#define PEEP 1
+#else
+	#ifdef P2
+		#pragma message "Compiling for PEEP 2"
+		#define PEEP 2
+	#else
+		// Define own peep
+		#pragma message "Compiling for source specified PEEP"
+		#define PEEP 1
+	#endif
+#endif
+
 //#define PEEP = 2
 #if PEEP == 1
 #define PWMFREQ 38

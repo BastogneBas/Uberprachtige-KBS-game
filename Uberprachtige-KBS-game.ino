@@ -232,14 +232,16 @@ int main()
 	// Construct the irComm class
 	Definitions::irComm = new IRComm();
 
-	Serial.println("Hallo");
+	Serial.println("Morning!");
+	Serial.print("This is ");
+	Serial.print(PEEP);
+	Serial.print(" speaking at ");
+	Serial.print(PWMFREQ);
+	Serial.println(" kHz");
 	//Serial.println(OCR0A);
 	//Definitions::irComm->bitReceiveEnabled = 1;
-#if PEEP == 2
-	Definitions::irComm->sendBit(ONE_BIT);
-#elif PEEP == 1
-	//Definitions::irComm->startReceive();
-	Definitions::irComm->receiveBit();
+#if PEEP == 1
+	Definitions::irComm->read();
 #endif
 #else
 //	Definitions::irComm =
@@ -282,7 +284,7 @@ int main()
 			//Serial.println("Complete");
 			//Definitions::irComm->startReceive();
 			//Definitions::irComm->receiveBit();
-			Definitions::irComm->read();
+			Serial.write(Definitions::irComm->read());
 		}
 #endif
 		//_delay_ms(10);

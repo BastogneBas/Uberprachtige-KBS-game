@@ -114,7 +114,7 @@ uint8_t IRComm::receiveBit()
 		if(bitReceiveStarted && bitReceiveChanged)
 		{
 			uint8_t ret = handleReceive();
-			Serial.println(ret);
+			//Serial.println(ret);
 			return ret;
 			break;
 		}
@@ -165,20 +165,21 @@ uint8_t IRComm::handleReceive()
 }
 
 size_t IRComm::write(uint8_t byte){
-	Serial.println(byte, BIN);
-	Serial.println((uint8_t)((byte>>7)<<0), BIN);
-	Serial.println((uint8_t)((byte>>6)<<1), BIN);
-	Serial.println((uint8_t)((byte>>1)<<6), BIN);
-	Serial.println((uint8_t)((byte>>0)<<7), BIN);
+	for(uint8_t i=0;i<8;i++){
+		Serial.print((byte & (1 << 7-i)) ? "1" : "0");
+	}
+	Serial.println();
 	sendBit(START_BIT);
-	sendBit((uint8_t)((byte>>0)<<7) ? ZERO_BIT : ONE_BIT);
-	sendBit((uint8_t)((byte>>1)<<6) ? ZERO_BIT : ONE_BIT);
-	sendBit((uint8_t)((byte>>2)<<5) ? ZERO_BIT : ONE_BIT);
-	sendBit((uint8_t)((byte>>3)<<4) ? ZERO_BIT : ONE_BIT);
-	sendBit((uint8_t)((byte>>4)<<3) ? ZERO_BIT : ONE_BIT);
-	sendBit((uint8_t)((byte>>5)<<2) ? ZERO_BIT : ONE_BIT);
-	sendBit((uint8_t)((byte>>6)<<1) ? ZERO_BIT : ONE_BIT);
-	sendBit((uint8_t)((byte>>7)<<0) ? ZERO_BIT : ONE_BIT);
+	for(uint8_t i=0;i<8;i++){
+		sendBit(byte & (1 << 7-i) ? ONE_BIT : ZERO_BIT);
+	}
+	//sendBit((uint8_t)((byte>>1)<<6) ? ZERO_BIT : ONE_BIT);
+	//sendBit((uint8_t)((byte>>2)<<5) ? ZERO_BIT : ONE_BIT);
+	//sendBit((uint8_t)((byte>>3)<<4) ? ZERO_BIT : ONE_BIT);
+	//sendBit((uint8_t)((byte>>4)<<3) ? ZERO_BIT : ONE_BIT);
+	//sendBit((uint8_t)((byte>>5)<<2) ? ZERO_BIT : ONE_BIT);
+	//sendBit((uint8_t)((byte>>6)<<1) ? ZERO_BIT : ONE_BIT);
+	//sendBit((uint8_t)((byte>>7)<<0) ? ZERO_BIT : ONE_BIT);
 	sendBit(STOP_BIT);
 	return 0;
 }
@@ -194,22 +195,26 @@ int IRComm::read(){
 	for(;;)
 	{
 		uint8_t bit = receiveBit();
-		if (bit == 80 && index == 0 && byteHasStarted == false)
+		if (bit == 255)
+		{
+			continue; // We have something invalid. Probably noise...
+		}
+		else if (bit == 80 && index == 0 && byteHasStarted == false)
 		{
 			byteHasStarted = true;
 		}
 		else if (bit == 80 && index != 0 && byteHasStarted == false)
 		{
-			Serial.print("Randomly received START_BIT at ");
-			Serial.println(index);
+			//Serial.print("Randomly received START_BIT at ");
+			//Serial.println(index);
 		}
 		else if (bit != 80 && index == 0 && byteHasStarted == false)
 		{
-			Serial.println("Wait, this isn't a START_BIT");
+			//Serial.println("Wait, this isn't a START_BIT");
 		}
 		else if (bit == 40)
 		{
-			character |= (1 << (6-index));
+			character |= (1 << (7-index));
 			index++;
 		}
 		else if (bit == 20)
@@ -217,18 +222,22 @@ int IRComm::read(){
 			character |= 0; // Basically does nothing
 			index++;
 		}
-		else if (bit == 60 && index == 7)
+		else if (bit == 60 && index == 8)
 		{
 			break;
 		}
-		else if (bit == 60 && index != 7)
+		else if (bit == 60 && index != 8)
 		{
 			Serial.print("Hmmm, the byte is sent, but we only have ");
 			Serial.print(index);
 			Serial.println("bits");
 		}
 	}
-	Serial.println(character, BIN);
+	for(uint8_t i=0;i<8;i++){
+		//Serial.print(character & (1 << 7-i) ? "1" : "0");
+	}
+	//Serial.println();
+	//Serial.println(character, BIN);
 	return character;
 }
 
