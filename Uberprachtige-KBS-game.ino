@@ -248,7 +248,8 @@ int main()
 	//Definitions::irComm->bitReceiveEnabled = 1;
 #if PEEP == 1
 	Definitions::irComm->readByteStart();
-	Definitions::irComm->startReceive();
+	//Definitions::irComm->startReceive();
+	Definitions::irComm->receiveOneByte();
 	Serial.println(Definitions::irComm->read());
 #endif
 #else
@@ -293,6 +294,8 @@ int main()
 			//Definitions::irComm->startReceive();
 			//Definitions::irComm->receiveBit();
 			//Definitions::irComm->readByteStart();
+			//Definitions::irComm->startReceive();
+			Definitions::irComm->receiveOneByte();
 			Serial.write(Definitions::irComm->read());
 		}
 #endif

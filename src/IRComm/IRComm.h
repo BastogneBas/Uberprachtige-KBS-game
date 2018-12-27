@@ -62,10 +62,11 @@ class IRComm: public Stream
 
 	// Function definitions
 	void sendBit(uint8_t sendType);
-	void startReceive();
-	uint8_t handleReceive();
+	void startReceiveBit();
+	uint8_t handleReceiveBit();
 	void readByteStart();
 	int readByteIteration();
+	void receiveOneByte();
 	char lastchar = ' ';
 
 	// Inherited from Stream

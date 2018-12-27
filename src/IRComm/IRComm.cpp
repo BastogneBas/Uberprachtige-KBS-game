@@ -97,7 +97,7 @@ void IRComm::sendBit(uint8_t sendType)
 }
 
 // Reset the receival and indicate that it has started
-void IRComm::startReceive()
+void IRComm::startReceiveBit()
 {
 	bitReceiveChanged = 0;
 	bitReceiveStarted = 0;
@@ -107,7 +107,7 @@ void IRComm::startReceive()
 }
 
 // Process the received data
-uint8_t IRComm::handleReceive()
+uint8_t IRComm::handleReceiveBit()
 {
 	// Stop the receival of data
 	bitReceiveEnabled = 0;
@@ -179,7 +179,7 @@ void IRComm::readByteStart()
 
 int IRComm::readByteIteration()
 {
-	uint8_t bit = handleReceive();
+	uint8_t bit = handleReceiveBit();
 	if (bit == 255)
 	{
 		return 0; // We have something invalid. Probably noise...
@@ -222,25 +222,43 @@ int IRComm::readByteIteration()
 	return 0;
 }
 
-int IRComm::read(){
-	//readByteStart();
-	for(;;)
+void IRComm::receiveOneByte()
+{
+	while(true)
 	{
-		startReceive();
-		while(!(bitReceiveStarted && bitReceiveChanged))
+		startReceiveBit(); // Start receiving bit
+		while(!(bitReceiveStarted && bitReceiveChanged)) // Wait for our bit
 		{
-			/* We need to do something in our loop for some reason, so we set
-			 * the Power Reduction Register to the value of itself... */
 			PRR = PRR;
 		}
-		if(readByteIteration())
-//		if(readByteCharacter)
-		{
+		if(readByteIteration()) // parse bit
+		{	// We've got our last bit
+			lastchar = readByteCharacter;
+			readByteStart(); // Read next byte
 			break;
 		}
 	}
-	lastchar = readByteCharacter;
-	readByteStart();
+}
+
+int IRComm::read(){
+//	//readByteStart();
+//	for(;;)
+//	{
+//		startReceive();
+//		while(!(bitReceiveStarted && bitReceiveChanged))
+//		{
+//			/* We need to do something in our loop for some reason, so we set
+//			 * the Power Reduction Register to the value of itself... */
+//			PRR = PRR;
+//		}
+//		if(readByteIteration())
+////		if(readByteCharacter)
+//		{
+//			break;
+//		}
+//	}
+//	lastchar = readByteCharacter;
+//	readByteStart();
 	uint8_t ret = lastchar;
 	lastchar = 0;
 	return ret;
