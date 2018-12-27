@@ -49,21 +49,24 @@ class IRComm: public Stream
 
 	// Variable definitions
 	uint8_t bitSendEnabled = 0;
-	uint8_t bitSendCounter = 0;
+	uint16_t bitSendCounter = 0;
 	uint8_t bitSendType = 0;
 	uint8_t bitSendComplete = 0;
 	uint32_t bitReceiveEnabled = 0;
-	uint32_t bitReceiveCounter = 0;
+	uint16_t bitReceiveCounter = 0;
 	uint32_t bitReceiveStarted = 0;
 	uint32_t bitReceiveChanged = 0;
 	uint32_t bitReceiveComplete = 0;
 	uint8_t typeReceived;
+	uint8_t readByteCharacter = 0;
 
 	// Function definitions
 	void sendBit(uint8_t sendType);
 	void startReceive();
 	uint8_t handleReceive();
-	uint8_t receiveBit();
+	void readByteStart();
+	int readByteIteration();
+	char lastchar = ' ';
 
 	// Inherited from Stream
 	size_t write(uint8_t);

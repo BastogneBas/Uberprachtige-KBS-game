@@ -57,8 +57,8 @@ IRComm::IRComm()
 void IRComm::sendBit(uint8_t sendType)
 {
 		PORTC |= (1 << PORTC1);
-		Serial.print("Send ");
-		Serial.println(sendType);
+//		Serial.print("Send ");
+//		Serial.println(sendType);
 /* --Sending a bit--
  * Uses timer0 as defined above
  * Timer0 will always be running and comparing...
@@ -93,7 +93,7 @@ void IRComm::sendBit(uint8_t sendType)
 
 	// Disable digital PIN 1 to indicate that the sending is done
 	PORTC &= ~(1 << PORTC1);
-	Serial.println("Send complete");
+//	Serial.println("Send complete");
 }
 
 // Reset the receival and indicate that it has started
@@ -104,28 +104,6 @@ void IRComm::startReceive()
 	bitReceiveCounter = 0;
 	bitReceiveComplete = 0;
 	bitReceiveEnabled = 1;
-}
-
-uint8_t IRComm::receiveBit()
-{
-	startReceive();
-	while(true)
-	{
-		if(bitReceiveStarted && bitReceiveChanged)
-		{
-			uint8_t ret = handleReceive();
-			//Serial.println(ret);
-			return ret;
-			break;
-		}
-		else
-		{
-			/* We need to do something in our loop for some reason, so we set
-			 * the Power Reduction Register to the value of itself... */
-			PRR = PRR;
-			continue;
-		}
-	}
 }
 
 // Process the received data
@@ -165,13 +143,13 @@ uint8_t IRComm::handleReceive()
 }
 
 size_t IRComm::write(uint8_t byte){
-	for(uint8_t i=0;i<8;i++){
-		Serial.print((byte & (1 << 7-i)) ? "1" : "0");
-	}
-	Serial.println();
+//	for(uint8_t i=0;i<8;i++){
+//		Serial.print((byte & (1 << (7-i))) ? "1" : "0");
+//	}
+//	Serial.println();
 	sendBit(START_BIT);
 	for(uint8_t i=0;i<8;i++){
-		sendBit(byte & (1 << 7-i) ? ONE_BIT : ZERO_BIT);
+		sendBit(byte & (1 << (7-i)) ? ONE_BIT : ZERO_BIT);
 	}
 	//sendBit((uint8_t)((byte>>1)<<6) ? ZERO_BIT : ONE_BIT);
 	//sendBit((uint8_t)((byte>>2)<<5) ? ZERO_BIT : ONE_BIT);
@@ -188,57 +166,84 @@ int IRComm::available(){
 	return 0;
 }
 
+uint8_t readByteIndex = 0;
+//uint8_t readByteCharacter = 0;
+uint8_t readByteHasStarted = false;
+
+void IRComm::readByteStart()
+{
+	readByteIndex = 0;
+	readByteCharacter = 0;
+	readByteHasStarted = false;
+}
+
+int IRComm::readByteIteration()
+{
+	uint8_t bit = handleReceive();
+	if (bit == 255)
+	{
+		return 0; // We have something invalid. Probably noise...
+	}
+	else if (bit == 80 && readByteIndex == 0 && readByteHasStarted == false)
+	{
+		readByteHasStarted = true;
+	}
+	else if (bit == 80 && readByteIndex != 0 && readByteHasStarted == false)
+	{
+		//Serial.print("Randomly received START_BIT at ");
+		//Serial.println(index);
+	}
+	else if (bit != 80 && readByteIndex == 0 && readByteHasStarted == false)
+	{
+		//Serial.println("Wait, this isn't a START_BIT");
+	}
+	else if (bit == 40)
+	{
+		readByteCharacter |= (1 << (7-readByteIndex));
+		readByteIndex++;
+	}
+	else if (bit == 20)
+	{
+		readByteCharacter |= 0; // Basically does nothing
+		readByteIndex++;
+	}
+	else if (bit == 60 && readByteIndex == 8)
+	{
+		return 1;
+	}
+	else if (bit == 60 && readByteIndex != 8)
+	{
+		Serial.print("Hmmm, the byte is sent, but we only have ");
+		Serial.print(readByteIndex);
+		Serial.println(" bits");
+		Serial.println("retrying");
+		readByteStart();
+	}
+	return 0;
+}
+
 int IRComm::read(){
-	uint8_t index = 0;
-	uint8_t character = 0;
-	uint8_t byteHasStarted = false;
+	//readByteStart();
 	for(;;)
 	{
-		uint8_t bit = receiveBit();
-		if (bit == 255)
+		startReceive();
+		while(!(bitReceiveStarted && bitReceiveChanged))
 		{
-			continue; // We have something invalid. Probably noise...
+			/* We need to do something in our loop for some reason, so we set
+			 * the Power Reduction Register to the value of itself... */
+			PRR = PRR;
 		}
-		else if (bit == 80 && index == 0 && byteHasStarted == false)
-		{
-			byteHasStarted = true;
-		}
-		else if (bit == 80 && index != 0 && byteHasStarted == false)
-		{
-			//Serial.print("Randomly received START_BIT at ");
-			//Serial.println(index);
-		}
-		else if (bit != 80 && index == 0 && byteHasStarted == false)
-		{
-			//Serial.println("Wait, this isn't a START_BIT");
-		}
-		else if (bit == 40)
-		{
-			character |= (1 << (7-index));
-			index++;
-		}
-		else if (bit == 20)
-		{
-			character |= 0; // Basically does nothing
-			index++;
-		}
-		else if (bit == 60 && index == 8)
+		if(readByteIteration())
+//		if(readByteCharacter)
 		{
 			break;
 		}
-		else if (bit == 60 && index != 8)
-		{
-			Serial.print("Hmmm, the byte is sent, but we only have ");
-			Serial.print(index);
-			Serial.println("bits");
-		}
 	}
-	for(uint8_t i=0;i<8;i++){
-		//Serial.print(character & (1 << 7-i) ? "1" : "0");
-	}
-	//Serial.println();
-	//Serial.println(character, BIN);
-	return character;
+	lastchar = readByteCharacter;
+	readByteStart();
+	uint8_t ret = lastchar;
+	lastchar = 0;
+	return ret;
 }
 
 int IRComm::peek(){

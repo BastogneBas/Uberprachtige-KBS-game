@@ -69,7 +69,7 @@ ISR(TIMER0_COMPA_vect)
 
 		// If the bit is completely sent...
 		// (a bit is sent over 100 pulses)
-		if (Definitions::irComm->bitSendCounter == 100)
+		if (Definitions::irComm->bitSendCounter == 200)
 		{
 			// Signal that the bit is completely sent
 			Definitions::irComm->bitSendComplete = 1;
@@ -143,7 +143,13 @@ ISR(PCINT1_vect)
 			// Save at which count the receive has stopped
 			Definitions::irComm->bitReceiveChanged = Definitions::irComm->bitReceiveCounter;
 			// Process the data
-			//Definitions::irComm->handleReceive();
+			/*uint8_t byteFinished = Definitions::irComm->readByteIteration();
+			if (byteFinished)
+			{
+				Definitions::irComm->lastchar = Definitions::irComm->readByteCharacter;
+				Definitions::irComm->readByteStart();
+			}
+			Definitions::irComm->startReceive();*/
 		}
 	if(PINC & (1 << PINC3))
 		PORTB &= ~(1 << PORTB4);
@@ -241,7 +247,9 @@ int main()
 	//Serial.println(OCR0A);
 	//Definitions::irComm->bitReceiveEnabled = 1;
 #if PEEP == 1
-	Definitions::irComm->read();
+	Definitions::irComm->readByteStart();
+	Definitions::irComm->startReceive();
+	Serial.println(Definitions::irComm->read());
 #endif
 #else
 //	Definitions::irComm =
@@ -284,6 +292,7 @@ int main()
 			//Serial.println("Complete");
 			//Definitions::irComm->startReceive();
 			//Definitions::irComm->receiveBit();
+			//Definitions::irComm->readByteStart();
 			Serial.write(Definitions::irComm->read());
 		}
 #endif
