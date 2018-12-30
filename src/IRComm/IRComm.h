@@ -2,6 +2,8 @@
 #include <util/delay.h>
 #include <stddef.h>
 #include <Stream.h>
+#include <WString.h>
+
 //#include "../../staticDefinitions.cpp"
 
 #ifndef IRCOMM_H
@@ -62,12 +64,13 @@ class IRComm: public Stream
 
 	// Function definitions
 	void sendBit(uint8_t sendType);
-	volatile void startReceiveBit();
+	void startReceiveBit();
 	uint8_t handleReceiveBit();
 	void readByteStart();
 	int readByteIteration();
 	void receiveOneByte();
-	char lastchar = ' ';
+	char charbuffer[50] = "";
+	uint8_t writeIndex = 0;
 
 	// Inherited from Stream
 	size_t write(uint8_t);

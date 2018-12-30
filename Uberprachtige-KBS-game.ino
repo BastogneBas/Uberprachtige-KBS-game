@@ -313,7 +313,9 @@ int main()
 			//Definitions::irComm->readByteStart();
 			//Definitions::irComm->startReceive();
 			Definitions::irComm->receiveOneByte();
-			Serial.write(Definitions::irComm->read());
+			Definitions::irComm->available();
+			Definitions::irComm->read();
+			//Serial.write(Definitions::irComm->read());
 		//else
 		//{
 		//	Serial.println("Not received");

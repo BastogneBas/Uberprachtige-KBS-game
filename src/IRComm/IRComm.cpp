@@ -97,7 +97,7 @@ void IRComm::sendBit(uint8_t sendType)
 }
 
 // Reset the receival and indicate that it has started
-volatile void IRComm::startReceiveBit()
+void IRComm::startReceiveBit()
 {
 	bitReceiveChanged = 0;
 	bitReceiveStarted = 0;
@@ -163,6 +163,7 @@ size_t IRComm::write(uint8_t byte){
 }
 
 int IRComm::available(){
+	Serial.println(String(charbuffer).length());
 	return 0;
 }
 
@@ -213,7 +214,8 @@ int IRComm::readByteIteration()
 	{
 		//lastchar = readByteCharacter;
 		//readByteStart();
-		lastchar = readByteCharacter;
+		charbuffer[writeIndex] = readByteCharacter;
+		writeIndex++;
 		readByteStart(); // Read next byte
 		startReceiveBit(); // Start receiving next bit
 		return 1;
@@ -255,6 +257,11 @@ void IRComm::receiveOneByte()
 	}
 }
 
+void shiftbufferleft()
+{
+//	for (int 
+}
+
 int IRComm::read(){
 //	//readByteStart();
 //	for(;;)
@@ -274,9 +281,9 @@ int IRComm::read(){
 //	}
 //	lastchar = readByteCharacter;
 //	readByteStart();
-	uint8_t ret = lastchar;
+	//uint8_t ret = charbuffer[0];
 	//lastchar = 0;
-	return ret;
+	return charbuffer[0];
 }
 
 int IRComm::peek(){
