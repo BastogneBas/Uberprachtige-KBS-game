@@ -62,7 +62,7 @@ class IRComm: public Stream
 
 	// Function definitions
 	void sendBit(uint8_t sendType);
-	void startReceiveBit();
+	volatile void startReceiveBit();
 	uint8_t handleReceiveBit();
 	void readByteStart();
 	int readByteIteration();

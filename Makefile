@@ -15,6 +15,7 @@ ARDUINO_LIBS = Adafruit_GFX_Library SPI Wire Adafruit_ILI9341 game level homeScr
 
 ifdef PEEP
 	CPPFLAGS += -DP$(PEEP)
+	CPPFLAGS += -save-temps=obj
 endif
 
 include $(ARDMK_DIR)/Arduino.mk

@@ -143,6 +143,16 @@ ISR(PCINT1_vect)
 			// Save at which count the receive has stopped
 			Definitions::irComm->bitReceiveChanged = Definitions::irComm->bitReceiveCounter;
 			// Process the data
+/*			uint8_t lastBitReceived = 2;
+			while(lastBitReceived == 2)
+			{
+				lastBitReceived = readByteIteration();
+				if(lastBitReceived == 1)
+				{
+					break;
+				}
+			}*/
+
 			/*uint8_t byteFinished = Definitions::irComm->readByteIteration();
 			if (byteFinished)
 			{
@@ -151,11 +161,11 @@ ISR(PCINT1_vect)
 			}
 			Definitions::irComm->startReceive();*/
 		}
+	}
 	if(PINC & (1 << PINC3))
 		PORTB &= ~(1 << PORTB4);
 	else
 		PORTB |= (1 << PORTB4);
-	}
 	//Serial.println(Definitions::irComm->bitReceiveStarted);
 	//Serial.println(Definitions::irComm->bitReceiveChanged);
 	//Serial.println();
@@ -249,6 +259,7 @@ int main()
 #if PEEP == 1
 	Definitions::irComm->readByteStart();
 	//Definitions::irComm->startReceive();
+	Definitions::irComm->startReceiveBit();
 	Definitions::irComm->receiveOneByte();
 	Serial.println(Definitions::irComm->read());
 #endif
@@ -289,7 +300,7 @@ int main()
 		}
 		}*/
 #elif PEEP == 1
-		if(Definitions::irComm->bitReceiveComplete){
+		//if(Definitions::irComm->bitReceiveComplete){
 			//Serial.println("Complete");
 			//Definitions::irComm->startReceive();
 			//Definitions::irComm->receiveBit();
@@ -297,7 +308,11 @@ int main()
 			//Definitions::irComm->startReceive();
 			Definitions::irComm->receiveOneByte();
 			Serial.write(Definitions::irComm->read());
-		}
+		//else
+		//{
+		//	Serial.println("Not received");
+		//}
+
 #endif
 		//_delay_ms(10);
 #endif

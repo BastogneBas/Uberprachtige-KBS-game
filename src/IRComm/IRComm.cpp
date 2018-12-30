@@ -97,7 +97,7 @@ void IRComm::sendBit(uint8_t sendType)
 }
 
 // Reset the receival and indicate that it has started
-void IRComm::startReceiveBit()
+volatile void IRComm::startReceiveBit()
 {
 	bitReceiveChanged = 0;
 	bitReceiveStarted = 0;
@@ -179,6 +179,8 @@ void IRComm::readByteStart()
 
 int IRComm::readByteIteration()
 {
+	if(bitReceiveStarted && bitReceiveChanged)
+	{
 	uint8_t bit = handleReceiveBit();
 	if (bit == 255)
 	{
@@ -209,6 +211,8 @@ int IRComm::readByteIteration()
 	}
 	else if (bit == 60 && readByteIndex == 8)
 	{
+		//lastchar = readByteCharacter;
+		//readByteStart();
 		return 1;
 	}
 	else if (bit == 60 && readByteIndex != 8)
@@ -220,22 +224,33 @@ int IRComm::readByteIteration()
 		readByteStart();
 	}
 	return 0;
+	}
+	else
+	{
+		return 2;
+	}
 }
 
 void IRComm::receiveOneByte()
 {
 	while(true)
 	{
-		startReceiveBit(); // Start receiving bit
-		while(!(bitReceiveStarted && bitReceiveChanged)) // Wait for our bit
-		{
-			PRR = PRR;
-		}
-		if(readByteIteration()) // parse bit
+		uint8_t isLastBit = readByteIteration();
+		if(isLastBit == 1) // parse bit
 		{	// We've got our last bit
 			lastchar = readByteCharacter;
 			readByteStart(); // Read next byte
+			startReceiveBit(); // Start receiving next bit
 			break;
+		}
+		else if(isLastBit == 2)
+		{
+			//Serial.println("Not finished");
+		}
+		else
+		{
+			startReceiveBit(); // Start receiving next bit
+			continue;
 		}
 	}
 }
@@ -260,7 +275,7 @@ int IRComm::read(){
 //	lastchar = readByteCharacter;
 //	readByteStart();
 	uint8_t ret = lastchar;
-	lastchar = 0;
+	//lastchar = 0;
 	return ret;
 }
 
