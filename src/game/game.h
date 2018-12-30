@@ -13,7 +13,7 @@ class gameScreen:public screen
 	void begin();
 	void end();
 	void refresh();
-	void writeEndScreen();
+	void drawEndScreen();
 	void drawLives();
 	void drawTimer();
 	void drawScore();
@@ -31,7 +31,7 @@ class gameScreen:public screen
 	uint16_t scoreP1 = 4000;
 	uint16_t scoreP2 = 4000;
 	uint16_t timeCounter = 0;
-	uint16_t currentTime = 180;
+	uint8_t currentTime = 180;
 	uint8_t deadPlayer = 0;
 	uint8_t winner = 0;
 };

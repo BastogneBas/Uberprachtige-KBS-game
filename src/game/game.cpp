@@ -21,19 +21,20 @@ gameScreen::gameScreen(Level level)
 
 int p2Y = 0, p2X = 0;
 int p1Y = 0, p1X = 0;
+///I don't know what this was supposed to do, so I left it --Niels
 //uint8_t bomb1X, bomb1Y;
 //uint8_t bomb2X, bomb2Y;
 //uint8_t bombX, bombY;
 int newX, newY;
 uint8_t lives1, lives2;
 
-void gameScreen::begin()
+void gameScreen::begin()    // Initializes the game's screen
 {
-    // Set background to black and draw the initial level
+	// Set background to black and draw the initial level
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 	level.begin();
 
-    ///I don't know what this was supposed to do, so I left it --Niels
+	///I don't know what this was supposed to do, so I left it --Niels
     //level.printMap();
 	//level.drawMap();
 	/*uint8_t width = Definitions::gameWidth+1, height = Definitions::gameHeight+1;
@@ -67,37 +68,56 @@ void gameScreen::begin()
 	p1X = 1;
 	p1Y = 1;
 
-	// Draw Text
+	// Draw some texts to initialize
 	Definitions::tft->setTextSize(1);
 	Definitions::tft->setTextColor(ILI9341_WHITE);
 
+	// Draw texts for lives
 	Definitions::tft->setCursor(250, 5);
-	Definitions::tft->print("You");
+	Definitions::tft->print("P1:");
 
 	Definitions::tft->setCursor(250, 50);
-	Definitions::tft->print("Opponent");
+	Definitions::tft->print("P2:");
 
-	// for loop for drawing the lives
+    Definitions::tft->setCursor(250, 100);
+    Definitions::tft->print("Tijd:");
+
+    // Draw texts for scores
+    Definitions::tft->setCursor(250, 110);
+    Definitions::tft->print("Scores:");
+
+    Definitions::tft->setCursor(250, 120);
+    Definitions::tft->print("P1:");
+
+    Definitions::tft->setCursor(250, 130);
+    Definitions::tft->print("P2:");
+
+    // Draw the initial lives values
 	for (int i = 255; i <= 305; i += 25)
 	{
 		Definitions::tft->fillCircle(i, 30, 10, ILI9341_RED);
 		Definitions::tft->fillCircle(i, 75, 10, ILI9341_RED);
 	}
-	
-	currentTime = 180;
+
+	// Set the timer to begin value to count down from
+	// NOTE: is currently done because of a bug where it isn't properly set from the header sometimes
+	//currentTime = 180;
+
+	// Draw initial timer and score values
 	drawTimer();
 	drawScore();
 }
 
-void gameScreen::end()
+void gameScreen::end()  // End the match by calculating some scores and showing the endScreen
 {
     // Check who won the game
     checkWinner();
     // Add some extra's to the scores
     calculateEndScores();
-    // Calling void to write the endScreen
-    gameScreen::writeEndScreen();
+    // Print the endScreen, showing if you won or lost and the scores
+    gameScreen::drawEndScreen();
 
+    ///What even is this!? --Niels
     while (Definitions::nunchuk->cButton == 0)
     {
         if (Definitions::nunchuk->cButton)
@@ -108,8 +128,7 @@ void gameScreen::end()
     }
 }
 
-// Check who won the game
-void gameScreen::checkWinner()
+void gameScreen::checkWinner()  // Check who won the game
 {
     // If the game is over and the timer hasn't reached zero yet...
     // ...a player has died, so the player who's dead has lost the game
@@ -122,7 +141,7 @@ void gameScreen::checkWinner()
         else
             winner = 0;
     }
-        // If the timer has reached 0 though, the winner will be based on score
+    // If the timer has reached 0 though, the winner will be based on score
     else
     {
         if(scoreP1 > scoreP2)
@@ -134,8 +153,7 @@ void gameScreen::checkWinner()
     }
 }
 
-// Adds or removes a bonus to the players' score based on if they won or lost
-void gameScreen::calculateEndScores()
+void gameScreen::calculateEndScores()   // Adds or removes a bonus to the players' score based on if they won or lost
 {
     // If the game is tied, give both players a bonus
     if(winner == 0)
@@ -143,13 +161,13 @@ void gameScreen::calculateEndScores()
         scoreP1 += ((currentTime * 10) + (livesP1 * 100));
         scoreP2 += ((currentTime * 10) + (livesP2 * 100));
     }
-        // If player 1 won, give them a bonus
+    // If player 1 won, give them a bonus
     else if(winner == 1)
     {
         scoreP1 += ((currentTime * 10) + (livesP1 * 100));
         scoreP2 -= ((currentTime * 10) - (livesP2 * 100));
     }
-        // If player 2 won, give them a bonus
+    // If player 2 won, give them a bonus
     else if(winner == 2)
     {
         scoreP1 -= ((currentTime * 10) - (livesP1 * 100));
@@ -157,40 +175,35 @@ void gameScreen::calculateEndScores()
     }
 }
 
-
-void gameScreen::writeEndScreen()
+void gameScreen::drawEndScreen()    // Draws the screen showing the results of the match
 {
-    // Setting title
+    // Set title values
     Definitions::tft->setCursor(10, 10);
     Definitions::tft->setTextSize(3);
     Definitions::tft->setTextColor(ILI9341_BLACK);
 
-    /*
-     * If statements for setting the title and some text
-     * The winner gets congratulated
-     */
+    /* Show the title and some text
+     * The winner gets congratulated and gets shown a green background :)
+     * The loser gets a sad face and a red background :(
+     * When the match is tied, both players get a neutral message with an orange background :| */
 
     // If the match is tied
     if(winner == 0)
     {
-        // Making the background orange
         Definitions::tft->fillScreen(ILI9341_ORANGE);
         Definitions::tft->setCursor(10, 10);
         Definitions::tft->println("Gelijkspel");
 
     }
-        // If the current player won
+    // If the current player won
     else if((winner == 1 && Definitions::currentPlayer == 1) ||
             (winner == 2 && Definitions::currentPlayer == 2))
     {
-        // Making the background green
         Definitions::tft->fillScreen(ILI9341_GREEN);
-
-        // If so, it will be shown on the screen
         Definitions::tft->println("Gewonnen :)");
 
     }
-        // If the current player lost
+    // If the current player lost
     else if((winner == 1 && Definitions::currentPlayer == 2) ||
             (winner == 2 && Definitions::currentPlayer == 1))
     {
@@ -199,14 +212,19 @@ void gameScreen::writeEndScreen()
 
     }
 
-    // Showing the scores
+    // Show the scores...
+    // Current Player
     Definitions::tft->setCursor(10, 50);
     Definitions::tft->setTextSize(2);
     Definitions::tft->println("Uw score:");
 
+    // Opponent
     Definitions::tft->setCursor(10, 70);
     Definitions::tft->println("Tegenstander:");
 
+    /* Makes sure the proper scores are shown for the proper player
+     * Shows current player's score at current player
+     * Shows opponent's score at opponent */
     if (Definitions::currentPlayer == 1)
     {
         Definitions::tft->setCursor(180, 50);
@@ -226,28 +244,32 @@ void gameScreen::writeEndScreen()
         Definitions::tft->print(scoreP1);
     }
 
-    // Print end time
+    // Prints end time
     Definitions::tft->setCursor(10, 90);
     Definitions::tft->println("Eindtijd:");
-
     Definitions::tft->setCursor(180, 90);
     Definitions::tft->print(currentTime);
 }
 
 uint32_t RefreshCnt = 0;
 //bool placed;
-void gameScreen::refresh()
+void gameScreen::refresh()  // Handles refreshing the screen and updating some variables
 {
-
+    // Increment refresh counter
     RefreshCnt++;
+
+    ///What is this used for? Can't find any usages and seems useless to define here... --Niels
     uint8_t getPlacedTime;
 
+    // If the refresh counter is divisible by three... (run every three refreshes)
     if ((RefreshCnt % 3) == 0)
     {
+// Shown only when debugging is enabled
 #ifdef DEBUG
         Definitions::setTextDebug();
 		Definitions::println("Refresh");
 #endif
+        // Get values from nunchuk controller
         Definitions::nunchuk->update();
         if (Definitions::nunchuk->zButton && level.getBombX(0) == 0
             && level.getBombTime(0) == 0 && level.getBombY(0) == 0
@@ -353,7 +375,7 @@ void gameScreen::refresh()
     }
     timeCounter++;
 
-    if(timeCounter >= 27)
+    if(timeCounter >= 30)
     {
         currentTime--;
         drawTimer();
@@ -407,13 +429,12 @@ void gameScreen::drawLives()
     }
 }
 
-void gameScreen::drawTimer()
+void gameScreen::drawTimer()    // Draws the timer value
 {
     Definitions::tft->setTextColor(ILI9341_WHITE, ILI9341_BLACK);
-    Definitions::tft->setCursor(240, 100);
-    Definitions::tft->setTextSize(1);
+    //Definitions::tft->setTextSize(1);
+    Definitions::tft->setCursor(286, 100);
 
-    Definitions::tft->print("Tijd: ");
     Definitions::tft->print(currentTime);
     Definitions::tft->println(" ");
 
@@ -424,20 +445,13 @@ void gameScreen::drawTimer()
     }
 }
 
-void gameScreen::drawScore()
+void gameScreen::drawScore()    // Draws the score values
 {
-    Definitions::tft->setTextColor(ILI9341_WHITE, ILI9341_BLACK);
-    Definitions::tft->setCursor(240, 110);
-    Definitions::tft->setTextSize(1);
-    Definitions::tft->print("Scores:");
-
-    Definitions::tft->setCursor(240, 120);
-    Definitions::tft->print("P1: ");
+    Definitions::tft->setCursor(274, 120);
     Definitions::tft->print(scoreP1);
     Definitions::tft->println(" ");
 
-    Definitions::tft->setCursor(240, 130);
-    Definitions::tft->print("P2: ");
+    Definitions::tft->setCursor(274, 130);
     Definitions::tft->print(scoreP2);
     Definitions::tft->println(" ");
 }
