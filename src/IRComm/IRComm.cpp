@@ -213,6 +213,9 @@ int IRComm::readByteIteration()
 	{
 		//lastchar = readByteCharacter;
 		//readByteStart();
+		lastchar = readByteCharacter;
+		readByteStart(); // Read next byte
+		startReceiveBit(); // Start receiving next bit
 		return 1;
 	}
 	else if (bit == 60 && readByteIndex != 8)
@@ -233,14 +236,11 @@ int IRComm::readByteIteration()
 
 void IRComm::receiveOneByte()
 {
-	while(true)
+	while(false)
 	{
 		uint8_t isLastBit = readByteIteration();
 		if(isLastBit == 1) // parse bit
 		{	// We've got our last bit
-			lastchar = readByteCharacter;
-			readByteStart(); // Read next byte
-			startReceiveBit(); // Start receiving next bit
 			break;
 		}
 		else if(isLastBit == 2)

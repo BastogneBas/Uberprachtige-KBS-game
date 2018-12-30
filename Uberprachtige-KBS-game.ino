@@ -143,15 +143,21 @@ ISR(PCINT1_vect)
 			// Save at which count the receive has stopped
 			Definitions::irComm->bitReceiveChanged = Definitions::irComm->bitReceiveCounter;
 			// Process the data
-/*			uint8_t lastBitReceived = 2;
-			while(lastBitReceived == 2)
+			uint8_t lastBitReceived = 2;
+			while(lastBitReceived == 2) // If, for some reason the bit is not received jet, try again.
 			{
-				lastBitReceived = readByteIteration();
+				lastBitReceived = Definitions::irComm->readByteIteration();
 				if(lastBitReceived == 1)
 				{
-					break;
+					// We have a whole byte, so save it.
+					// TODO: Save the byte
+					// SEE: IRComm.cpp:216
 				}
-			}*/
+				else
+				{
+					Definitions::irComm->startReceiveBit();
+				}
+			}
 
 			/*uint8_t byteFinished = Definitions::irComm->readByteIteration();
 			if (byteFinished)
