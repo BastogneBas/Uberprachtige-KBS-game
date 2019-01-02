@@ -64,6 +64,8 @@ class IRComm: public Stream
 	uint32_t bitReceiveComplete = 0;
 	uint8_t typeReceived;
 	uint8_t readByteCharacter = 0;
+	uint8_t readByteIndex = 0;
+	uint8_t readByteHasStarted = false;
 
 	// Function definitions
 	void sendBit(uint8_t sendType);

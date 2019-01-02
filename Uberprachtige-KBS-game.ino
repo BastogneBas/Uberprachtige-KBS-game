@@ -167,11 +167,11 @@ ISR(PCINT1_vect)
 			}
 			Definitions::irComm->startReceive();*/
 		}
+		if(PINC & (1 << PINC3))
+			PORTB &= ~(1 << PORTB4);
+		else
+			PORTB |= (1 << PORTB4);
 	}
-	if(PINC & (1 << PINC3))
-		PORTB &= ~(1 << PORTB4);
-	else
-		PORTB |= (1 << PORTB4);
 	//Serial.println(Definitions::irComm->bitReceiveStarted);
 	//Serial.println(Definitions::irComm->bitReceiveChanged);
 	//Serial.println();
@@ -262,13 +262,12 @@ int main()
 	Serial.println(" kHz");
 	//Serial.println(OCR0A);
 	//Definitions::irComm->bitReceiveEnabled = 1;
-#if PEEP == 1
+//#if PEEP == 1
 	Definitions::irComm->readByteStart();
 	//Definitions::irComm->startReceive();
 	Definitions::irComm->startReceiveBit();
-	Definitions::irComm->receiveOneByte();
 	Serial.println(Definitions::irComm->read());
-#endif
+//#endif
 #else
 //	Definitions::irComm =
 //		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
@@ -296,7 +295,7 @@ int main()
 		{
 			refreshDone = 0;
 #ifdef IR
-#if PEEP == 2
+//#if PEEP == 2
 		if(Serial.available()){
 			Definitions::irComm->write(Serial.read());
 		}
@@ -309,26 +308,30 @@ int main()
 			Definitions::irComm->write(0x00);
 		}
 		}*/
-#elif PEEP == 1
+//#elif PEEP == 1
 		//if(Definitions::irComm->bitReceiveComplete){
 			//Serial.println("Complete");
 			//Definitions::irComm->startReceive();
 			//Definitions::irComm->receiveBit();
 			//Definitions::irComm->readByteStart();
 			//Definitions::irComm->startReceive();
-			Definitions::irComm->receiveOneByte();
-			Serial.print(Definitions::irComm->available());
-			Serial.print("\t");
-			Serial.write(Definitions::irComm->read());
-			Serial.print("\t");
-			Serial.println(Definitions::irComm->available());
+			if(Definitions::irComm->available())
+			{
+				Serial.print(Definitions::irComm->available());
+				Serial.print("\t");
+				Serial.print(Definitions::irComm->peek(), HEX);
+				Serial.print("\t");
+				Serial.write(Definitions::irComm->read());
+				Serial.print("\t");
+				Serial.println(Definitions::irComm->available());
+			}
 			//Serial.write(Definitions::irComm->read());
 		//else
 		//{
 		//	Serial.println("Not received");
 		//}
 
-#endif
+//#endif
 		//_delay_ms(10);
 #endif
 #ifndef IR

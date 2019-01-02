@@ -39,7 +39,7 @@ IRComm::IRComm()
  * Runs at the frequency defined in staticDefinitions.cpp
  * Runs without prescaler
 */
-	ASSR = (1 << AS2);
+	//ASSR = (1 << AS2);
 	TCCR2A = (1 << COM2A0) | (1 << WGM20) | (1 << WGM21);
 	TCCR2B = (1 << CS20) | (1 << WGM22);
 	OCR2A = RECTOP;
@@ -57,7 +57,8 @@ IRComm::IRComm()
 
 void IRComm::sendBit(uint8_t sendType)
 {
-		PORTC |= (1 << PORTC1);
+
+	PORTC |= (1 << PORTC1);
 //		Serial.print("Send ");
 //		Serial.println(sendType);
 /* --Sending a bit--
@@ -118,21 +119,21 @@ uint8_t IRComm::handleReceiveBit()
 	//Serial.print("\t");
 	//Serial.print(bitReceiveChanged);
 	//Serial.print("\t");
-	//Serial.print(diff);
+	Serial.println(diff);
 	//Serial.print("\t");
-	if((diff >= 20) && (diff <= 30))
+	if((diff >= 15) && (diff <= 30))
 	{
 		return ZERO_BIT;
 	}
-	else if ((diff >= 40) && (diff <= 50))
+	else if ((diff >= 35) && (diff <= 50))
 	{
 		return ONE_BIT;
 	}
-	else if ((diff >= 60) && (diff <= 70))
+	else if ((diff >= 55) && (diff <= 70))
 	{
 		return STOP_BIT;
 	}
-	else if ((diff >= 80) && (diff <= 90))
+	else if ((diff >= 75) && (diff <= 90))
 	{
 		return START_BIT;
 	}
@@ -148,6 +149,12 @@ size_t IRComm::write(uint8_t byte){
 //		Serial.print((byte & (1 << (7-i))) ? "1" : "0");
 //	}
 //	Serial.println();
+
+	// We send half duplex, so wait til we're done receiving
+	while(readByteHasStarted)
+		PRR = PRR;
+	bitReceiveEnabled = 0;
+
 	sendBit(START_BIT);
 	for(uint8_t i=0;i<8;i++){
 		sendBit(byte & (1 << (7-i)) ? ONE_BIT : ZERO_BIT);
@@ -160,16 +167,16 @@ size_t IRComm::write(uint8_t byte){
 	//sendBit((uint8_t)((byte>>6)<<1) ? ZERO_BIT : ONE_BIT);
 	//sendBit((uint8_t)((byte>>7)<<0) ? ZERO_BIT : ONE_BIT);
 	sendBit(STOP_BIT);
+
+	// And go back to receiving mode
+	readByteStart();
+	startReceiveBit();
 	return 0;
 }
 
 int IRComm::available(){
 	return String(charbuffer).length();
 }
-
-uint8_t readByteIndex = 0;
-//uint8_t readByteCharacter = 0;
-uint8_t readByteHasStarted = false;
 
 void IRComm::readByteStart()
 {
@@ -223,7 +230,6 @@ int IRComm::readByteIteration()
 		{
 			Serial.println("\033[91m"); // We like some fancy colors in our terminal
 			Serial.println("Welp! Our buffer is full... So kind of ArrayIndexOutOfBoundsException...");
-			Serial.println("At: IRComm.cpp:217");
 			Serial.print("Index is: ");
 			Serial.println(writeIndex);
 			Serial.println("Please read something, or receive nothing...");
@@ -274,9 +280,15 @@ void IRComm::receiveOneByte()
 
 void IRComm::shiftbufferleft()
 {
+	if(writeIndex != 0)
+	{
 	for (uint8_t i = 0; i < BUFFER_SIZE; i++)
 	{
-		charbuffer[i] = ((uint16_t)(&(*(charbuffer[i])))) << 8;
+		charbuffer[i] = charbuffer[i+1];
+		writeIndex--;
+		if(charbuffer[i+1] == 0x00)
+			break;
+	}
 	}
 }
 
@@ -301,11 +313,18 @@ int IRComm::read(){
 //	readByteStart();
 	//uint8_t ret = charbuffer[0];
 	//lastchar = 0;
+	
+	// The receiver has received something, so there will be written to the buffer.
+	// It isn't safe to read right now... Wait for it.
+	while(readByteHasStarted)
+		PRR=PRR;
 	char ret = charbuffer[0];
 	shiftbufferleft();
 	return ret;
 }
 
 int IRComm::peek(){
-	return 0;
+	while(readByteHasStarted)
+		PRR=PRR;
+	return charbuffer[0];
 }
