@@ -6,11 +6,11 @@
 IRComm::IRComm()
 {
 	#if PWMFREQ == 38
-	IRComm::SENDTOP = 209;
+	IRComm::SENDTOP = 210;
 	IRComm::RECTOP = 142;
 	IRComm::recTimerOverflow = 0;
 	#elif PWMFREQ == 56
-	IRComm::SENDTOP = 142;
+	IRComm::SENDTOP = 143;
 	IRComm::RECTOP = 209;
 	IRComm::recTimerOverflow = 0;
 	#else
@@ -39,7 +39,6 @@ IRComm::IRComm()
  * Runs at the frequency defined in staticDefinitions.cpp
  * Runs without prescaler
 */
-	//ASSR = (1 << AS2);
 	TCCR2A = (1 << COM2A0) | (1 << WGM20) | (1 << WGM21);
 	TCCR2B = (1 << CS20) | (1 << WGM22);
 	OCR2A = RECTOP;
@@ -57,10 +56,7 @@ IRComm::IRComm()
 
 void IRComm::sendBit(uint8_t sendType)
 {
-
 	PORTC |= (1 << PORTC1);
-//		Serial.print("Send ");
-//		Serial.println(sendType);
 /* --Sending a bit--
  * Uses timer0 as defined above
  * Timer0 will always be running and comparing...
@@ -95,7 +91,6 @@ void IRComm::sendBit(uint8_t sendType)
 
 	// Disable digital PIN 1 to indicate that the sending is done
 	PORTC &= ~(1 << PORTC1);
-//	Serial.println("Send complete");
 }
 
 // Reset the receival and indicate that it has started
@@ -115,12 +110,6 @@ uint8_t IRComm::handleReceiveBit()
 	bitReceiveEnabled = 0;
 	bitReceiveComplete = 1;
 	uint8_t diff = bitReceiveChanged-bitReceiveStarted;
-	//Serial.print(bitReceiveStarted);
-	//Serial.print("\t");
-	//Serial.print(bitReceiveChanged);
-	//Serial.print("\t");
-	Serial.println(diff);
-	//Serial.print("\t");
 	if((diff >= 15) && (diff <= 30))
 	{
 		return ZERO_BIT;
@@ -145,11 +134,6 @@ uint8_t IRComm::handleReceiveBit()
 }
 
 size_t IRComm::write(uint8_t byte){
-//	for(uint8_t i=0;i<8;i++){
-//		Serial.print((byte & (1 << (7-i))) ? "1" : "0");
-//	}
-//	Serial.println();
-
 	// We send half duplex, so wait til we're done receiving
 	while(readByteHasStarted)
 		PRR = PRR;
@@ -159,13 +143,6 @@ size_t IRComm::write(uint8_t byte){
 	for(uint8_t i=0;i<8;i++){
 		sendBit(byte & (1 << (7-i)) ? ONE_BIT : ZERO_BIT);
 	}
-	//sendBit((uint8_t)((byte>>1)<<6) ? ZERO_BIT : ONE_BIT);
-	//sendBit((uint8_t)((byte>>2)<<5) ? ZERO_BIT : ONE_BIT);
-	//sendBit((uint8_t)((byte>>3)<<4) ? ZERO_BIT : ONE_BIT);
-	//sendBit((uint8_t)((byte>>4)<<3) ? ZERO_BIT : ONE_BIT);
-	//sendBit((uint8_t)((byte>>5)<<2) ? ZERO_BIT : ONE_BIT);
-	//sendBit((uint8_t)((byte>>6)<<1) ? ZERO_BIT : ONE_BIT);
-	//sendBit((uint8_t)((byte>>7)<<0) ? ZERO_BIT : ONE_BIT);
 	sendBit(STOP_BIT);
 
 	// And go back to receiving mode
@@ -219,12 +196,10 @@ int IRComm::readByteIteration()
 	}
 	else if (bit == 60 && readByteIndex == 8)
 	{
-		//lastchar = readByteCharacter;
-		//readByteStart();
 		if(writeIndex < BUFFER_SIZE)
 		{
-		charbuffer[writeIndex] = readByteCharacter;
-		writeIndex++;
+			charbuffer[writeIndex] = readByteCharacter;
+			writeIndex++;
 		}
 		else
 		{
@@ -257,27 +232,6 @@ int IRComm::readByteIteration()
 	}
 }
 
-void IRComm::receiveOneByte()
-{
-	while(false)
-	{
-		uint8_t isLastBit = readByteIteration();
-		if(isLastBit == 1) // parse bit
-		{	// We've got our last bit
-			break;
-		}
-		else if(isLastBit == 2)
-		{
-			//Serial.println("Not finished");
-		}
-		else
-		{
-			startReceiveBit(); // Start receiving next bit
-			continue;
-		}
-	}
-}
-
 void IRComm::shiftbufferleft()
 {
 	if(writeIndex != 0)
@@ -293,27 +247,6 @@ void IRComm::shiftbufferleft()
 }
 
 int IRComm::read(){
-//	//readByteStart();
-//	for(;;)
-//	{
-//		startReceive();
-//		while(!(bitReceiveStarted && bitReceiveChanged))
-//		{
-//			/* We need to do something in our loop for some reason, so we set
-//			 * the Power Reduction Register to the value of itself... */
-//			PRR = PRR;
-//		}
-//		if(readByteIteration())
-////		if(readByteCharacter)
-//		{
-//			break;
-//		}
-//	}
-//	lastchar = readByteCharacter;
-//	readByteStart();
-	//uint8_t ret = charbuffer[0];
-	//lastchar = 0;
-	
 	// The receiver has received something, so there will be written to the buffer.
 	// It isn't safe to read right now... Wait for it.
 	while(readByteHasStarted)

@@ -73,7 +73,6 @@ class IRComm: public Stream
 	uint8_t handleReceiveBit();
 	void readByteStart();
 	int readByteIteration();
-	void receiveOneByte();
 	char charbuffer[BUFFER_SIZE] = "";
 	uint8_t writeIndex = 0;
 

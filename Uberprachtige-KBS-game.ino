@@ -86,13 +86,8 @@ ISR(TIMER1_COMPA_vect)
 {
 	if (refreshDone)
 	{
-		//PORTD |= (1 << PORTD5);
 		startRefresh = 1;
 	}
-	//Serial.println("refresh");
-	//#ifndef IRDEBUG
-	//Definitions::currentScreen->refresh();
-	//#endif
 }
 
 /* --Compare interrupt for receive timer--
@@ -114,16 +109,8 @@ ISR(TIMER2_COMPA_vect)
 			Definitions::irComm->bitReceiveStarted = 0;
 		}
 	}
-	//Serial.println(PINC & (1 << PINC3));
-	//Serial.println(Definitions::irComm->bitReceiveCounter);
-	//Serial.println(OCR2A);
 #endif
 }
-
-//ISR(_VECTOR(0)){
-//  DDRD |= (1 << DDD4);
-//  PORTD |= (1 << PORTD4);
-//}
 
 // Receival Pin Change Interrupt
 ISR(PCINT1_vect)
@@ -147,34 +134,17 @@ ISR(PCINT1_vect)
 			while(lastBitReceived == 2) // If, for some reason the bit is not received jet, try again.
 			{
 				lastBitReceived = Definitions::irComm->readByteIteration();
-				if(lastBitReceived == 1)
-				{
-					// We have a whole byte, so save it.
-					// TODO: Save the byte
-					// SEE: IRComm.cpp:216
-				}
-				else
+				if(lastBitReceived != 1)
 				{
 					Definitions::irComm->startReceiveBit();
 				}
 			}
-
-			/*uint8_t byteFinished = Definitions::irComm->readByteIteration();
-			if (byteFinished)
-			{
-				Definitions::irComm->lastchar = Definitions::irComm->readByteCharacter;
-				Definitions::irComm->readByteStart();
-			}
-			Definitions::irComm->startReceive();*/
 		}
 		if(PINC & (1 << PINC3))
 			PORTB &= ~(1 << PORTB4);
 		else
 			PORTB |= (1 << PORTB4);
 	}
-	//Serial.println(Definitions::irComm->bitReceiveStarted);
-	//Serial.println(Definitions::irComm->bitReceiveChanged);
-	//Serial.println();
 #warning IR
 #endif
 }
@@ -207,7 +177,6 @@ void own_init(){
 		(0 << CS11)  |
 		(0 << CS10)  ;
 
-	//OCR1A = (uint16_t)6250;
 	OCR1A = (uint16_t) 1562;
 	TIMSK1 = (1 << OCIE1A);
 
@@ -260,14 +229,10 @@ int main()
 	Serial.print(" speaking at ");
 	Serial.print(PWMFREQ);
 	Serial.println(" kHz");
-	//Serial.println(OCR0A);
-	//Definitions::irComm->bitReceiveEnabled = 1;
-//#if PEEP == 1
+	
 	Definitions::irComm->readByteStart();
-	//Definitions::irComm->startReceive();
 	Definitions::irComm->startReceiveBit();
 	Serial.println(Definitions::irComm->read());
-//#endif
 #else
 //	Definitions::irComm =
 //		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
@@ -295,26 +260,9 @@ int main()
 		{
 			refreshDone = 0;
 #ifdef IR
-//#if PEEP == 2
 		if(Serial.available()){
 			Definitions::irComm->write(Serial.read());
 		}
-		/*if(!(PINC & (1 << PINC2))){
-		if(!(PINC & (1 << PINC0))){
-			//Definitions::irComm->sendBit(ONE_BIT);
-			Definitions::irComm->write(0xff);
-		} else {
-			//Definitions::irComm->sendBit(ZERO_BIT);
-			Definitions::irComm->write(0x00);
-		}
-		}*/
-//#elif PEEP == 1
-		//if(Definitions::irComm->bitReceiveComplete){
-			//Serial.println("Complete");
-			//Definitions::irComm->startReceive();
-			//Definitions::irComm->receiveBit();
-			//Definitions::irComm->readByteStart();
-			//Definitions::irComm->startReceive();
 			if(Definitions::irComm->available())
 			{
 				Serial.print(Definitions::irComm->available());
@@ -325,17 +273,8 @@ int main()
 				Serial.print("\t");
 				Serial.println(Definitions::irComm->available());
 			}
-			//Serial.write(Definitions::irComm->read());
-		//else
-		//{
-		//	Serial.println("Not received");
-		//}
-
-//#endif
-		//_delay_ms(10);
 #endif
 #ifndef IR
-			//PORTD |= (1 << PORTD6);
 			Definitions::currentScreen->refresh();
 #endif
 			startRefresh = 0;
@@ -347,17 +286,6 @@ int main()
 			 * the Power Reduction Register to the value of itself... */
 			PRR = PRR;		
 		}
-		/*if (startRefresh)
-		   PORTD |= (1 << PORTD5);
-		   else
-		   PORTD &= ~(1 << PORTD5);
-
-		   if (refreshDone)
-		   PORTD |= (1 << PORTD6);
-		   else
-		   PORTD &= ~(1 << PORTD6);
-		   } */
-		//delay(100);
 	}
 	PORTB = 0xFF;
 	PORTD = 0xFF;
