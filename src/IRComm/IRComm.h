@@ -21,6 +21,9 @@
 #define START_TYPE		2
 #define STOP_TYPE		3
 
+// Size of the buffer.
+#define BUFFER_SIZE	   50
+
 // Indicates that debugging on a single Arduino is enabled
 //#define SOLODEBUG
 
@@ -69,7 +72,7 @@ class IRComm: public Stream
 	void readByteStart();
 	int readByteIteration();
 	void receiveOneByte();
-	char charbuffer[50] = "";
+	char charbuffer[BUFFER_SIZE] = "";
 	uint8_t writeIndex = 0;
 
 	// Inherited from Stream
@@ -81,7 +84,7 @@ class IRComm: public Stream
   protected:
 
   private:
-
+	void shiftbufferleft();
 };
 
 #endif

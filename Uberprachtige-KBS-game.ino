@@ -291,6 +291,10 @@ int main()
 
 	for (;;)
 	{
+		// Refresh screen
+		if (startRefresh)
+		{
+			refreshDone = 0;
 #ifdef IR
 #if PEEP == 2
 		if(Serial.available()){
@@ -313,8 +317,11 @@ int main()
 			//Definitions::irComm->readByteStart();
 			//Definitions::irComm->startReceive();
 			Definitions::irComm->receiveOneByte();
-			Definitions::irComm->available();
-			Definitions::irComm->read();
+			Serial.print(Definitions::irComm->available());
+			Serial.print("\t");
+			Serial.write(Definitions::irComm->read());
+			Serial.print("\t");
+			Serial.println(Definitions::irComm->available());
 			//Serial.write(Definitions::irComm->read());
 		//else
 		//{
@@ -325,19 +332,17 @@ int main()
 		//_delay_ms(10);
 #endif
 #ifndef IR
-		//irComm->sendBit(ONE_BIT);
-		// Refresh screen
-		if (startRefresh)
-		{
-			refreshDone = 0;
 			//PORTD |= (1 << PORTD6);
 			Definitions::currentScreen->refresh();
+#endif
 			startRefresh = 0;
 			refreshDone = 1;
 		}
 		else
 		{
-			PORTB = PORTB;
+			/* We need to do something in our loop for some reason, so we set
+			 * the Power Reduction Register to the value of itself... */
+			PRR = PRR;		
 		}
 		/*if (startRefresh)
 		   PORTD |= (1 << PORTD5);
@@ -350,7 +355,6 @@ int main()
 		   PORTD &= ~(1 << PORTD6);
 		   } */
 		//delay(100);
-#endif
 	}
 	PORTB = 0xFF;
 	PORTD = 0xFF;
