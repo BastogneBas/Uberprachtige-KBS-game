@@ -35,33 +35,22 @@ class IRComm: public Stream
 	IRComm();
 
 	// Variables defined based on what frequencies we are using
-	uint8_t SENDTOP;
-	uint8_t RECTOP;
-	uint8_t recTimerOverflow;
-/*#if PWMFREQ == 38
-	uint8_t SENDTOP = 209;
-	uint8_t RECTOP = 142;
-	uint8_t recTimerOverflow = 0;
-
-#elif PWMFREQ == 56
-	uint8_t SENDTOP = 142;
-	uint8_t RECTOP = 209;
-	uint8_t recTimerOverflow = 0;
-
-#else
-#error Invalid PWM Frequency
-#endif*/
+//	uint8_t SENDTOP;
+//	uint8_t RECTOP;
+//	uint8_t recTimerOverflow;
 
 	// Variable definitions
 	uint8_t bitSendEnabled = 0;
 	uint16_t bitSendCounter = 0;
 	uint8_t bitSendType = 0;
 	uint8_t bitSendComplete = 0;
-	uint32_t bitReceiveEnabled = 0;
+
+	uint16_t bitReceiveEnabled = 0;
 	uint16_t bitReceiveCounter = 0;
-	uint32_t bitReceiveStarted = 0;
-	uint32_t bitReceiveChanged = 0;
-	uint32_t bitReceiveComplete = 0;
+	uint16_t bitReceiveStarted = 0;
+	uint16_t bitReceiveChanged = 0;
+	uint16_t bitReceiveComplete = 0;
+
 	uint8_t typeReceived;
 	uint8_t readByteCharacter = 0;
 	uint8_t readByteIndex = 0;
@@ -70,8 +59,8 @@ class IRComm: public Stream
 	// Function definitions
 	void sendBit(uint8_t sendType);
 	void startReceiveBit();
-	uint8_t handleReceiveBit();
-	void readByteStart();
+	uint8_t ahandleReceiveBit();
+	void startReadByte();
 	int readByteIteration();
 	char charbuffer[BUFFER_SIZE] = "";
 	uint8_t writeIndex = 0;
@@ -81,6 +70,10 @@ class IRComm: public Stream
 	int available();
 	int read();
 	int peek();
+
+
+//	AFTER REWITE OF CODE
+	
 
   protected:
 

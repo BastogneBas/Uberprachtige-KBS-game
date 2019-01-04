@@ -3,45 +3,51 @@
 #include <Wire.h>
 #include "../../staticDefinitions.cpp"
 
+#ifdef DEBUG
+#pragma message Debugging!
+#endif
+
+// *** Constructor *** //
 IRComm::IRComm()
 {
-	#if PWMFREQ == 38
-	IRComm::SENDTOP = 210;
-	IRComm::RECTOP = 142;
-	IRComm::recTimerOverflow = 0;
-	#elif PWMFREQ == 56
-	IRComm::SENDTOP = 143;
-	IRComm::RECTOP = 209;
-	IRComm::recTimerOverflow = 0;
-	#else
-	#error Invalid PWM frequency
-	#endif
 
-/* --Initialize the send timer--
- * Uses Timer0
- * Toggles OC0A (Digital PIN 6) on compare match
- * Operates in Fast PWM mode with OCRA as TOP
- * Compares with SENDTOP (defined in IRComm.h)
- * Runs at the frequency defined in staticDefinitions.cpp
- * Runs without prescaler
-*/
+	/* --Initialize the send timer--
+	 * Uses Timer0
+	 * Toggles OC0A (Digital PIN 6) on compare match
+	 * Operates in Fast PWM mode with OCRA as TOP
+	 * Compares with SENDTOP (defined in IRComm.h)
+	 * Runs at the frequency defined in staticDefinitions.cpp
+	 * Runs without prescaler
+	*/
 	TCCR0A = (1 << COM0A0) | (1 << WGM00) | (1 << WGM01);
 	TCCR0B = (1 << CS00) | (1 << WGM02);
-	OCR0A = SENDTOP;
+#if PWMFREQ == 38
+	OCR0A = 210;
+#elif PWMFREQ == 56
+	OCR0A = 143;
+#else
+#error Invalid PWM frequency
+#endif
 	// Enable timer0 compare interrupts
 	TIMSK0 = (1 << OCIE0A);
 
-/* --Initialize the receive timer--
- * Uses Timer2
- * Toggles OC2A (Digital PIN 11) on compare match
- * Operates in Fast PWM mode with OCRA as TOP
- * Compares with RECTOP (defined in IRComm.h)
- * Runs at the frequency defined in staticDefinitions.cpp
- * Runs without prescaler
-*/
+	/* --Initialize the receive timer--
+	 * Uses Timer2
+	 * Toggles OC2A (Digital PIN 11) on compare match
+	 * Operates in Fast PWM mode with OCRA as TOP
+	 * Compares with RECTOP (defined in IRComm.h)
+	 * Runs at the frequency defined in staticDefinitions.cpp
+	 * Runs without prescaler
+	*/
 	TCCR2A = (1 << COM2A0) | (1 << WGM20) | (1 << WGM21);
 	TCCR2B = (1 << CS20) | (1 << WGM22);
-	OCR2A = RECTOP;
+#if PWMFREQ == 38
+	OCR2A = 142;
+#elif PWMFREQ == 56
+	OCR2A = 209;
+#else
+#error Invalid PWM frequency
+#endif
 	// Enable timer2 compare interrupts
 	TIMSK2 = (1 << OCIE2A);
 
@@ -54,22 +60,45 @@ IRComm::IRComm()
 }
 
 
+
+// *** Sending *** //
+// Inherited from Stream
+// Writes one byte
+size_t IRComm::write(uint8_t byte){
+	// We send half duplex, so wait til we're done receiving
+	while(readByteHasStarted)
+		PRR = PRR;
+	bitReceiveEnabled = 0;
+
+	sendBit(START_BIT);
+	for(uint8_t i=0;i<8;i++){
+		sendBit(byte & (1 << (7-i)) ? ONE_BIT : ZERO_BIT);
+	}
+	sendBit(STOP_BIT);
+
+	// And go back to receiving mode
+	startReadByte();
+	startReceiveBit();
+	return 0;
+}
+
+// Sends one bit
 void IRComm::sendBit(uint8_t sendType)
 {
-	PORTC |= (1 << PORTC1);
-/* --Sending a bit--
- * Uses timer0 as defined above
- * Timer0 will always be running and comparing...
- * ...at the frequency defined in staticDefinitions.cpp
- * If a bit will be sent/the signal will be let through to the LED...
- * ...is defined by the enabling or disabling of Digital PIN 4
- *
- * If PIN4 is high, the LED doesn't have a connection to ground...
- * ...which means that the LED won't be burning
- * If PIN4 is low however, the LED will burn at the defined frequency
- *
- * This function also handles properly initiating the sending of a bit
-*/
+	//PORTD |= (1 << PORTD1);
+	/* --Sending a bit--
+	 * Uses timer0 as defined above
+	 * Timer0 will always be running and comparing...
+	 * ...at the frequency defined in staticDefinitions.cpp
+	 * If a bit will be sent/the signal will be let through to the LED...
+	 * ...is defined by the enabling or disabling of Digital PIN 4
+	 *
+	 * If PIN4 is high, the LED doesn't have a connection to ground...
+	 * ...which means that the LED won't be burning
+	 * If PIN4 is low however, the LED will burn at the defined frequency
+	 *
+	 * This function also handles properly initiating the sending of a bit
+	*/
 	// Reset the sendBit counters
 	bitSendComplete = 0;
 	bitSendCounter = 0;
@@ -90,9 +119,12 @@ void IRComm::sendBit(uint8_t sendType)
 	}
 
 	// Disable digital PIN 1 to indicate that the sending is done
-	PORTC &= ~(1 << PORTC1);
+	//PORTD&= ~(1 << PORTD1);
 }
 
+
+
+// *** Receiving *** //
 // Reset the receival and indicate that it has started
 void IRComm::startReceiveBit()
 {
@@ -103,149 +135,126 @@ void IRComm::startReceiveBit()
 	bitReceiveEnabled = 1;
 }
 
-// Process the received data
-uint8_t IRComm::handleReceiveBit()
-{
-	// Stop the receival of data
-	bitReceiveEnabled = 0;
-	bitReceiveComplete = 1;
-	uint8_t diff = bitReceiveChanged-bitReceiveStarted;
-	if((diff >= 15) && (diff <= 30))
-	{
-		return ZERO_BIT;
-	}
-	else if ((diff >= 35) && (diff <= 50))
-	{
-		return ONE_BIT;
-	}
-	else if ((diff >= 55) && (diff <= 70))
-	{
-		return STOP_BIT;
-	}
-	else if ((diff >= 75) && (diff <= 90))
-	{
-		return START_BIT;
-	}
-	else
-	{
-		return -1;
-	}
-
-}
-
-size_t IRComm::write(uint8_t byte){
-	// We send half duplex, so wait til we're done receiving
-	while(readByteHasStarted)
-		PRR = PRR;
-	bitReceiveEnabled = 0;
-
-	sendBit(START_BIT);
-	for(uint8_t i=0;i<8;i++){
-		sendBit(byte & (1 << (7-i)) ? ONE_BIT : ZERO_BIT);
-	}
-	sendBit(STOP_BIT);
-
-	// And go back to receiving mode
-	readByteStart();
-	startReceiveBit();
-	return 0;
-}
-
-int IRComm::available(){
-	return String(charbuffer).length();
-}
-
-void IRComm::readByteStart()
+// Prepaire for receiving the next byte
+void IRComm::startReadByte()
 {
 	readByteIndex = 0;
 	readByteCharacter = 0;
 	readByteHasStarted = false;
 }
 
+// Process received bit data
 int IRComm::readByteIteration()
 {
+	// Check if we have received a bit.
 	if(bitReceiveStarted && bitReceiveChanged)
 	{
-	uint8_t bit = handleReceiveBit();
-	if (bit == 255)
-	{
-		return 0; // We have something invalid. Probably noise...
-	}
-	else if (bit == 80 && readByteIndex == 0 && readByteHasStarted == false)
-	{
-		readByteHasStarted = true;
-	}
-	else if (bit == 80 && readByteIndex != 0 && readByteHasStarted == false)
-	{
-		//Serial.print("Randomly received START_BIT at ");
-		//Serial.println(index);
-	}
-	else if (bit != 80 && readByteIndex == 0 && readByteHasStarted == false)
-	{
-		//Serial.println("Wait, this isn't a START_BIT");
-	}
-	else if (bit == 40)
-	{
-		readByteCharacter |= (1 << (7-readByteIndex));
-		readByteIndex++;
-	}
-	else if (bit == 20)
-	{
-		readByteCharacter |= 0; // Basically does nothing
-		readByteIndex++;
-	}
-	else if (bit == 60 && readByteIndex == 8)
-	{
-		if(writeIndex < BUFFER_SIZE)
+		// Yes we have.
+		// Stop the receival of data
+		bitReceiveEnabled = 0;
+		bitReceiveComplete = 1;
+		// Calculate the difference between start and the end of the receival.
+		uint8_t diff = bitReceiveChanged-bitReceiveStarted;
+		// And do something with it
+		if (((diff >= 75) && (diff <= 90)) && readByteIndex == 0 && readByteHasStarted == false)
 		{
-			charbuffer[writeIndex] = readByteCharacter;
-			writeIndex++;
+			// We have received a START_BIT, so we can start receiving.
+			readByteHasStarted = true;
 		}
-		else
+		else if (((diff >= 75) && (diff <= 90)) && readByteIndex != 0 && readByteHasStarted == true)
 		{
-			Serial.println("\033[91m"); // We like some fancy colors in our terminal
-			Serial.println("Welp! Our buffer is full... So kind of ArrayIndexOutOfBoundsException...");
-			Serial.print("Index is: ");
-			Serial.println(writeIndex);
-			Serial.println("Please read something, or receive nothing...");
+			// We received a START_BIT while the receiving of this byte has already started
+		}
+		else if (((diff >= 75) && (diff <= 90)) && readByteIndex == 0 && readByteHasStarted == false)
+		{
+			// We have received a valid bit, but we expected a START_BIT
+		}
+		else if ((diff >= 35) && (diff <= 50))
+		{
+			// We have received a valid 1 (one) bit to append to our byte
+			readByteCharacter |= (1 << (7 - readByteIndex));
+			readByteIndex++;
+		}
+		else if ((diff >= 15) && (diff <= 30))
+		{
+			// We have received a valid 0 (zero) bit to append to our byte
+			readByteCharacter &= (0 << (7 - readByteIndex)); // Basically does nothing
+			readByteIndex++;
+		}
+		else if (((diff >= 55) && (diff <= 70)) && readByteIndex == 8)
+		{
+			// We have received a STOP_BIT and we have a eight bits, so we have finished our byte
+			// Let's check if the writebuffer hasn't already been filled
+			if(writeIndex < BUFFER_SIZE)
+			{
+				// Nope, so we can append our byte to it.
+				charbuffer[writeIndex] = readByteCharacter;
+				writeIndex++;
+			}
+			else
+			{
+				// Yikes the buffer is filled. Well, let's throw away our byte and cry 😭
+#ifdef DEBUG
+				Serial.println("\033[91m"); // We like some fancy colors in our terminal
+				Serial.println("Welp! Our buffer is full... So kind of ArrayIndexOutOfBoundsException...");
+				Serial.print("Index is: ");
+				Serial.println(writeIndex);
+				Serial.println("Please read something, or receive nothing...");
+				Serial.print("\033[m");
+#endif
+			}
+			startReadByte(); // Read next byte
+			startReceiveBit(); // Start receiving next bit
+			return 1;
+		}
+		else if (((diff >= 55) && (diff <= 70)) && readByteIndex != 8)
+		{
+			// Yikes, the sender has sent all bits, but we haven't received all of them...
+#ifdef DEBUG
+			// Now cry 😭
+			Serial.println("\033[91m");
+			Serial.print("Hmmm, the byte is sent, but we only have ");
+			Serial.print(readByteIndex);
+			Serial.println(" bits");
+			Serial.println("retrying");
 			Serial.print("\033[m");
+#endif
+			// Prepaire for receiving a new byte
+			startReadByte();
 		}
-		readByteStart(); // Read next byte
-		startReceiveBit(); // Start receiving next bit
-		return 1;
-	}
-	else if (bit == 60 && readByteIndex != 8)
-	{
-		Serial.println("\033[91m");
-		Serial.print("Hmmm, the byte is sent, but we only have ");
-		Serial.print(readByteIndex);
-		Serial.println(" bits");
-		Serial.println("retrying");
-		Serial.print("\033[m");
-		readByteStart();
-	}
-	return 0;
+		return 0;
 	}
 	else
 	{
+		// Hey, we haven't received everything...
 		return 2;
 	}
 }
 
+// Shift the charbuffer one character to the left.
 void IRComm::shiftbufferleft()
 {
 	if(writeIndex != 0)
 	{
-	for (uint8_t i = 0; i < BUFFER_SIZE; i++)
-	{
-		charbuffer[i] = charbuffer[i+1];
-		writeIndex--;
-		if(charbuffer[i+1] == 0x00)
-			break;
-	}
+		for (uint8_t i = 0; i < BUFFER_SIZE; i++)
+		{
+			charbuffer[i] = charbuffer[i+1];
+			writeIndex--;
+			if(charbuffer[i+1] == 0x00)
+				break;
+		}
 	}
 }
 
+
+
+// *** Reading from buffer *** //
+// Checks the amount of bytes waiting to be read.
+int IRComm::available(){
+	return String(charbuffer).length();
+}
+
+// Reads one byte, and marks it as read, so we shift it one place to the right
 int IRComm::read(){
 	// The receiver has received something, so there will be written to the buffer.
 	// It isn't safe to read right now... Wait for it.
@@ -256,6 +265,7 @@ int IRComm::read(){
 	return ret;
 }
 
+// Reads one byte, but doesn't do anything with it.
 int IRComm::peek(){
 	while(readByteHasStarted)
 		PRR=PRR;

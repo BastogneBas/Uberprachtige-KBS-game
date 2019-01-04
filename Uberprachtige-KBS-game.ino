@@ -230,7 +230,7 @@ int main()
 	Serial.print(PWMFREQ);
 	Serial.println(" kHz");
 	
-	Definitions::irComm->readByteStart();
+	Definitions::irComm->startReadByte();
 	Definitions::irComm->startReceiveBit();
 	Serial.println(Definitions::irComm->read());
 #else

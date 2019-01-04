@@ -36,7 +36,7 @@
 #define PWMFREQ 56
 #endif
 
-//#define DEBUG
+#define DEBUG
 
 class Definitions
 {
