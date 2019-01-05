@@ -2,7 +2,7 @@
 #define SCREEN_H
 
 
-class screen	/// Defines the screen class
+class screen /// Defines the screen class
 {
   public:
 	//virtual Scherm()=0;

@@ -79,7 +79,7 @@ ISR(TIMER0_COMPA_vect)
 }
 #endif
 
-ISR(TIMER1_COMPA_vect)	// Timer1 output compare interrupt
+ISR(TIMER1_COMPA_vect) // Timer1 output compare interrupt
 {
 	if(refreshDone)
 	{
@@ -157,7 +157,7 @@ ISR(PCINT1_vect)
 }
 #endif
 
-int main()	// Main function
+int main() // Main function
 {
 	// Set PINs to output
 	DDRB |=
@@ -176,7 +176,7 @@ int main()	// Main function
 	// TODO: replace with own initialisation.
 	// SEE: https://github.com/arduino/ArduinoCore-avr/blob/b084848f2eaf9ccb3ac9a64ac5492d91df4706bf/cores/arduino/wiring.c#L241
 	// Default Arduino initialisation.
-#warning Needs to be replaced
+	#warning Needs to be replaced
 	//init();
 
 	// Initialize Timer 0
@@ -256,26 +256,23 @@ int main()	// Main function
 //#endif
 #endif
 
-	for(;;)	// Loop forever
+	for(;;) // Loop forever
 	{
-		// Refresh screen when a refresh has been indicated
-		if(startRefresh)
+		if(startRefresh) // Refresh screen when a refresh has been indicated
 		{
 			refreshDone = 0;
-#ifndef IRDEBUG
+		#ifndef IRDEBUG
 			///Only refresh the screen when not debugging IR
 			Definitions::currentScreen->refresh();
-#endif
+		#endif
 			startRefresh = 0;
 			refreshDone = 1;
 		}
-		// Otherwise do nothing
 		else
 		{
-			// Does nothing, but the arduino can't handle empty whiles for some reason
+			// Does nothing, but the arduino can't handle empty whiles for some reason, so we put this in instead
 			PORTB = PORTB;
 		}
-
 		// TODO: Decide if this commented-out piece of code can be removed
 		/*if (startRefresh)
 		   PORTD |= (1 << PORTD5);

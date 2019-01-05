@@ -1,66 +1,57 @@
-// Including libs for enabling the screen
 #include "../Adafruit_GFX_Library/Adafruit_GFX.h"	// Core graphics library
 #include "../Adafruit_ILI9341/Adafruit_ILI9341.h"	// Hardware-specific library
-#include <SPI.h>
-
-// Including nunchuck libs
 #include "../ArduinoNunchuk/ArduinoNunchuk.h"
-
-// Other includes
+#include <SPI.h>
 #include "../../staticDefinitions.cpp"
-#include "highScoreScreen.h"
-//#include "../endScreen/endScreen.h"
-#include "../homeScreen/homeScreen.h"
 #include "../../screen.h"
+#include "../homeScreen/homeScreen.h"
+#include "highScoreScreen.h"
 
 highScoreScreen::highScoreScreen()
 {
 
 }
 
-void highScoreScreen::begin()
+void highScoreScreen::begin() // Initialize highScoreScreen
 {
-	// Making the background black
+	// Set background to black
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 	Definitions::tft->setTextColor(ILI9341_WHITE);
 
-	// Writing title
+	// Print title
 	Definitions::tft->setCursor(20, 10);
 	Definitions::tft->setTextSize(3);
 	Definitions::tft->println("Highscores");
 
-	// Drawing lines
+	// Draw lines
 	Definitions::tft->drawLine(10, 40, 310, 40, ILI9341_WHITE);
 	Definitions::tft->drawLine(160, 40, 160, 240, ILI9341_WHITE);
 	Definitions::tft->drawLine(10, 65, 310, 65, ILI9341_WHITE);
 	Definitions::tft->drawLine(40, 65, 40, 240, ILI9341_WHITE);
 	Definitions::tft->drawLine(190, 65, 190, 240, ILI9341_WHITE);
 
-	// Draw rectangle around the lines
+	// Draw rectangles around the lines
 	Definitions::tft->drawRect(10, 0, 300, 240, ILI9341_WHITE);
 
-	// Drawing players
+	// Draw player titles
 	Definitions::tft->setCursor(20, 45);
 	Definitions::tft->setTextSize(2);
 	Definitions::tft->println("Player 1");
-
 	Definitions::tft->setCursor(170, 45);
 	Definitions::tft->println("Player 2");
 
-	// For loop to print the numbers 1 - 5 and the highscore values for p1 and p2
-	for (uint8_t i = 1; i <= 5; i++)
+	for (uint8_t i = 1; i <= 5; i++) // Print values
 	{
-		// Printing values 1 - 5 on the left side
+		// Print numbers 1 to 5 on the left for player 1
 		Definitions::tft->setCursor(20, highScoreScreen::cursorValue);
 		Definitions::tft->print(i);
 
-		// Printing values 1 - 5 on the right side
+		// Print numbers 1 to 5 on the left for player 2
 		Definitions::tft->setCursor(170, highScoreScreen::cursorValue);
 		Definitions::tft->print(i);
 
-		// TODO get values from the highScores class instead of highScoreScreen.h file
-		// Sorting the arrays for players 1 and 2
-		for (uint8_t a = 0; a <= 4; a++)
+		// TODO: get values from the highScores class instead of highScoreScreen.h file
+		for (uint8_t a = 0; a <= 4; a++) // Sort the scores for both players
 		{
 			// Looping until all the values have been checked (j <= 4 - a)
 			for (uint8_t j = 0; j <= 4 - a; j++)

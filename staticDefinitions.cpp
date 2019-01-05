@@ -31,7 +31,7 @@
 /// Uncomment this to enable debug code
 //#define DEBUG
 
-class Definitions	// Define the constants
+class Definitions // Define the constants
 {
   public:
 	/* Define which PINs the TFT display is on
