@@ -147,8 +147,10 @@ int main()
 	// Initialize the tft
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
+#ifdef TFT
 	Definitions::tft->begin();
 	yield();
+#endif
 	//Definitions::tft->setRotation(1);
 	//Definitions::tft->fillScreen(ILI9341_BLACK);
 
@@ -164,16 +166,17 @@ int main()
 
 	// Opening the homeScreen
 	Definitions::currentScreen = new homeScreen();
+#ifdef TFT
 	Definitions::currentScreen->begin();
-//#endif
+#endif
 
 #ifdef IR
 	Serial.begin(500000);
-	Serial.setTimeout(12);
+//	Serial.setTimeout(12);
 	// Construct the irComm class
 	Definitions::irComm = new IRComm();
 
-//	Serial.println("Morning!");
+	Serial.println("Morning!");
 //	Serial.print("This is ");
 //	Serial.print(PEEP);
 //	Serial.print(" speaking at ");
@@ -205,15 +208,20 @@ int main()
 
 	while (true)
 	{
+		Serial.println("Refresh");
 		// Refresh screen
 		if (startRefresh)
 		{
 			refreshDone = 0;
-		if (Serial.available()){
-			char buffer[64] = {0};
-			Serial.readBytes(buffer, Serial.available());
-			Definitions::irComm->print(buffer);
-		}
+//			if(Definitions::irComm->available())
+//			{
+//				Definitions::irComm->write(Definitions::irComm->read());
+//			}
+			if (Serial.available()){
+				char buffer[64] = {0};
+				Serial.readBytes(buffer, Serial.available());
+				Definitions::irComm->print(buffer);
+			}
 		
 			if(Definitions::irComm->available())
 			{
@@ -222,12 +230,13 @@ int main()
 				Serial.print(Definitions::irComm->peek(), HEX);
 				Serial.print("\t");
 				Serial.write(Definitions::irComm->read());
-				Serial.print("\t");
-				Serial.println(Definitions::irComm->available());
+				Serial.println();
+				//Serial.print("\t");
+				//Serial.println(Definitions::irComm->available());
 			}
-//#ifndef IR
+#ifdef TFT
 			Definitions::currentScreen->refresh();
-//#endif
+#endif
 			startRefresh = 0;
 			refreshDone = 1;
 		}
@@ -236,7 +245,8 @@ int main()
 		{
 			/* We need to do something in our loop for some reason, so we set
 			 * the Power Reduction Register to the value of itself... */
-			PRR = PRR;		
+			asm volatile ("nop");
+			//PRR = PRR;
 		}
 	}
 }

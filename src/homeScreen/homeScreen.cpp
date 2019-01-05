@@ -211,7 +211,7 @@ void homeScreen::newScreen(uint8_t buttonSelect)
 		}
 		else if (buttonSelect == 2)
 		{
-			Definitions::currentScreen = new highScoreScreen();
+			//Definitions::currentScreen = new highScoreScreen();
 		}
 
 		// Opening the new window

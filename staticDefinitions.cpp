@@ -11,9 +11,11 @@
 
 /* Defines based on if infrared comms are used
  * Uncomment IR line to enable IR comms
+ * Uncomment TFT line to enable the tft display
  * Uncomment RECEIVER line to set current arduino as a receiver
  * Uncomment SENDER line to set current arduino as a sender */
 #define IR 1
+//#define TFT 1
 //#define RECEIVER 1
 //#define SENDER 1
 
