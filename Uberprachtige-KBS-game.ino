@@ -1,21 +1,20 @@
-#include "src/game/game.h"
-#include "screen.h"
-#include "staticDefinitions.cpp"
-#include "src/level/levelDefs.h"
 #include "src/homeScreen/homeScreen.h"
-#include <avr/io.h>
+#include "src/game/game.h"
+#include "src/level/levelDefs.h"
 #include "src/IRComm/IRComm.h"
+#include "staticDefinitions.cpp"
+#include "screen.h"
+#include <avr/io.h>
 #include <HardwareSerial.h>
 #include <Stream.h>
 #include <HardwareSerial_private.h>
 
-#pragma message "Uberprachtige-KBS-game.ino"
-
-// Used for when debugging Infrared Comms
-// Used to not destroy work of others while working on IR :)
+/* Defines if debugging for IR is enabled
+ * Uncomment this to enable debugging
+ * WARNING: May break other screen drawing stuff
+ * Please, only enable when debugging and disable when pushing to git */
 //#define IRDEBUG
 
-// initialize the IR Communications class
 // If we are debugging, uncomment this. Then there will be Serial communication.
 //#define DEBUG
 
@@ -35,10 +34,10 @@ screen *Definitions::currentScreen;
 Stream *Definitions::irComm;
 //#endif
 
-
+// Reset refreshing
 static int startRefresh = 0, refreshDone = 1;
 
-
+#ifdef IR
 /* --Compare interrupt for send timer--
  * Makes sure that pulses are sent over the proper frequency
  * Keeps a counter of amount of overflows
@@ -51,38 +50,59 @@ static int startRefresh = 0, refreshDone = 1;
  * The amount of pulses for every bit type is defined in IRComm.h
  * If the counter reached 100, the bit is done sending
  * This will end the sending of the bit
-*/
+ *
+ * (is only enabled when IR is enabled) */
 ISR(TIMER0_COMPA_vect)
 {
 	((IRComm*)(Definitions::irComm))->timer0ISR();
 }
+#endif
 
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER1_COMPA_vect)	// Timer1 output compare interrupt
 {
-	if (refreshDone)
+	if(refreshDone)
 	{
 		startRefresh = 1;
 	}
 }
 
+#ifdef IR
 /* --Compare interrupt for receive timer--
  * When a bit is being received, a pin change interrupt will happen
  * This will enable the counter for this timer interrupt
  * This timer will count 'pulses' at the frequency of the sender
  * For more info, see the comment at the pin change interrupt
-*/
+ *
+ * (is only enabled when IR is enabled) */
 ISR(TIMER2_COMPA_vect)
 {
 	((IRComm*)(Definitions::irComm))->timer2ISR();
 }
+#endif
 
-// Receival Pin Change Interrupt
+/* --Pin Change Interrupt for receive timer--
+ * If a PIN Change Interrupt is found on Analog PIN A3...
+ * ...the receiving of a bit has begun
+ * This is because the receiver will change from a high to a low signal...
+ * ...when it receives something.
+ * 
+ * First, we will check if receiving has been enabled
+ * Then, we will check if the receiving has started yet
+ * If this isn't the case, start the receiving and start a counter
+ * If the receiving has already started however and we got an interrupt...
+ * ...the receiving has ended
+ * This is because the signal will change from low to high after receiving
+ * After receiving, the counted pulses will be processed and we will know what we received
+ *
+ * (is only enabled when IR is enabled) */
 ISR(PCINT1_vect)
 {
 	((IRComm*)(Definitions::irComm))->pcint1ISR();
 }
+#endif
 
 void own_init(){
+	// Set PINs to output
 	DDRB |=
 		(1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4)
 		| (1 << DDB5);
@@ -113,6 +133,8 @@ void own_init(){
 	OCR1A = (uint16_t) 1562;
 	TIMSK1 = (1 << OCIE1A);
 
+
+	// Enable global interupts
 	sei();
 	
 }
@@ -135,8 +157,8 @@ int main()
 	//Definitions::tft->setRotation(1);
 	//Definitions::tft->fillScreen(ILI9341_BLACK);
 
-	// Turn on Serial communication if we are debugging
 #ifdef DEBUG
+	// Turn on Serial communication if we are debugging	
 	Definitions::println("Welkom!");
 #endif
 
@@ -214,6 +236,7 @@ int main()
 			startRefresh = 0;
 			refreshDone = 1;
 		}
+		// Otherwise do nothing
 		else
 		{
 			/* We need to do something in our loop for some reason, so we set

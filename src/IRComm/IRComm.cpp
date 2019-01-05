@@ -1,7 +1,7 @@
+#include "../../staticDefinitions.cpp"
 #include "IRComm.h"
 #include <util/delay.h>
 #include <Wire.h>
-#include "../../staticDefinitions.cpp"
 
 #ifdef DEBUG
 #pragma message "Debugging!"
