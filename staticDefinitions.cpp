@@ -4,15 +4,18 @@
 #include <string.h>
 #include "sprites.h"
 #include "screen.h"
+#include "src/IRComm/IRComm.h"
 
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
 /* Defines based on if infrared comms are used
  * Uncomment IR line to enable IR comms
+ * Uncomment TFT line to enable the tft display
  * Uncomment RECEIVER line to set current arduino as a receiver
  * Uncomment SENDER line to set current arduino as a sender */
-//#define IR 1
+#define IR 1
+//#define TFT 1
 //#define RECEIVER 1
 //#define SENDER 1
 
@@ -20,7 +23,21 @@
  * If PEEP is defined as 1, the current arduino will be player 1
  * If PEEP is defined as 2, the current arudino will be player 2
  * The frequecny of IR comms will be dependant on which player you are */
-#define PEEP 1
+
+// First two are used for compilation with -DP1 or -DP2
+#ifdef P1
+	#pragma message "Compiling for PEEP 1"
+	#define PEEP 1
+#else
+	#ifdef P2
+		#pragma message "Compiling for PEEP 2"
+		#define PEEP 2
+	#else
+		// Define own peep
+		#pragma message "Compiling for source specified PEEP"
+		#define PEEP 1
+	#endif
+#endif
 //#define PEEP = 2
 #if PEEP == 1
 #define PWMFREQ 38
@@ -58,14 +75,14 @@ class Definitions // Define the constants
 	static screen *currentScreen;
 	static Stream *irComm;
 
-#ifdef DEBUG
-	static void setTextDebug()	// Set the text position at 0,0 and color at white on black
+	/* Set the text position at 0,0 and color at white on black
+	 * FOR DEBUGGING */
+	static void setTextDebug()
 	{
 		tft->setTextColor(ILI9341_WHITE, ILI9341_BLACK);
 		tft->setCursor(0, 0);
 		tft->setTextSize(1);
 	}
-#endif
 
 	/* BEGIN PRINTs */
 	/* SEE: https://github.com/arduino/ArduinoCore-avr/blob/all-master/cores/arduino/Print.h */
@@ -171,7 +188,6 @@ class Definitions // Define the constants
 	}
 
 	static const uint8_t timer = 180;
-
 	/* END PRINTs */
 };
 

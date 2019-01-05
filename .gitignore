@@ -1,4 +1,5 @@
 build-uno/
+build-*/
 make_Bas
 *~
 cmake-build-debug

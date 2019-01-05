@@ -12,5 +12,12 @@ MONITOR_BAUDRATE = 500000
 #CXXFLAGS += -Isrc/spel/
 USER_LIB_PATH = $(realpath ./src)
 ARDUINO_LIBS = Adafruit_GFX_Library SPI Wire Adafruit_ILI9341 game level homeScreen lvlSelectScreen highScoreScreen ArduinoNunchuk IRComm
+#HEX_MAXIMUM_SIZE = 32700
+
+ifdef PEEP
+	CPPFLAGS += -DP$(PEEP)
+	CPPFLAGS += -save-temps=obj
+	OBJDIR = build-Peep$(PEEP)
+endif
 
 include $(ARDMK_DIR)/Arduino.mk
