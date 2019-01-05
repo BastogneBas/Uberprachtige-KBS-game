@@ -13,4 +13,9 @@ MONITOR_BAUDRATE = 500000
 USER_LIB_PATH = $(realpath ./src)
 ARDUINO_LIBS = Adafruit_GFX_Library SPI Wire Adafruit_ILI9341 game level homeScreen lvlSelectScreen highScoreScreen ArduinoNunchuk IRComm
 
+ifdef PEEP
+	CPPFLAGS += -DP$(PEEP)
+	CPPFLAGS += -save-temps=obj
+endif
+
 include $(ARDMK_DIR)/Arduino.mk
