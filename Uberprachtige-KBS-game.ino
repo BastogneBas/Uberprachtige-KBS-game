@@ -110,7 +110,7 @@ void own_init(){
 		(0 << CS11)  |
 		(0 << CS10)  ;
 
-	OCR1A = (uint16_t) 15620;
+	OCR1A = (uint16_t) 1562;
 	TIMSK1 = (1 << OCIE1A);
 
 	sei();
@@ -119,7 +119,6 @@ void own_init(){
 
 int main()
 {
-	PORTB = 0;
 
 	// TODO: replace with own initialisation.
 	// SEE: https://github.com/arduino/ArduinoCore-avr/blob/b084848f2eaf9ccb3ac9a64ac5492d91df4706bf/cores/arduino/wiring.c#L241
@@ -127,14 +126,14 @@ int main()
 #warning Needs to be replaced
 	own_init();
 
-#ifndef IR
+//#ifndef IR
 	// Initialize the tft
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
 	Definitions::tft->begin();
 	yield();
-	Definitions::tft->setRotation(1);
-	Definitions::tft->fillScreen(ILI9341_BLACK);
+	//Definitions::tft->setRotation(1);
+	//Definitions::tft->fillScreen(ILI9341_BLACK);
 
 	// Turn on Serial communication if we are debugging
 #ifdef DEBUG
@@ -149,7 +148,7 @@ int main()
 	// Opening the homeScreen
 	Definitions::currentScreen = new homeScreen();
 	Definitions::currentScreen->begin();
-#endif
+//#endif
 
 #ifdef IR
 	Serial.begin(500000);
@@ -157,12 +156,12 @@ int main()
 	// Construct the irComm class
 	Definitions::irComm = new IRComm();
 
-	Serial.println("Morning!");
-	Serial.print("This is ");
-	Serial.print(PEEP);
-	Serial.print(" speaking at ");
-	Serial.print(PWMFREQ);
-	Serial.println(" kHz");
+//	Serial.println("Morning!");
+//	Serial.print("This is ");
+//	Serial.print(PEEP);
+//	Serial.print(" speaking at ");
+//	Serial.print(PWMFREQ);
+//	Serial.println(" kHz");
 	
 	//Definitions::irComm->startReadByte();
 	//Definitions::irComm->startReceiveBit();
@@ -174,7 +173,7 @@ int main()
 	((HardwareSerial *) (Definitions::irComm))->begin(9600);
 
 #if PEEP == 1
-	char mystr[] = "1hello";
+	char mystr[] = "hello";
 	Definitions::irComm->print(mystr);
 	//delay (1000);
 
@@ -187,7 +186,7 @@ int main()
 
 #endif
 
-	for (;;)
+	while (true)
 	{
 		// Refresh screen
 		if (startRefresh)
@@ -209,9 +208,9 @@ int main()
 				Serial.print("\t");
 				Serial.println(Definitions::irComm->available());
 			}
-#ifndef IR
+//#ifndef IR
 			Definitions::currentScreen->refresh();
-#endif
+//#endif
 			startRefresh = 0;
 			refreshDone = 1;
 		}
@@ -222,6 +221,4 @@ int main()
 			PRR = PRR;		
 		}
 	}
-	PORTB = 0xFF;
-	PORTD = 0xFF;
 }
