@@ -33,7 +33,7 @@ Stream *Definitions::irComm;
 // Reset refreshing
 static int startRefresh = 0, refreshDone = 1;
 
-
+#ifdef IR
 /* --Compare interrupt for send timer--
  * Makes sure that pulses are sent over the proper frequency
  * Keeps a counter of amount of overflows
@@ -48,7 +48,6 @@ static int startRefresh = 0, refreshDone = 1;
  * This will end the sending of the bit
  *
  * (is only enabled when IR is enabled) */
-#ifdef IR
 ISR(TIMER0_COMPA_vect)
 {
 	// If a bit wants to be sent...
@@ -80,9 +79,9 @@ ISR(TIMER0_COMPA_vect)
 }
 #endif
 
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER1_COMPA_vect)	// Timer1 output compare interrupt
 {
-	if (refreshDone)
+	if(refreshDone)
 	{
 		//PORTD |= (1 << PORTD5);
 		startRefresh = 1;
@@ -93,6 +92,7 @@ ISR(TIMER1_COMPA_vect)
 	//#endif
 }
 
+#ifdef IR
 /* --Compare interrupt for receive timer--
  * When a bit is being received, a pin change interrupt will happen
  * This will enable the counter for this timer interrupt
@@ -100,7 +100,6 @@ ISR(TIMER1_COMPA_vect)
  * For more info, see the comment at the pin change interrupt
  *
  * (is only enabled when IR is enabled) */
-#ifdef IR
 ISR(TIMER2_COMPA_vect)
 {
 	if (irComm->bitReceiveEnabled)
@@ -110,6 +109,7 @@ ISR(TIMER2_COMPA_vect)
 }
 #endif
 
+#ifdef IR
 /* --Pin Change Interrupt for receive timer--
  * If a PIN Change Interrupt is found on Analog PIN A3...
  * ...the receiving of a bit has begun
@@ -125,7 +125,6 @@ ISR(TIMER2_COMPA_vect)
  * After receiving, the counted pulses will be processed and we will know what we received
  *
  * (is only enabled when IR is enabled) */
-#ifdef IR
 ISR(PCINT1_vect)
 {
 #ifdef IRDEBUG
@@ -158,8 +157,7 @@ ISR(PCINT1_vect)
 }
 #endif
 
-// Main function
-int main()
+int main()	// Main function
 {
 	// Set PINs to output
 	DDRB |=
@@ -239,6 +237,7 @@ int main()
 	#endif
 ///I don't know what this was supposed to do, so I left it --Niels
 #else
+// TODO: Decide if this commented-out piece of code can be removed
 //	Definitions::irComm =
 //		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
 //						   &UDR0);
@@ -257,15 +256,14 @@ int main()
 //#endif
 #endif
 
-	// Loop forever
-	for (;;)
+	for(;;)	// Loop forever
 	{
 		// Refresh screen when a refresh has been indicated
-		if (startRefresh)
+		if(startRefresh)
 		{
 			refreshDone = 0;
-///Only refresh the screen when not debugging IR
 #ifndef IRDEBUG
+			///Only refresh the screen when not debugging IR
 			Definitions::currentScreen->refresh();
 #endif
 			startRefresh = 0;
@@ -278,7 +276,7 @@ int main()
 			PORTB = PORTB;
 		}
 
-		///I don't know what this was supposed to do, so I left it --Niels
+		// TODO: Decide if this commented-out piece of code can be removed
 		/*if (startRefresh)
 		   PORTD |= (1 << PORTD5);
 		   else

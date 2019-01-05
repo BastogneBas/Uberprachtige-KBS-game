@@ -57,6 +57,7 @@ class mapObject
 class Level
 {
   public:
+	// TODO: Describe all variables and what they are used for
 	// Constructors
 	Level(uint16_t barrels[Definitions::gameHeight], String name);
 	Level(String name);

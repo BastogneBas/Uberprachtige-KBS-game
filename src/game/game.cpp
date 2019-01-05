@@ -8,23 +8,27 @@
 #include "game.h"
 #include "bomb.h"
 
+// Uncomment this to enable some debug code
 //#define DEBUG 1
 
+// TODO: Explain to me what this does
 gameScreen::gameScreen()
 {
 }
 
+// Initialize gameScreen class
 gameScreen::gameScreen(Level level)
 {
 	this->level = level;
 }
 
+// Define players' positions
 int p2Y = 0, p2X = 0;
 int p1Y = 0, p1X = 0;
-///I don't know what this was supposed to do, so I left it --Niels
-//uint8_t bomb1X, bomb1Y;
+// TODO: Decide if this commented-out piece of code can be removed
+/*//uint8_t bomb1X, bomb1Y;
 //uint8_t bomb2X, bomb2Y;
-//uint8_t bombX, bombY;
+//uint8_t bombX, bombY;*/
 int newX, newY;
 uint8_t lives1, lives2;
 
@@ -34,10 +38,10 @@ void gameScreen::begin()    // Initializes the game's screen
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 	level.begin();
 
-	///I don't know what this was supposed to do, so I left it --Niels
-    //level.printMap();
-	//level.drawMap();
-	/*uint8_t width = Definitions::gameWidth+1, height = Definitions::gameHeight+1;
+	// TODO: Decide if this commented-out piece of code can be removed
+    /*level.printMap();
+	level.drawMap();
+	uint8_t width = Definitions::gameWidth+1, height = Definitions::gameHeight+1;
 	for (int x = 0; x <= width; x++)
 	    drawBlock(x, 0);
 	for (int y = 0; y <= height; y++)
@@ -92,15 +96,15 @@ void gameScreen::begin()    // Initializes the game's screen
     Definitions::tft->setCursor(250, 130);
     Definitions::tft->print("P2:");
 
-    // Draw the initial lives values
-	for (int i = 255; i <= 305; i += 25)
+	for (int i = 255; i <= 305; i += 25)    // Draw the initial lives values
 	{
 		Definitions::tft->fillCircle(i, 30, 10, ILI9341_RED);
 		Definitions::tft->fillCircle(i, 75, 10, ILI9341_RED);
 	}
 
-	// Set the timer to begin value to count down from
-	// NOTE: is currently done because of a bug where it isn't properly set from the header sometimes
+	/* Set the timer to begin value to count down from
+	 * NOTE: is currently done because of a bug where it isn't properly set from the header sometimes
+	 * Can be removed if the bug is fixed and this seems unnecessary */
 	//currentTime = 180;
 
 	// Draw initial timer and score values
@@ -117,7 +121,7 @@ void gameScreen::end()  // End the match by calculating some scores and showing 
     // Print the endScreen, showing if you won or lost and the scores
     gameScreen::drawEndScreen();
 
-    ///What even is this!? --Niels
+    // TODO: Find out what the heck this even is
     while (Definitions::nunchuk->cButton == 0)
     {
         if (Definitions::nunchuk->cButton)
@@ -141,8 +145,7 @@ void gameScreen::checkWinner()  // Check who won the game
         else
             winner = 0;
     }
-    // If the timer has reached 0 though, the winner will be based on score
-    else
+    else    // If the timer has reached 0 though, the winner will be based on score
     {
         if(scoreP1 > scoreP2)
             winner = 1;
@@ -155,20 +158,17 @@ void gameScreen::checkWinner()  // Check who won the game
 
 void gameScreen::calculateEndScores()   // Adds or removes a bonus to the players' score based on if they won or lost
 {
-    // If the game is tied, give both players a bonus
-    if(winner == 0)
+    if(winner == 0) // If the game is tied, give both players a bonus
     {
         scoreP1 += ((currentTime * 10) + (livesP1 * 100));
         scoreP2 += ((currentTime * 10) + (livesP2 * 100));
     }
-    // If player 1 won, give them a bonus
-    else if(winner == 1)
+    else if(winner == 1)    // If player 1 won, give them a bonus
     {
         scoreP1 += ((currentTime * 10) + (livesP1 * 100));
         scoreP2 -= ((currentTime * 10) - (livesP2 * 100));
     }
-    // If player 2 won, give them a bonus
-    else if(winner == 2)
+    else if(winner == 2)    // If player 2 won, give them a bonus
     {
         scoreP1 -= ((currentTime * 10) - (livesP1 * 100));
         scoreP2 += ((currentTime * 10) + (livesP2 * 100));
@@ -186,9 +186,7 @@ void gameScreen::drawEndScreen()    // Draws the screen showing the results of t
      * The winner gets congratulated and gets shown a green background :)
      * The loser gets a sad face and a red background :(
      * When the match is tied, both players get a neutral message with an orange background :| */
-
-    // If the match is tied
-    if(winner == 0)
+    if(winner == 0) // If the match is tied
     {
         Definitions::tft->fillScreen(ILI9341_ORANGE);
         Definitions::tft->setCursor(10, 10);
@@ -258,43 +256,46 @@ void gameScreen::refresh()  // Handles refreshing the screen and updating some v
     // Increment refresh counter
     RefreshCnt++;
 
-    ///What is this used for? Can't find any usages and seems useless to define here... --Niels
+    // TODO: Find out what this is used for and remove if useless
     uint8_t getPlacedTime;
 
-    // If the refresh counter is divisible by three... (run every three refreshes)
-    if ((RefreshCnt % 3) == 0)
+    if ((RefreshCnt % 3) == 0)  // If the refresh counter is divisible by three... (run every three refreshes)
     {
-// Shown only when debugging is enabled
 #ifdef DEBUG
+        // Shown only when debugging is enabled
         Definitions::setTextDebug();
 		Definitions::println("Refresh");
 #endif
         // Get values from nunchuk controller
         Definitions::nunchuk->update();
+
+        // If the Z button is pressed and there's no bomb on the current x and y position...
+        // ...and a bomb is not currently active and [WHATEVER getBombPeep DOES]...
         if (Definitions::nunchuk->zButton && level.getBombX(0) == 0
             && level.getBombTime(0) == 0 && level.getBombY(0) == 0
             && level.getBombPeep(0) == 0)
         {
-
-
             if (Definitions::nunchuk->cButton
-                && Definitions::nunchuk->zButton)
+                && Definitions::nunchuk->zButton)   // If both C and Z are pressed...
             {
+                // Place a bomb on player 2's position
                 level.setBomb(1, p2X, p2Y, RefreshCnt, 2);
                 placeBomb(2, level.getBombX(1), level.getBombY(1));
             }
-            if (Definitions::nunchuk->zButton)
+            if (Definitions::nunchuk->zButton)      // If only the Z button is pressed...
             {
+                // Place a bomb on player 1's position
                 level.setBomb(0, p1X, p1Y, RefreshCnt, 1);
                 placeBomb(1, level.getBombX(0), level.getBombY(0));
             }
 
-
-            //getPlacedTime = level.getBombTime(0);
+            // TODO: Decide if this commented-out piece of code can be removed
+            /* //getPlacedTime = level.getBombTime(0);
             //Serial.println(getPlacedTime, DEC);
-            //placed = true;
+            //placed = true; */
         }
 
+		// TODO: Explain this statement
         if (RefreshCnt >= level.getBombTime(0) + 48)
         {
             if (((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
@@ -306,6 +307,7 @@ void gameScreen::refresh()  // Handles refreshing the screen and updating some v
                 drawExplosion(2, level.getBombX(1), level.getBombY(1));
 
 #ifdef DEBUG
+                // Print some debug information on the screen
                 Definitions::print("BombTime: ");
 				Definitions::print(level.getBombTime(0) + 12);
 				Definitions::println("  ");
@@ -316,6 +318,8 @@ void gameScreen::refresh()  // Handles refreshing the screen and updating some v
             }
         }
 
+// TODO: Decide if this commented-out piece of code can be removed
+/*
 //        if (RefreshCnt == level.getBombTime(0) + 12) {
 //            if (((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb) &&
 //                 !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
@@ -326,8 +330,9 @@ void gameScreen::refresh()  // Handles refreshing the screen and updating some v
 //                //getExTime = RefreshCnt;
 //            }
 //        }
+*/
 
-
+        // TODO: Explain what this does
         if (RefreshCnt >= level.getBombTime(0) + 92)
         {
             if ((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
@@ -343,26 +348,32 @@ void gameScreen::refresh()  // Handles refreshing the screen and updating some v
             }
         }
 
-        if (Definitions::nunchuk->cButton)
+        if (Definitions::nunchuk->cButton)  // If the C-Button is pressed, move player 2
         {
             movePeep(2, p2X, p2Y);
         }
-        else
+        else    // Otherwise, move player 1
         {
             movePeep(1, p1X, p1Y);
         }
 
 #ifdef DEBUG
+        ///Print some debug information
         //level.printMap();
 		//Definitions::println();
+		// Print which frame we are on
 		Definitions::setTextDebug();
 		Definitions::tft->setCursor(0, 210);
 		Definitions::tft->print("frame: ");
 		Definitions::tft->println(RefreshCnt);
+
+		// Print the x-position of the nunchuk's joystick
 		Definitions::tft->setCursor(240, 0);
 		Definitions::tft->print("x:  ");
 		Definitions::tft->print(Definitions::nunchuk->analogX);
 		Definitions::tft->print("   ");
+
+		// Print the y-position of the nunchuk's joystick
 		Definitions::tft->setCursor(240, 8);
 		Definitions::tft->print("y:  ");
 		Definitions::tft->print((unsigned int) Definitions::nunchuk->analogY);
@@ -375,179 +386,179 @@ void gameScreen::refresh()  // Handles refreshing the screen and updating some v
     }
     timeCounter++;
 
-    if(timeCounter >= 30)
+    // Update the current time
+    if(timeCounter >= 30)   //If 30 refreshes have happened (roughly 1 second)
     {
+        // Subtract one from the timer (timer counts down)
         currentTime--;
+        // Draw the new timer value
         drawTimer();
+        // Reset the counter for the timer
         timeCounter = 0;
     }
 }
 
-// Function to show the lives realtime
-void gameScreen::drawLives()
+void gameScreen::drawLives()    // Print the amount of lives per player on-screen
 {
-
-    // Setting value so the lives can be written down
+    // Set x-location of lives
     uint16_t x = 305;
 
-    // If statements that checks if any lives have already been taken away
-    if (livesP1 < 3)
+    if (livesP1 < 3)    // If player 1 has lost lives
     {
-        // For loop that overwrites the lives if P1 has been hit
-        for (int i = 3 - livesP1; i > 0; i--)
+        for (int i = 3 - livesP1; i > 0; i--)   // Checks for the amount of lives player 1 has left
         {
+            // Draw a black circle over the amount of lives for every life player 1 has lost
             Definitions::tft->fillCircle(x, 30, 10, ILI9341_BLACK);
+            // Set the x-position back by 25 pixels to draw over the next life circle
             x -= 25;
         }
     }
-
-    // Resetting the value
+    // Reset the x-value for the next player
     x = 305;
 
-    // Same thing happens for P2
-    if (livesP2 < 3)
+    if (livesP2 < 3)    // If player 2 has lost lives
     {
-
-        for (int i = 3 - livesP2; i > 0; i--)
+        for (int i = 3 - livesP2; i > 0; i--)   // Checks for the amount of lives player 2 has left
         {
+            // Draw a black circle over the amount of lives for every life player 2 has lost
             Definitions::tft->fillCircle(x, 75, 10, ILI9341_BLACK);
+            // Set the x-position back by 25 pixels to draw over the next life circle
             x -= 25;
         }
     }
 
-    // If statement that checks if one of the players has no lives left
-    // If so, the endScreen will be called and the game is over :)
-    if (livesP1 == 0)
+    // Checks if a player has died yet and if so, ends the game
+    if (livesP1 == 0)   // If player 1 has died
     {
+        // Set the dead player as player 1
         deadPlayer = 1;
+        // End the game
         end();
     }
-    else if (livesP2 == 0)
+    else if (livesP2 == 0)  // If player 2 has died
     {
+        // Set the dead player as player 2
         deadPlayer = 2;
+        // End the game
         end();
     }
 }
 
 void gameScreen::drawTimer()    // Draws the timer value
 {
+    // Sets the proper values for printing the text and prints the value of the timer
     Definitions::tft->setTextColor(ILI9341_WHITE, ILI9341_BLACK);
-    //Definitions::tft->setTextSize(1);
     Definitions::tft->setCursor(286, 100);
-
     Definitions::tft->print(currentTime);
     Definitions::tft->println(" ");
 
-    if(currentTime == 0)
+    // Ends the game if the timer has ran out
+    if(currentTime == 0)    // If the timer has reached zero...
     {
+        // Set the winner to zero (tied)
         winner = 0;
+        // End the game
         end();
     }
 }
 
 void gameScreen::drawScore()    // Draws the score values
 {
+    // Sets values and draws score of player 1
     Definitions::tft->setCursor(274, 120);
     Definitions::tft->print(scoreP1);
     Definitions::tft->println(" ");
 
+    // Sets values and draws score of player 2
     Definitions::tft->setCursor(274, 130);
     Definitions::tft->print(scoreP2);
     Definitions::tft->println(" ");
 }
 
-void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
+void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)   // Move a player across the level
 {
-	// make location of peep the same is the direction from Nunchuck
+	// Store the direction of nunchuk's joystick
 	int nunX = Definitions::nunchuk->analogX;
 	int nunY = Definitions::nunchuk->analogY;
 
-	// if player is 1
-	if (peep == 1)
+	// Get the locations of the players and store in newX and newY
+	if (peep == 1)  // If the current player is player 1
 	{
-		// newX is equal to peep location X
+		// Set new positions to player 1's position
 		newX = p1X;
-
-		// newY is equal to peep location Y
 		newY = p1Y;
 	}
-
-	// if player is 2
-	if (peep == 2)
+	if (peep == 2)  // If the current player is player 2
 	{
-
-		// newX is equal to peep location X
+        // Set new positions to player 1's position
 		newX = p2X;
-
-		// newY is equal to peep location Y
 		newY = p2Y;
 	}
 
 	//Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
 
-	// check if nunchuk is left, if true go to left
-	if (nunX <= 70 && (nunY > 50 && nunY < 200))	// && p2X > 1)
+	// Change the new position according to the joystick position
+	// TODO: decide if all commented-out code here can be removed
+	if (nunX <= 70 && (nunY > 50 && nunY < 200))	// && p2X > 1)  // If the joystick is moved to the left, move player to the left
 	{
 		newX--;
 	}
-
-	// check if nunchuk is right, if true go to right
-	else if (nunX >= 170 && (nunY > 50 && nunY < 200))	// && p2X < Definitions::gameWidth)
+	else if (nunX >= 170 && (nunY > 50 && nunY < 200))	// && p2X < Definitions::gameWidth) // If the joystick is moved to the right, move player to the right
 	{
 		newX++;
 	}
-	// check if nunchuk is up, if true go up
-	else if ((nunX > 50 && nunX < 200) && nunY >= 170)	// && p2Y > 1)
+	else if ((nunX > 50 && nunX < 200) && nunY >= 170)	// && p2Y > 1)  // If the joystick is moved upwards, move player upwards
 	{
 		// Nunchuck Y is inverted.
 		//p2Y--;
 		newY--;
 	}
-
-	else if ((nunX > 50 && nunX < 200) && nunY <= 70)	// && p2Y < Definitions::gameHeight)
+	else if ((nunX > 50 && nunX < 200) && nunY <= 70)	// && p2Y < Definitions::gameHeight)    // If the joystick is moved downwards, move player downwards
 	{
+        // Nunchuck Y is inverted.
 		//p2Y++;
 		newY++;
 	}
 
-	// check which peep and new location is not equal to peep location
+	// Draw player in new position
+	// Checks which peep is selected and if the new position isn't the same as the selected peep's current position
 	if ((peep == 1 && (newY != p1Y || newX != p1X))
 		|| (peep == 2 && (newY != p2Y || newX != p2X)))
 	{
-		// if true check if there is no block and no barrel and no bomb
+		// Check if the player can move to the new position (if there's a block or barrel on the new position)
 		if (!(level.getObjectAt(newX, newY) & mapObject::block) &&
 			!(level.getObjectAt(newX, newY) & mapObject::barrel) &&
 			!((level.getObjectAt(newX, newY) & mapObject::bomb)
 			  && !(level.getObjectAt(newX, newY) & mapObject::explosion)))
 		{
-			// if player is 2
-			if (peep == 2)
+            if (peep == 1)  // If the selected player is player 1
+            {
+                // Draw player 1 on their new position
+                level.unmarkObjectAt(p1X, p1Y, mapObject::peep1);
+                level.markObjectAt(p1X, p1Y, mapObject::needsRedraw);
+                level.markObjectAt(newX, newY, mapObject::peep1);
+                level.markObjectAt(newX, newY, mapObject::needsRedraw);
+
+                // Set player 1's position values
+                p1X = newX;
+                p1Y = newY;
+            }
+			if (peep == 2)  // If the selected player is player 2
 			{
-				// player 2 is moving to new location
+				// Draw player 2 on their new position
 				level.unmarkObjectAt(p2X, p2Y, mapObject::peep2);
 				level.markObjectAt(p2X, p2Y, mapObject::needsRedraw);
 				level.markObjectAt(newX, newY, mapObject::peep2);
 				level.markObjectAt(newX, newY, mapObject::needsRedraw);
 
+				// Set player 2's position values
 				p2X = newX;
 				p2Y = newY;
-			}
-
-			// if player is 1
-			if (peep == 1)
-			{
-				// player 1 is moving to new location
-				level.unmarkObjectAt(p1X, p1Y, mapObject::peep1);
-				level.markObjectAt(p1X, p1Y, mapObject::needsRedraw);
-				level.markObjectAt(newX, newY, mapObject::peep1);
-				level.markObjectAt(newX, newY, mapObject::needsRedraw);
-
-				p1X = newX;
-				p1Y = newY;
 			}
 		}
 	}
 
+    // TODO: Decide if this commented-out piece of code can be removed
 	//draw peep on the newest location
 	/*if (peep == 1)
 	   {
@@ -562,19 +573,21 @@ void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY)
 	//return dirX, dirY;
 }
 
-void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y)
+void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y)    // Place a bomb
 {
-
+    // TODO: Decide if this commented-out piece of code can be removed
 	//level.setBomb(0, x, y, )
-	// check which peep places the bomb
-	if (peep == 1)
+	if (peep == 1)  // If player 1 placed the bomb
 	{
+	    // Place a bomb where Player 1 placed the bomb
 		level.markObjectAt(x, y, mapObject::bombPeep1);
 	}
-	if (peep == 2)
+	if (peep == 2)  // If player 2 placed the bomb
 	{
+        // Place a bomb where Player 2 placed the bomb
 		level.markObjectAt(x, y, mapObject::bombPeep2);
 	}
+	// TODO: Wat is deez?
 	// now there is a bom placed
 	level.markObjectAt(x, y, mapObject::bomb);
 	level.markObjectAt(x, y, mapObject::needsRedraw);
@@ -582,23 +595,27 @@ void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y)
 
 }
 
-void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)
+void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY)    // Draws an explosion on the screen
 {
-
+// TODO: Decide if this commented-out piece of code can be removed
 //    int explX = p2X;
 //    int explY = p2Y;
-
 //    int X = p2X;
 //    int Y = p2Y;
-
-
-	for (int x = -2; x <= 2; x++)
-	{
-		// if x is not equal to 0
-		if (x != 0)
+    /* Checks where the explosions can be placed
+     * The checks are done as follows:
+     * - - - - - - -
+     * - - - 9 - - -
+     * - - - 8 - - -
+     * - 0 1 2 3 4 -
+     * - - - 6 - - -
+     * - - - 5 - - -
+     * - - - - - - -
+     */
+	for (int x = -2; x <= 2; x++)   // Check over horizontal positions
+    {
+		if (x != 0) // If not on the center of the explosion
 		{
-
-			// if place before explosion is no block
 			if (	((x < 0) && !(level.getObjectAt(explX + x + 1, explY) & mapObject::block))
 					|| ((x > 0) && !(level.getObjectAt(explX + x - 1, explY) & mapObject::block)))
 			{

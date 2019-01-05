@@ -12,7 +12,6 @@
  * Uncomment IR line to enable IR comms
  * Uncomment RECEIVER line to set current arduino as a receiver
  * Uncomment SENDER line to set current arduino as a sender */
-
 //#define IR 1
 //#define RECEIVER 1
 //#define SENDER 1
@@ -21,7 +20,6 @@
  * If PEEP is defined as 1, the current arduino will be player 1
  * If PEEP is defined as 2, the current arudino will be player 2
  * The frequecny of IR comms will be dependant on which player you are */
-
 #define PEEP 1
 //#define PEEP = 2
 #if PEEP == 1
@@ -33,8 +31,7 @@
 /// Uncomment this to enable debug code
 //#define DEBUG
 
-// Define the constants
-class Definitions
+class Definitions	// Define the constants
 {
   public:
 	/* Define which PINs the TFT display is on
@@ -62,8 +59,7 @@ class Definitions
 	static Stream *irComm;
 
 #ifdef DEBUG
-	// Set the text position at 0,0 and color at white on black
-	static void setTextDebug()
+	static void setTextDebug()	// Set the text position at 0,0 and color at white on black
 	{
 		tft->setTextColor(ILI9341_WHITE, ILI9341_BLACK);
 		tft->setCursor(0, 0);

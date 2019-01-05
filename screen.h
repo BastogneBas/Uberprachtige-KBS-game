@@ -1,9 +1,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-/// Defines the screen class
 
-class screen
+class screen	/// Defines the screen class
 {
   public:
 	//virtual Scherm()=0;

@@ -3,8 +3,7 @@
 #ifndef BOMB_H
 #define BOMB_H
 
-// Define bomb class
-class Bomb
+class Bomb	// Define bomb class
 {
   public:
 	// Define functions
