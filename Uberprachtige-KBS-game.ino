@@ -9,6 +9,8 @@
 #include <Stream.h>
 #include <HardwareSerial_private.h>
 
+#pragma message "Uberprachtige-KBS-game.ino"
+
 // Used for when debugging Infrared Comms
 // Used to not destroy work of others while working on IR :)
 //#define IRDEBUG
@@ -27,11 +29,11 @@ ArduinoNunchuk *Definitions::nunchuk;
 screen *Definitions::currentScreen;
 
 // IRcomm needs to be redefined here
-#ifdef IR
-IRComm *Definitions::irComm;
-#else
+//#ifdef IR
+//IRComm *Definitions::irComm;
+//#else
 Stream *Definitions::irComm;
-#endif
+//#endif
 
 
 static int startRefresh = 0, refreshDone = 1;
@@ -52,34 +54,7 @@ static int startRefresh = 0, refreshDone = 1;
 */
 ISR(TIMER0_COMPA_vect)
 {
-#ifdef IR
-	// If a bit wants to be sent...
-	if (Definitions::irComm->bitSendEnabled)
-	{
-		// If the counter has reached the amount of pulses...
-		// ...for the specified bit to be sent...
-		if (Definitions::irComm->bitSendCounter >= Definitions::irComm->bitSendType)
-		{
-			// Disable the 'let-through' pin for the IR LED, blocking the PWM signal
-			PORTD |= (1 << PORTD4);
-		}
-
-		// Add one to pulsecounter
-		Definitions::irComm->bitSendCounter++;
-
-		// If the bit is completely sent...
-		// (a bit is sent over 100 pulses)
-		if (Definitions::irComm->bitSendCounter == 200)
-		{
-			// Signal that the bit is completely sent
-			Definitions::irComm->bitSendComplete = 1;
-			// Reset the counter
-			Definitions::irComm->bitSendCounter = 0;
-			// Disable the sending of a bit
-			Definitions::irComm->bitSendEnabled = 0;
-		}
-	}
-#endif
+	((IRComm*)(Definitions::irComm))->timer0ISR();
 }
 
 ISR(TIMER1_COMPA_vect)
@@ -98,55 +73,13 @@ ISR(TIMER1_COMPA_vect)
 */
 ISR(TIMER2_COMPA_vect)
 {
-#ifdef IR
-	if (Definitions::irComm->bitReceiveEnabled)
-	{
-		Definitions::irComm->bitReceiveCounter++;
-		if(Definitions::irComm->bitReceiveStarted && 
-			(Definitions::irComm->bitReceiveCounter - Definitions::irComm->bitReceiveStarted) > 95)
-		{
-			// Timed out...
-			Definitions::irComm->bitReceiveStarted = 0;
-		}
-	}
-#endif
+	((IRComm*)(Definitions::irComm))->timer2ISR();
 }
 
 // Receival Pin Change Interrupt
 ISR(PCINT1_vect)
 {
-#ifdef IR
-	// If the receiving has been enabled
-	if (Definitions::irComm->bitReceiveEnabled)
-	{
-		// If the receive hasn't started yet
-		if (!Definitions::irComm->bitReceiveStarted)
-		{
-			Definitions::irComm->bitReceiveStarted = Definitions::irComm->bitReceiveCounter;
-		}
-		else
-		{
-			// The message has ended...
-			// Save at which count the receive has stopped
-			Definitions::irComm->bitReceiveChanged = Definitions::irComm->bitReceiveCounter;
-			// Process the data
-			uint8_t lastBitReceived = 2;
-			while(lastBitReceived == 2) // If, for some reason the bit is not received jet, try again.
-			{
-				lastBitReceived = Definitions::irComm->readByteIteration();
-				if(lastBitReceived != 1)
-				{
-					Definitions::irComm->startReceiveBit();
-				}
-			}
-		}
-		if(PINC & (1 << PINC3))
-			PORTB &= ~(1 << PORTB4);
-		else
-			PORTB |= (1 << PORTB4);
-	}
-#warning IR
-#endif
+	((IRComm*)(Definitions::irComm))->pcint1ISR();
 }
 
 void own_init(){
@@ -177,7 +110,7 @@ void own_init(){
 		(0 << CS11)  |
 		(0 << CS10)  ;
 
-	OCR1A = (uint16_t) 1562;
+	OCR1A = (uint16_t) 15620;
 	TIMSK1 = (1 << OCIE1A);
 
 	sei();
@@ -220,6 +153,7 @@ int main()
 
 #ifdef IR
 	Serial.begin(500000);
+	Serial.setTimeout(12);
 	// Construct the irComm class
 	Definitions::irComm = new IRComm();
 
@@ -230,26 +164,26 @@ int main()
 	Serial.print(PWMFREQ);
 	Serial.println(" kHz");
 	
-	Definitions::irComm->startReadByte();
-	Definitions::irComm->startReceiveBit();
-	Serial.println(Definitions::irComm->read());
+	//Definitions::irComm->startReadByte();
+	//Definitions::irComm->startReceiveBit();
+	//Serial.println(Definitions::irComm->read());
 #else
-//	Definitions::irComm =
-//		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
-//						   &UDR0);
-//	((HardwareSerial *) (Definitions::irComm))->begin(9600);
+	Definitions::irComm =
+		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
+						   &UDR0);
+	((HardwareSerial *) (Definitions::irComm))->begin(9600);
 
-//#if PEEP == 1
-//	char mystr[] = "1hello";
-//	Definitions::irComm->print(mystr);
-//	//delay (1000);
-//
-//#else
-//	char mystr[10];
-//	Definitions::irComm->readBytes(mystr, 5);
-//	Definitions::irComm->println(mystr);
-//	//delay(1000);
-//#endif
+#if PEEP == 1
+	char mystr[] = "1hello";
+	Definitions::irComm->print(mystr);
+	//delay (1000);
+
+#else
+	char mystr[10];
+	Definitions::irComm->readBytes(mystr, 5);
+	Definitions::irComm->println(mystr);
+	//delay(1000);
+#endif
 
 #endif
 
@@ -259,10 +193,12 @@ int main()
 		if (startRefresh)
 		{
 			refreshDone = 0;
-#ifdef IR
-		if(Serial.available()){
-			Definitions::irComm->write(Serial.read());
+		if (Serial.available()){
+			char buffer[64] = {0};
+			Serial.readBytes(buffer, Serial.available());
+			Definitions::irComm->print(buffer);
 		}
+		
 			if(Definitions::irComm->available())
 			{
 				Serial.print(Definitions::irComm->available());
@@ -273,7 +209,6 @@ int main()
 				Serial.print("\t");
 				Serial.println(Definitions::irComm->available());
 			}
-#endif
 #ifndef IR
 			Definitions::currentScreen->refresh();
 #endif

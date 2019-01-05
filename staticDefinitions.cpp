@@ -36,7 +36,7 @@
 #define PWMFREQ 56
 #endif
 
-#define DEBUG
+//#define DEBUG
 
 class Definitions
 {
@@ -61,12 +61,11 @@ class Definitions
 	static ArduinoNunchuk *nunchuk;
 	static screen *currentScreen;
 
-#ifdef IR
-	static IRComm *irComm;
-#else
+//#ifdef IR
+//	static IRComm *irComm;
+//#else
 	static Stream *irComm;
-#endif
-
+//#endif
 
 
 
@@ -184,7 +183,6 @@ class Definitions
 	}
 
 	static const uint8_t timer = 180;
-
 	/* END PRINTs */
 };
 

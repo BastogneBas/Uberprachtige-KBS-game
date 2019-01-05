@@ -34,11 +34,6 @@ class IRComm: public Stream
   public:
 	IRComm();
 
-	// Variables defined based on what frequencies we are using
-//	uint8_t SENDTOP;
-//	uint8_t RECTOP;
-//	uint8_t recTimerOverflow;
-
 	// Variable definitions
 	uint8_t bitSendEnabled = 0;
 	uint16_t bitSendCounter = 0;
@@ -57,19 +52,21 @@ class IRComm: public Stream
 	uint8_t readByteHasStarted = false;
 
 	// Function definitions
+	void timer0ISR();
 	void sendBit(uint8_t sendType);
+
+	void timer2ISR();
+	void pcint1ISR();
 	void startReceiveBit();
-	uint8_t ahandleReceiveBit();
 	void startReadByte();
 	int readByteIteration();
-	char charbuffer[BUFFER_SIZE] = "";
-	uint8_t writeIndex = 0;
 
 	// Inherited from Stream
 	size_t write(uint8_t);
 	int available();
 	int read();
 	int peek();
+	using Print::write;
 
 
 //	AFTER REWITE OF CODE
@@ -79,6 +76,8 @@ class IRComm: public Stream
 
   private:
 	void shiftbufferleft();
+	char charbuffer[BUFFER_SIZE] = "";
+	int8_t writeIndex = 0;
 };
 
 #endif

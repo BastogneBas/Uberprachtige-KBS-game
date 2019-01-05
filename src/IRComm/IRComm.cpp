@@ -4,7 +4,7 @@
 #include "../../staticDefinitions.cpp"
 
 #ifdef DEBUG
-#pragma message Debugging!
+#pragma message "Debugging!"
 #endif
 
 // *** Constructor *** //
@@ -57,6 +57,10 @@ IRComm::IRComm()
 	// Enable pin change interrupts on Analog PIN 3
 	PCMSK1 = (1 << PCINT11);
 	sei();
+
+	startReadByte();
+	startReceiveBit();
+	read();
 }
 
 
@@ -79,13 +83,44 @@ size_t IRComm::write(uint8_t byte){
 	// And go back to receiving mode
 	startReadByte();
 	startReceiveBit();
-	return 0;
+	return 1;
+}
+
+// Timer function
+void IRComm::timer0ISR()
+{
+	// If a bit wants to be sent...
+	if (bitSendEnabled)
+	{
+		// If the counter has reached the amount of pulses...
+		// ...for the specified bit to be sent...
+		if (bitSendCounter >= bitSendType)
+		{
+			// Disable the 'let-through' pin for the IR LED, blocking the PWM signal
+			PORTD |= (1 << PORTD4);
+		}
+
+		// Add one to pulsecounter
+		bitSendCounter++;
+
+		// If the bit is completely sent...
+		// (a bit is sent over 100 pulses)
+		if (bitSendCounter == 200)
+		{
+			// Signal that the bit is completely sent
+			bitSendComplete = 1;
+			// Reset the counter
+			bitSendCounter = 0;
+			// Disable the sending of a bit
+			bitSendEnabled = 0;
+		}
+	}
 }
 
 // Sends one bit
 void IRComm::sendBit(uint8_t sendType)
 {
-	//PORTD |= (1 << PORTD1);
+	PORTB |= (1 << PORTB5);
 	/* --Sending a bit--
 	 * Uses timer0 as defined above
 	 * Timer0 will always be running and comparing...
@@ -119,12 +154,58 @@ void IRComm::sendBit(uint8_t sendType)
 	}
 
 	// Disable digital PIN 1 to indicate that the sending is done
-	//PORTD&= ~(1 << PORTD1);
+	PORTB &= ~(1 << PORTB5);
 }
 
 
 
 // *** Receiving *** //
+
+void IRComm::timer2ISR()
+{
+	if (bitReceiveEnabled)
+	{
+		bitReceiveCounter++;
+		if(bitReceiveStarted && (bitReceiveCounter - bitReceiveStarted) > 95)
+		{
+			// Timed out...
+			bitReceiveStarted = 0;
+		}
+	}
+}
+
+void IRComm::pcint1ISR()
+{
+	// If the receiving has been enabled
+	if (bitReceiveEnabled)
+	{
+		// If the receive hasn't started yet
+		if (!bitReceiveStarted)
+		{
+			bitReceiveStarted = bitReceiveCounter;
+		}
+		else
+		{
+			// The message has ended...
+			// Save at which count the receive has stopped
+			bitReceiveChanged = bitReceiveCounter;
+			// Process the data
+			uint8_t lastBitReceived = 2;
+			while(lastBitReceived == 2) // If, for some reason the bit is not received jet, try again.
+			{
+				lastBitReceived = readByteIteration();
+				if(lastBitReceived != 1)
+				{
+					startReceiveBit();
+				}
+			}
+		}
+		if(PINC & (1 << PINC3))
+			PORTB &= ~(1 << PORTB4);
+		else
+			PORTB |= (1 << PORTB4);
+	}
+}
 // Reset the receival and indicate that it has started
 void IRComm::startReceiveBit()
 {
@@ -164,10 +245,16 @@ int IRComm::readByteIteration()
 		else if (((diff >= 75) && (diff <= 90)) && readByteIndex != 0 && readByteHasStarted == true)
 		{
 			// We received a START_BIT while the receiving of this byte has already started
+#ifdef DEBUG
+			Serial.println("\033[91mWe received a START_BIT, but the byte has already been started...\033[m");
+#endif
 		}
 		else if (((diff >= 75) && (diff <= 90)) && readByteIndex == 0 && readByteHasStarted == false)
 		{
 			// We have received a valid bit, but we expected a START_BIT
+#ifdef DEBUG
+			Serial.println("\033[91mWe received a bit other than START_BIT, but we expected a START_BIT...\033[m");
+#endif
 		}
 		else if ((diff >= 35) && (diff <= 50))
 		{
@@ -178,7 +265,7 @@ int IRComm::readByteIteration()
 		else if ((diff >= 15) && (diff <= 30))
 		{
 			// We have received a valid 0 (zero) bit to append to our byte
-			readByteCharacter &= (0 << (7 - readByteIndex)); // Basically does nothing
+			readByteCharacter &= ~(0 << (7 - readByteIndex)); // Basically does nothing
 			readByteIndex++;
 		}
 		else if (((diff >= 55) && (diff <= 70)) && readByteIndex == 8)
@@ -194,14 +281,27 @@ int IRComm::readByteIteration()
 			else
 			{
 				// Yikes the buffer is filled. Well, let's throw away our byte and cry 😭
+				uint8_t bufferlength = String(charbuffer).length();
 #ifdef DEBUG
 				Serial.println("\033[91m"); // We like some fancy colors in our terminal
 				Serial.println("Welp! Our buffer is full... So kind of ArrayIndexOutOfBoundsException...");
 				Serial.print("Index is: ");
 				Serial.println(writeIndex);
 				Serial.println("Please read something, or receive nothing...");
+				Serial.print("Last received character:\t");
+				Serial.write(readByteCharacter);
+				Serial.print("\t0x");
+				Serial.println(readByteCharacter, HEX);
+				Serial.print("The buffer is:\t");
+				Serial.println(charbuffer);
+				Serial.print("The code of the first byte is:\t0x");
+				Serial.println(charbuffer[0], HEX);
+				Serial.print("The index of the first byte with 0x00 is: ");
+				Serial.println(bufferlength);
+				Serial.println("Setting writeIndex to this value");
 				Serial.print("\033[m");
 #endif
+				writeIndex = bufferlength;
 			}
 			startReadByte(); // Read next byte
 			startReceiveBit(); // Start receiving next bit
@@ -239,10 +339,10 @@ void IRComm::shiftbufferleft()
 		for (uint8_t i = 0; i < BUFFER_SIZE; i++)
 		{
 			charbuffer[i] = charbuffer[i+1];
-			writeIndex--;
-			if(charbuffer[i+1] == 0x00)
+			if(charbuffer[i] == 0x00)
 				break;
 		}
+		writeIndex--;
 	}
 }
 
