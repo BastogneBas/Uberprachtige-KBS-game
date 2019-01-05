@@ -81,7 +81,6 @@ class Definitions	// Define the constants
 		tft->setCursor(0, 0);
 		tft->setTextSize(1);
 	}
-#endif
 
 	/* BEGIN PRINTs */
 	/* SEE: https://github.com/arduino/ArduinoCore-avr/blob/all-master/cores/arduino/Print.h */

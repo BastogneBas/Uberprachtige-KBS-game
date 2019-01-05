@@ -37,7 +37,6 @@ Stream *Definitions::irComm;
 // Reset refreshing
 static int startRefresh = 0, refreshDone = 1;
 
-#ifdef IR
 /* --Compare interrupt for send timer--
  * Makes sure that pulses are sent over the proper frequency
  * Keeps a counter of amount of overflows
@@ -56,7 +55,6 @@ ISR(TIMER0_COMPA_vect)
 {
 	((IRComm*)(Definitions::irComm))->timer0ISR();
 }
-#endif
 
 ISR(TIMER1_COMPA_vect)	// Timer1 output compare interrupt
 {
@@ -66,7 +64,6 @@ ISR(TIMER1_COMPA_vect)	// Timer1 output compare interrupt
 	}
 }
 
-#ifdef IR
 /* --Compare interrupt for receive timer--
  * When a bit is being received, a pin change interrupt will happen
  * This will enable the counter for this timer interrupt
@@ -78,7 +75,6 @@ ISR(TIMER2_COMPA_vect)
 {
 	((IRComm*)(Definitions::irComm))->timer2ISR();
 }
-#endif
 
 /* --Pin Change Interrupt for receive timer--
  * If a PIN Change Interrupt is found on Analog PIN A3...
@@ -99,7 +95,6 @@ ISR(PCINT1_vect)
 {
 	((IRComm*)(Definitions::irComm))->pcint1ISR();
 }
-#endif
 
 void own_init(){
 	// Set PINs to output
