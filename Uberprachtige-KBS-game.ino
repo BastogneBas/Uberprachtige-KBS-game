@@ -146,9 +146,9 @@ int main()
 #ifdef TFT
 	Definitions::tft->begin();
 	yield();
+	Definitions::tft->setRotation(1);
+	Definitions::tft->fillScreen(ILI9341_BLACK);
 #endif
-	//Definitions::tft->setRotation(1);
-	//Definitions::tft->fillScreen(ILI9341_BLACK);
 
 #ifdef DEBUG
 	// Turn on Serial communication if we are debugging	
