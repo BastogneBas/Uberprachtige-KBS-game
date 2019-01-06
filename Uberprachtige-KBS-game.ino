@@ -138,19 +138,22 @@ int main()
 	// Default Arduino initialisation.
 #warning Needs to be replaced
 	own_init();
-	Serial.begin(500000);
+	//Serial.begin(500000);
+	Definitions::irComm = new IRComm();
 
-	//Serial.println("r143");
+	Definitions::irComm->println("r144");
 //#ifndef IR
 	// Initialize the tft
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
 #ifdef TFT
 #warning TFT
+	Definitions::irComm->println("r151");
 	Definitions::tft->begin();
 	yield();
 	Definitions::tft->setRotation(1);
 	Definitions::tft->fillScreen(ILI9341_BLACK);
+	Definitions::irComm->println("r156");
 #endif
 
 #ifdef DEBUG
@@ -161,24 +164,26 @@ int main()
 	// Initialize the Nunchuk for player 1
 	Definitions::nunchuk = new ArduinoNunchuk();
 	Definitions::nunchuk->init();
+	Definitions::irComm->println("r167");
 
 #ifdef TFT
 	// Opening the homeScreen
 	Definitions::currentScreen = new homeScreen();
 	Definitions::currentScreen->begin();
+	Definitions::irComm->println("r173");
+
 #endif
 
 #ifdef IR
 //	Serial.setTimeout(12);
 	// Construct the irComm class
-	Definitions::irComm = new IRComm();
 
-	Serial.println("Morning!");
-	Serial.print("This is ");
-	Serial.print(PEEP);
-	Serial.print(" speaking at ");
-	Serial.print(PWMFREQ);
-	Serial.println(" kHz");
+	Definitions::irComm->println("Morning!");
+//	Serial.print("This is ");
+//	Serial.print(PEEP);
+//	Serial.print(" speaking at ");
+//	Serial.print(PWMFREQ);
+//	Serial.println(" kHz");
 	
 	//Definitions::irComm->startReadByte();
 	//Definitions::irComm->startReceiveBit();
@@ -210,29 +215,29 @@ int main()
 		if (startRefresh)
 		{
 			refreshDone = 0;
+			//if(Definitions::irComm->available())
+			//{
+			//	Definitions::irComm->write(Definitions::irComm->read());
+			//}
+//			if (Serial.available()){
+//				char buffer[64] = {0};
+//				Serial.readBytes(buffer, Serial.available());
+//				Serial.println(buffer);
+//				Definitions::irComm->print(buffer);
+//				Serial.println("Done");
+//			}
+//
 //			if(Definitions::irComm->available())
 //			{
-//				Definitions::irComm->write(Definitions::irComm->read());
+//				Serial.print(Definitions::irComm->available());
+//				Serial.print("\t");
+//				Serial.print(Definitions::irComm->peek(), HEX);
+//				Serial.print("\t");
+//				Serial.write(Definitions::irComm->read());
+//				Serial.println();
+//				//Serial.print("\t");
+//				//Definitions::irComm->println(Definitions::irComm->available());
 //			}
-			if (Serial.available()){
-				char buffer[64] = {0};
-				Serial.readBytes(buffer, Serial.available());
-				Serial.println(buffer);
-				Definitions::irComm->print(buffer);
-				Serial.println("Done");
-			}
-		
-			if(Definitions::irComm->available())
-			{
-				Serial.print(Definitions::irComm->available());
-				Serial.print("\t");
-				Serial.print(Definitions::irComm->peek(), HEX);
-				Serial.print("\t");
-				Serial.write(Definitions::irComm->read());
-				Serial.println();
-				//Serial.print("\t");
-				//Definitions::irComm->println(Definitions::irComm->available());
-			}
         #ifdef TFT
 			Definitions::currentScreen->refresh();
 		#endif
