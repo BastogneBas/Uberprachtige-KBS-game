@@ -216,7 +216,7 @@ void IRComm::startReceiveBit()
 	bitReceiveEnabled = 1;
 }
 
-// Prepaire for receiving the next byte
+// Prepair for receiving the next byte
 void IRComm::startReadByte()
 {
 	readByteIndex = 0;
@@ -319,7 +319,7 @@ int IRComm::readByteIteration()
 			Serial.println("retrying");
 			Serial.print("\033[m");
 #endif
-			// Prepaire for receiving a new byte
+			// Prepair for receiving a new byte
 			startReadByte();
 		}
 		return 0;
