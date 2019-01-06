@@ -138,12 +138,15 @@ int main()
 	// Default Arduino initialisation.
 #warning Needs to be replaced
 	own_init();
+	Serial.begin(500000);
 
+	//Serial.println("r143");
 //#ifndef IR
 	// Initialize the tft
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
 #ifdef TFT
+#warning TFT
 	Definitions::tft->begin();
 	yield();
 	Definitions::tft->setRotation(1);
@@ -155,33 +158,31 @@ int main()
 	Definitions::println("Welkom!");
 #endif
 
-#warning not IR
 	// Initialize the Nunchuk for player 1
 	Definitions::nunchuk = new ArduinoNunchuk();
 	Definitions::nunchuk->init();
 
+#ifdef TFT
 	// Opening the homeScreen
 	Definitions::currentScreen = new homeScreen();
-#ifdef TFT
 	Definitions::currentScreen->begin();
 #endif
 
 #ifdef IR
-	Serial.begin(500000);
 //	Serial.setTimeout(12);
 	// Construct the irComm class
 	Definitions::irComm = new IRComm();
 
 	Serial.println("Morning!");
-//	Serial.print("This is ");
-//	Serial.print(PEEP);
-//	Serial.print(" speaking at ");
-//	Serial.print(PWMFREQ);
-//	Serial.println(" kHz");
+	Serial.print("This is ");
+	Serial.print(PEEP);
+	Serial.print(" speaking at ");
+	Serial.print(PWMFREQ);
+	Serial.println(" kHz");
 	
 	//Definitions::irComm->startReadByte();
 	//Definitions::irComm->startReceiveBit();
-	//Serial.println(Definitions::irComm->read());
+	//Definitions::irComm->println(Definitions::irComm->read());
 #else
 	Definitions::irComm =
 		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
@@ -204,19 +205,21 @@ int main()
 
 	while (true)
 	{
-		//Serial.println("Refresh");
+		Serial.println("Refresh");
 		// Refresh screen
 		if (startRefresh)
 		{
 			refreshDone = 0;
-			if(Definitions::irComm->available())
-			{
-				Definitions::irComm->write(Definitions::irComm->read());
-			}
-/*			if (Serial.available()){
+//			if(Definitions::irComm->available())
+//			{
+//				Definitions::irComm->write(Definitions::irComm->read());
+//			}
+			if (Serial.available()){
 				char buffer[64] = {0};
 				Serial.readBytes(buffer, Serial.available());
+				Serial.println(buffer);
 				Definitions::irComm->print(buffer);
+				Serial.println("Done");
 			}
 		
 			if(Definitions::irComm->available())
@@ -228,8 +231,8 @@ int main()
 				Serial.write(Definitions::irComm->read());
 				Serial.println();
 				//Serial.print("\t");
-				//Serial.println(Definitions::irComm->available());
-			}*/
+				//Definitions::irComm->println(Definitions::irComm->available());
+			}
         #ifdef TFT
 			Definitions::currentScreen->refresh();
 		#endif

@@ -17,7 +17,7 @@
  * Note: For the final project, enable IR and TFT.
  * SENDER and RECEIVER are given at compilation time. SEE: README.md */
 #define IR 1
-#define TFT 1
+//#define TFT 1
 //#define RECEIVER 1
 //#define SENDER 1
 
