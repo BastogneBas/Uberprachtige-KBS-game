@@ -205,7 +205,7 @@ int main()
 
 	while (true)
 	{
-		Serial.println("Refresh");
+		//Serial.println("Refresh");
 		// Refresh screen
 		if (startRefresh)
 		{
@@ -243,8 +243,8 @@ int main()
 		{
 			/* We need to do something in our loop for some reason, so we set
 			 * the Power Reduction Register to the value of itself... */
-			asm volatile ("nop");
-			//PRR = PRR;
+			//asm volatile ("nop");
+			PRR = PRR;
 		}
 	}
 }

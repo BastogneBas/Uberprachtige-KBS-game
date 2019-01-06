@@ -48,7 +48,7 @@
 #endif
 
 /// Uncomment this to enable debug code
-//#define DEBUG
+#define DEBUG
 
 class Definitions // Define the constants
 {

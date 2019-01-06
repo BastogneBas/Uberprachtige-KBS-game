@@ -237,6 +237,7 @@ int IRComm::readByteIteration()
 		bitReceiveComplete = 1;
 		// Calculate the difference between start and the end of the receival.
 		uint8_t diff = bitReceiveChanged-bitReceiveStarted;
+		//Serial.println(diff);
 		// And do something with it
 		if (((diff >= 75) && (diff <= 90)) && readByteIndex == 0 && readByteHasStarted == false)
 		{
