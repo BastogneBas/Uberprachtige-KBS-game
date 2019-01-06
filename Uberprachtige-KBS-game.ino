@@ -215,21 +215,23 @@ int main()
 //				Definitions::irComm->write(Definitions::irComm->read());
 //			}
 			if (Serial.available()){
-				char buffer[64] = {0};
-				Serial.readBytes(buffer, Serial.available());
-				Serial.println(buffer);
-				Definitions::irComm->print(buffer);
-				Serial.println("Done");
+				//char buffer[64] = {0};
+				//Serial.readBytes(buffer, Serial.available());
+				//Serial.println(buffer);
+				//Definitions::irComm->print(buffer);
+				//Serial.println("Done");
+				Definitions::irComm->write(Serial.read());
 			}
 		
 			if(Definitions::irComm->available())
 			{
-				Serial.print(Definitions::irComm->available());
-				Serial.print("\t");
-				Serial.print(Definitions::irComm->peek(), HEX);
-				Serial.print("\t");
+				//Serial.print(Definitions::irComm->available());
+				//Serial.print("\t");
+				//Serial.print(Definitions::irComm->peek(), HEX);
+				//Serial.print("\t");
+				//Serial.write(Definitions::irComm->read());
+				//Serial.println();
 				Serial.write(Definitions::irComm->read());
-				Serial.println();
 				//Serial.print("\t");
 				//Definitions::irComm->println(Definitions::irComm->available());
 			}
