@@ -209,11 +209,11 @@ int main()
 		if (startRefresh)
 		{
 			refreshDone = 0;
-//			if(Definitions::irComm->available())
-//			{
-//				Definitions::irComm->write(Definitions::irComm->read());
-//			}
-			if (Serial.available()){
+			if(Definitions::irComm->available())
+			{
+				Definitions::irComm->write(Definitions::irComm->read());
+			}
+/*			if (Serial.available()){
 				char buffer[64] = {0};
 				Serial.readBytes(buffer, Serial.available());
 				Definitions::irComm->print(buffer);
@@ -229,7 +229,7 @@ int main()
 				Serial.println();
 				//Serial.print("\t");
 				//Serial.println(Definitions::irComm->available());
-			}
+			}*/
         #ifdef TFT
 			Definitions::currentScreen->refresh();
 		#endif
