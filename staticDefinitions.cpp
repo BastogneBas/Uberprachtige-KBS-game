@@ -13,7 +13,9 @@
  * Uncomment IR line to enable IR comms
  * Uncomment TFT line to enable the tft display
  * Uncomment RECEIVER line to set current arduino as a receiver
- * Uncomment SENDER line to set current arduino as a sender */
+ * Uncomment SENDER line to set current arduino as a sender
+ * Note: For the final project, enable IR and TFT.
+ * SENDER and RECEIVER are given at compilation time. SEE: README.md */
 #define IR 1
 //#define TFT 1
 //#define RECEIVER 1
