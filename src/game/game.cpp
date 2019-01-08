@@ -266,6 +266,11 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
     // Increment refresh counter
     *RefreshCnt++;
 
+	if(Definitions::irComm->available)
+	{
+		
+	}
+
     if((*RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
     {
     #ifdef DEBUG
@@ -554,6 +559,14 @@ void gameScreen::movePeep(int peep) // Move a player across the level
                 // Set player 1's position values
                 p1X = newX;
                 p1Y = newY;
+				Definitions::irComm->write(0x05);
+				Definitions::irComm->println("p1pos:")
+				Definitions::irComm->write(p1X);
+				Definitions::irComm->print(p1X);
+				Definitions::irComm->print(", ");
+				Definitions::irComm->write(p1Y);
+				Definitions::irComm->println(p1Y);
+
             }
 			if(peep == 2) // If the selected player is player 2
 			{

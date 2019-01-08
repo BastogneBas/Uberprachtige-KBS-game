@@ -348,8 +348,6 @@ void IRComm::shiftbufferleft()
 	}
 }
 
-
-
 // *** Reading from buffer *** //
 // Checks the amount of bytes waiting to be read.
 int IRComm::available(){
