@@ -105,7 +105,7 @@ void lvlSelectScreen::refresh()
 
 			// If true, the newScreen function will be called. This function
 			// Will close the current screen, and call the new screen
-			lvlSelectScreen::startGame(lvlSelectScreen::selectedButton);
+			lvlSelectScreen::startGame();
 
 		}
 
@@ -205,29 +205,35 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 }
 
 // Function that will be called if the user wants to go to start a level
-void lvlSelectScreen::startGame(uint8_t selectedButton)
+void lvlSelectScreen::startGame()
 {
 
-	Definitions::println(lvlSelectScreen::selectedButton);
+	Definitions::irComm->println(selectedButton);
 	// Checking if buttonSelect is > 0 && <= 4 for general functions on all buttons
 	if ((selectedButton > 0) && (selectedButton <= 4))
 	{
-		// Deleting current pointer
-		delete Definitions::currentScreen;
 
 		// If buttonSelect == 1, the lvlSelect screen will be called and started.
 		// The same things happen with the other buttons
 		if (selectedButton == 1)
 		{
-			Definitions::println((uint16_t) Definitions::currentScreen,
-								 HEX);
+			// Deleting current pointer
+			//delete Definitions::currentScreen;
+
+//			Definitions::irComm->println("lvlsel:223");
+//			Definitions::irComm->println(sizeof(&LevelDefs::getLevel(0)));
+            Definitions::irComm->println("lvlsel:225");
 			Definitions::currentScreen =
 				new gameScreen(LevelDefs::getLevel(0));
+			Definitions::irComm->println("lvlsel:228");
 			Definitions::currentScreen->begin();
-
+            Definitions::irComm->println("lvlsel:230");
 		}
 		else if (selectedButton == 2)
 		{
+			// Deleting current pointer
+			delete Definitions::currentScreen;
+
 			Definitions::currentScreen =
 				new gameScreen(LevelDefs::getLevel(1));
 			Definitions::currentScreen->begin();
@@ -235,6 +241,9 @@ void lvlSelectScreen::startGame(uint8_t selectedButton)
 		}
 		else if (selectedButton == 3)
 		{
+			// Deleting current pointer
+			delete Definitions::currentScreen;
+
 			Definitions::currentScreen =
 				new gameScreen(LevelDefs::getLevel(2));
 			Definitions::currentScreen->begin();
@@ -242,6 +251,9 @@ void lvlSelectScreen::startGame(uint8_t selectedButton)
 		}
 		else if (selectedButton == 4)
 		{
+			// Deleting current pointer
+			delete Definitions::currentScreen;
+
 			Definitions::currentScreen = new gameScreen(Level("Random"));
 			Definitions::currentScreen->begin();
 

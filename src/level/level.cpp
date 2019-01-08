@@ -3,7 +3,6 @@
 #include "../../staticDefinitions.cpp"
 #include "levelDefs.h"
 
-
 /* Level constructor
  * Creates a level from predefined barrel locations.
  */
@@ -16,6 +15,20 @@ Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 	}
 	// And set the name of the current level
 	this->name = name;
+}
+
+Level::Level(const uint16_t (*barrels)[Definitions::gameHeight], const char *name)
+{
+	Definitions::irComm->println("level:22");
+	// Copy barrel locations from current level to ram
+	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
+	{
+		this->barrels[i] = barrels[i];
+	}
+	Definitions::irComm->println("level:28");
+	// And set the name of the current level
+	this->name = name;
+	Definitions::irComm->println("level:31");
 }
 
 /* Returns the X value of the bomb specified */

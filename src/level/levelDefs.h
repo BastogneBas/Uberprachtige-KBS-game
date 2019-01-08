@@ -12,7 +12,7 @@ class LevelDefs
 	 * levelId = 1 --> Level 2
 	 * Etc.
 	 */
-	static Level getLevel(uint8_t levelId);
+	static Level *getLevel(uint8_t levelId);
 
 	// A mask for the locations where no barrels can be placed
 	static const uint16_t YouCantPlaceBarrelsHere[11];

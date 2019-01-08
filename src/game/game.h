@@ -11,6 +11,7 @@ class gameScreen:public screen // Defines the gameScreen class
 	// Define functions
 	gameScreen();
 	gameScreen(Level level);
+	gameScreen(Level *level);
 	void begin();
 	void end();
 	void refresh();
@@ -31,8 +32,8 @@ class gameScreen:public screen // Defines the gameScreen class
 	Level level;
 	uint8_t livesP1 = 3;
 	uint8_t livesP2 = 3;
-	uint16_t scoreP1 = 4000;
-	uint16_t scoreP2 = 4000;
+	int16_t scoreP1 = 4000;
+	int16_t scoreP2 = 4000;
 	uint16_t timeCounter = 0;
 	uint8_t currentTime = 180;
 	uint8_t deadPlayer = 0;

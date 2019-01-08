@@ -79,8 +79,19 @@ const uint16_t LevelDefs::YouCantPlaceBarrelsHere[11] = {
 	0b1110000000000111
 };
 
-Level LevelDefs::getLevel(uint8_t levelId)
+Level* LevelDefs::getLevel(uint8_t levelId)
 {
-	return Level(LevelDefs::levelBarrels[levelId],
-				 LevelDefs::levelNames[levelId]);
+	Definitions::irComm->println("lvldef:84");
+    uint16_t (*pBarrels)[11] = &LevelDefs::levelBarrels[levelId];
+    Definitions::irComm->println("lvldef:86");
+	//Level* ret = new Level(pBarrels, LevelDefs::levelNames[levelId]);
+	Level* ret = &Level();
+	Definitions::irComm->println("lvldef:88");
+	Definitions::irComm->println((uint32_t) ret, HEX);
+	Definitions::irComm->println(sizeof(*ret));
+    Level* rat = &Level();
+    Definitions::irComm->println("lvldef:88");
+    Definitions::irComm->println((uint32_t) rat, HEX);
+    Definitions::irComm->println(sizeof(*rat));
+	return ret;
 }

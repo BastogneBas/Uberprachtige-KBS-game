@@ -60,6 +60,7 @@ class Level
 	// TODO: Describe all variables and what they are used for
 	// Constructors
 	Level(uint16_t barrels[Definitions::gameHeight], String name);
+	Level(const uint16_t(*)[11], const char* name);
 	Level(String name);
 	Level();
 	~Level();
