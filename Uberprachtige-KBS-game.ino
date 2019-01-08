@@ -140,10 +140,12 @@ int main()
 	own_init();
 	//Serial.begin(500000);
 	Definitions::irComm = new IRComm();
+	Definitions::irComm->println('\n');
 
 	Definitions::irComm->println("r144");
 //#ifndef IR
 	// Initialize the tft
+	//Definitions::printScreenSize((uint16_t)Definitions::tft);
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
 #ifdef TFT
@@ -162,14 +164,17 @@ int main()
 #endif
 
 	// Initialize the Nunchuk for player 1
+	//Definitions::printScreenSize((uint16_t)Definitions::nunchuk);
 	Definitions::nunchuk = new ArduinoNunchuk();
 	Definitions::nunchuk->init();
 	Definitions::irComm->println("r167");
 
 #ifdef TFT
 	// Opening the homeScreen
+	//Definitions::printScreenSize((uint16_t)Definitions::currentScreen);
 	Definitions::currentScreen = new homeScreen();
 	Definitions::currentScreen->begin();
+	Definitions::printScreenSize((uint16_t)Definitions::currentScreen);
 	Definitions::irComm->println("r173");
 
 #endif
@@ -239,6 +244,10 @@ int main()
 //				//Definitions::irComm->println(Definitions::irComm->available());
 //			}
         #ifdef TFT
+//			Definitions::irComm->print("\t0x");
+//			Definitions::irComm->print((uint16_t)Definitions::currentScreen, HEX);
+//			Definitions::irComm->print("\t0x");
+//			Definitions::irComm->println(sizeof(((Definitions::currentScreen))), HEX);
 			Definitions::currentScreen->refresh();
 		#endif
 			startRefresh = 0;

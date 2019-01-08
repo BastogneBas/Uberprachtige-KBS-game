@@ -114,6 +114,8 @@ void homeScreen::refresh()
 	// Updating the nunchuk values
 	Definitions::nunchuk->update();
 
+	Definitions::printScreenSize((uint16_t)this);
+
 	// If statement that checks if the nunchuk joystick is pushed down
 	if (Definitions::nunchuk->analogY < 50)
 	{
