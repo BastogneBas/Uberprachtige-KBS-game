@@ -261,14 +261,14 @@ void gameScreen::drawEndScreen() // Draws the screen showing the results of the 
     Definitions::tft->print(currentTime);
 }
 
-uint32_t **RefreshCnt = 0;
+uint32_t *RefreshCnt = 0;
 //bool placed;
 void gameScreen::refresh() // Handles refreshing the screen and updating some variables
 {
     // Increment refresh counter
-    **RefreshCnt++;
+    *RefreshCnt++;
 
-    if((**RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
+    if((*RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
     {
     #ifdef DEBUG
             // Shown only when debugging is enabled
