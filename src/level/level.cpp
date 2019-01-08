@@ -19,16 +19,13 @@ Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 
 Level::Level(const uint16_t (*barrels)[Definitions::gameHeight], const char *name)
 {
-	Definitions::irComm->println("level:22");
 	// Copy barrel locations from current level to ram
 	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
 	{
-		this->barrels[i] = barrels[i];
+		this->barrels[i] = *barrels[i];
 	}
-	Definitions::irComm->println("level:28");
 	// And set the name of the current level
 	this->name = name;
-	Definitions::irComm->println("level:31");
 }
 
 /* Returns the X value of the bomb specified */
@@ -100,6 +97,15 @@ void Level::begin()
 	uint8_t width = Definitions::gameWidth + 1, height =
 		Definitions::gameHeight + 1;
 
+	printMap();
+	Definitions::irComm->println();
+
+	for (int x = 0; x <= width; x++)
+		for (int y = 0; y <= height; y++)
+			map[y][x] = 0;
+
+	printMap();
+
 	for (int x = 0; x <= width; x++)
 		setObjectAt(x, 0, mapObject::block);
 	for (int y = 0; y <= height; y++)
@@ -112,7 +118,6 @@ void Level::begin()
 	for (uint8_t y = 2; y <= height; y += 2)
 		for (uint8_t x = 2; x <= width; x += 2)
 			setObjectAt(x, y, mapObject::block);
-
 
 
 	setObjectAt(1, 1, mapObject::peep1);
@@ -131,6 +136,9 @@ void Level::begin()
 			markObjectAt(x + 1, y + 1, mapObject::needsRedraw);
 		}
 	}
+
+	Definitions::irComm->println();
+	printMap();
 }
 
 // Returns the barrel locations
@@ -152,14 +160,16 @@ void Level::printMap()
 	{
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
 		{
+			if (map[y][x] <= 0xFFF)
+				Definitions::irComm->print("0");
+			if (map[y][x] <= 0xFF)
+				Definitions::irComm->print("0");
 			if (map[y][x] <= 0xF)
-			{
-				Definitions::print(" ");
-			}
-			Definitions::print(map[y][x], HEX);
-			Definitions::print(" ");
+				Definitions::irComm->print("0");
+			Definitions::irComm->print(map[y][x], HEX);
+			Definitions::irComm->print("\t");
 		}
-		Definitions::println();
+		Definitions::irComm->println();
 	}
 //#endif
 }

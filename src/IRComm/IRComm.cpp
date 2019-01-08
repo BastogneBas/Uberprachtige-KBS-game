@@ -105,7 +105,7 @@ void IRComm::timer0ISR()
 
 		// If the bit is completely sent...
 		// (a bit is sent over 100 pulses)
-		if (bitSendCounter == 200)
+		if (bitSendCounter == 150)
 		{
 			// Signal that the bit is completely sent
 			bitSendComplete = 1;

@@ -96,7 +96,7 @@ class Level
 	 *      ███████████████
 	 *      █        B B B█
 	 */
-	const uint16_t barrels[Definitions::gameHeight] = { 0 };
+	uint16_t barrels[Definitions::gameHeight] = { 0 };
 
 	uint16_t map[Definitions::gameHeight + 2][Definitions::gameWidth + 2] = {
 		{0},

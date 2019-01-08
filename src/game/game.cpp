@@ -19,9 +19,7 @@ gameScreen::gameScreen()
 // Initialize gameScreen class
 gameScreen::gameScreen(Level *level)
 {
-    Definitions::irComm->println("r29");
     this->level = *level;
-    Definitions::irComm->println("r31");
 }
 
 // Define players' positions
@@ -413,10 +411,10 @@ void gameScreen::drawLives() // Print the amount of lives per player on-screen
     // Set x-location of lives
     uint16_t x = 305;
 
-    Definitions::irComm->print("p1: ");
-    Definitions::irComm->println(livesP1);
-    Definitions::irComm->print("p2: ");
-    Definitions::irComm->println(livesP2);
+//    Definitions::irComm->print("p1: ");
+//    Definitions::irComm->println(livesP1);
+//    Definitions::irComm->print("p2: ");
+//    Definitions::irComm->println(livesP2);
     if(livesP1 < 3) // If player 1 has lost lives
     {
         for(int i = 3 - livesP1; i > 0; i--) // Checks for the amount of lives player 1 has left

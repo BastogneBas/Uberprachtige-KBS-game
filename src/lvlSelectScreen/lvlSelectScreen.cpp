@@ -70,7 +70,6 @@ void lvlSelectScreen::refresh()
 {
 	*refreshCount++;
 
-	Definitions::printScreenSize((uint16_t)this);
 	if ((*refreshCount % 5)== 0) {
 		// Updating the nunchuk values
 		Definitions::nunchuk->update();

@@ -81,22 +81,23 @@ const uint16_t LevelDefs::YouCantPlaceBarrelsHere[11] = {
 
 Level* LevelDefs::getLevel(uint8_t levelId)
 {
-	Definitions::irComm->println("lvldef:84");
-    const uint16_t (*pBarrels)[11] = &LevelDefs::levelBarrels[levelId];
-	Definitions::printScreenSize((uint16_t)pBarrels);
+	//Definitions::irComm->println("lvldef:84");
+    //const uint16_t (*pBarrels)[11] = &LevelDefs::levelBarrels[levelId];
+	//Definitions::printScreenSize((uint16_t)pBarrels);
     Definitions::irComm->println("lvldef:86");
 	Level ret;
 	//Level* ret = new Level(pBarrels, LevelDefs::levelNames[levelId]);
-	ret = Level();
+	ret = Level(LevelDefs::levelBarrels[levelId], LevelDefs::levelNames[levelId]);
+//	ret = Level(pBarrels, LevelDefs::levelNames[levelId]);
 	Level* pret = &ret;
-	Definitions::irComm->println("lvldef:88");
-	Definitions::irComm->println((uint32_t) pret, HEX);
-	Definitions::irComm->println(sizeof(*pret), HEX);
+//	Definitions::irComm->println("lvldef:88");
+//	Definitions::irComm->println((uint32_t) pret, HEX);
+//	Definitions::irComm->println(sizeof(*pret), HEX);
 
-    Level** rat = &pret;
-    Definitions::irComm->println("lvldef:93");
-    Definitions::irComm->println((uint32_t) rat, HEX);
-    Definitions::irComm->println(sizeof(*rat), HEX);
+//    Level** rat = &pret;
+//    Definitions::irComm->println("lvldef:93");
+//    Definitions::irComm->println((uint32_t) rat, HEX);
+//    Definitions::irComm->println(sizeof(*rat), HEX);
 
 	return pret;
 }

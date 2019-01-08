@@ -142,20 +142,16 @@ int main()
 	Definitions::irComm = new IRComm();
 	Definitions::irComm->println('\n');
 
-	Definitions::irComm->println("r144");
 //#ifndef IR
 	// Initialize the tft
-	//Definitions::printScreenSize((uint16_t)Definitions::tft);
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
 #ifdef TFT
 #warning TFT
-	Definitions::irComm->println("r151");
 	Definitions::tft->begin();
 	yield();
 	Definitions::tft->setRotation(1);
 	Definitions::tft->fillScreen(ILI9341_BLACK);
-	Definitions::irComm->println("r156");
 #endif
 
 #ifdef DEBUG
@@ -167,7 +163,6 @@ int main()
 	//Definitions::printScreenSize((uint16_t)Definitions::nunchuk);
 	Definitions::nunchuk = new ArduinoNunchuk();
 	Definitions::nunchuk->init();
-	Definitions::irComm->println("r167");
 
 #ifdef TFT
 	// Opening the homeScreen
@@ -175,7 +170,6 @@ int main()
 	Definitions::currentScreen = new homeScreen();
 	Definitions::currentScreen->begin();
 	Definitions::printScreenSize((uint16_t)Definitions::currentScreen);
-	Definitions::irComm->println("r173");
 
 #endif
 
