@@ -13,7 +13,7 @@ class lvlSelectScreen:public screen
 	void startGame();
 
 	// Defining variable that holds the value of the current button being selected
-	uint8_t selectedButton = 0;
+	uint8_t selectedButton = 1;
 
 	// Defining variables to fill the screen with
 	uint8_t yRect = 29, yFill = 30, cursor = 40;

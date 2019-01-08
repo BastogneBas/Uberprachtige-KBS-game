@@ -17,13 +17,6 @@ gameScreen::gameScreen()
 }
 
 // Initialize gameScreen class
-gameScreen::gameScreen(Level level)
-{
-    Definitions::irComm->println("r22");
-	this->level = level;
-	Definitions::irComm->println("r24");
-}
-
 gameScreen::gameScreen(Level *level)
 {
     Definitions::irComm->println("r29");
@@ -268,17 +261,14 @@ void gameScreen::drawEndScreen() // Draws the screen showing the results of the 
     Definitions::tft->print(currentTime);
 }
 
-uint32_t RefreshCnt = 0;
+uint32_t *RefreshCnt = 0;
 //bool placed;
 void gameScreen::refresh() // Handles refreshing the screen and updating some variables
 {
     // Increment refresh counter
-    RefreshCnt++;
+    *RefreshCnt++;
 
-    // TODO: Find out what this is used for and remove if useless
-    uint8_t getPlacedTime;
-
-    if((RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
+    if((*RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
     {
     #ifdef DEBUG
             // Shown only when debugging is enabled
@@ -299,13 +289,13 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
                 && Definitions::nunchuk->zButton) // If both C and Z are pressed...
             {
                 // Place a bomb on player 2's position
-                level.setBomb(1, p2X, p2Y, RefreshCnt, 2);
+                level.setBomb(1, p2X, p2Y, *RefreshCnt, 2);
                 placeBomb(2, level.getBombX(1), level.getBombY(1));
             }
             if(Definitions::nunchuk->zButton) // If only the Z button is pressed...
             {
                 // Place a bomb on player 1's position
-                level.setBomb(0, p1X, p1Y, RefreshCnt, 1);
+                level.setBomb(0, p1X, p1Y, *RefreshCnt, 1);
                 placeBomb(1, level.getBombX(0), level.getBombY(0));
             }
 
@@ -316,7 +306,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
         }
 
 		// TODO: Explain this statement
-        if(RefreshCnt >= level.getBombTime(0) + 48)
+        if(*RefreshCnt >= level.getBombTime(0) + 48)
         {
             if(((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
                 && !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
@@ -340,20 +330,20 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
 // TODO: Decide if this commented-out piece of code can be removed
 /*
-//        if (RefreshCnt == level.getBombTime(0) + 12) {
+//        if (*RefreshCnt == level.getBombTime(0) + 12) {
 //            if (((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb) &&
 //                 !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
 //                || ((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb) &&
 //                    (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))) {
 //                drawExplosion(level.getBombX(0), level.getBombY(0));
 //                drawExplosion(level.getBombX(1), level.getBombY(1));
-//                //getExTime = RefreshCnt;
+//                //getExTime = *RefreshCnt;
 //            }
 //        }
 */
 
         // TODO: Explain what this does
-        if(RefreshCnt >= level.getBombTime(0) + 92)
+        if(*RefreshCnt >= level.getBombTime(0) + 92)
         {
             if((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
                 && (level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion)
@@ -370,11 +360,11 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
         if(Definitions::nunchuk->cButton) // If the C-Button is pressed, move player 2
         {
-            movePeep(2, p2X, p2Y);
+            movePeep(2);
         }
         else // Otherwise, move player 1
         {
-            movePeep(1, p1X, p1Y);
+            movePeep(1);
         }
 
     #ifdef DEBUG
@@ -385,7 +375,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 		Definitions::setTextDebug();
 		Definitions::tft->setCursor(0, 210);
 		Definitions::tft->print("frame: ");
-		Definitions::tft->println(RefreshCnt);
+		Definitions::tft->println(*RefreshCnt);
 
 		// Print the x-position of the nunchuk's joystick
 		Definitions::tft->setCursor(240, 0);
@@ -499,7 +489,7 @@ void gameScreen::drawScore() // Draws the score values
     Definitions::tft->println(" ");
 }
 
-void gameScreen::movePeep(int peep, uint16_t dirX, uint16_t dirY) // Move a player across the level
+void gameScreen::movePeep(int peep) // Move a player across the level
 {
 	// Store the direction of nunchuk's joystick
 	int nunX = Definitions::nunchuk->analogX;
