@@ -79,6 +79,8 @@ void lvlSelectScreen::waitForStart()
 		while(!Definitions::irComm->available())
 			PRR = PRR;
 		int receivedcmd = Definitions::irComm->read();
+		Definitions::tft->print("received: ");
+		Definitions::tft->println(receivedcmd);
 		if(receivedcmd == 0x02)
 		{
 			Definitions::tft->print("Starting level ");
@@ -112,8 +114,6 @@ void lvlSelectScreen::waitForStart()
 		}
 		else
 		{
-			Definitions::tft->print("received: ");
-			Definitions::tft->println(Definitions::irComm->read());
 		}
 	}
 }

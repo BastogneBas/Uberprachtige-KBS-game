@@ -36,6 +36,7 @@ class gameScreen:public screen // Defines the gameScreen class
   private:
 	// Define functions
 	void movePeep(int peep);
+	void movePeep(int peep, int, int);
 	void placeBomb(int peep, uint16_t x, uint16_t y);
 	void drawExplosion(int peep, uint16_t explX, uint16_t explY);
 	void drawAir(uint16_t explX, uint16_t explY);

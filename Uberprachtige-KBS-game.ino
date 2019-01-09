@@ -171,17 +171,14 @@ int main()
 #endif
 
 	// Initialize the Nunchuk for player 1
-	//Definitions::printScreenSize((uint16_t)Definitions::nunchuk);
 	Definitions::nunchuk = new ArduinoNunchuk();
 	Definitions::nunchuk->init();
 
 #ifdef TFT
 	// Opening the homeScreen
-	//Definitions::printScreenSize((uint16_t)Definitions::currentScreen);
 	//Definitions::currentScreen = new homeScreen();
 	Definitions::currentScreen = new lvlSelectScreen();
 	Definitions::currentScreen->begin();
-	Definitions::printScreenSize((uint16_t)Definitions::currentScreen);
 
 #endif
 

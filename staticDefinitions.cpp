@@ -80,14 +80,14 @@ class Definitions // Define the constants
 	static uint8_t timerCounter;
 	static uint8_t currentTime;
 
-	static void printScreenSize(uint16_t pointer)
+/*	static void printScreenSize(uint16_t pointer)
 	{
 		irComm->print("\t0x");
 		irComm->print(pointer, HEX);
 		irComm->print("\t0x");
 		uint8_t* ptr = new uint8_t;
 		irComm->println((uint16_t)ptr, HEX);
-	}
+	}*/
 
 	/* Set the text position at 0,0 and color at white on black
 	 * FOR DEBUGGING */

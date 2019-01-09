@@ -325,14 +325,18 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 			while(!Definitions::irComm->available())
 				PRR=PRR;
 			uint8_t recPy = Definitions::irComm->read();
+
+			Definitions::irComm->println(recPx);
+			Definitions::irComm->println(recPy);
+
 		#if PEEP==1
-			p2X = recPx;
-			p2Y = recPy;
-			movePeep(2);
+			//p2X = recPx;
+			//p2Y = recPy;
+			movePeep(2, recPx, recPy);
 		#elif PEEP==2
-			p1X = recPx;
-			p1Y = recPy;
-			movePeep(1);
+			//p1X = recPx;
+			//p1Y = recPy;
+			movePeep(1, recPx, recPy);
 		#endif
 		}
 		else if(recCmd == 0x06)
@@ -642,6 +646,11 @@ void gameScreen::movePeep(int peep) // Move a player across the level
 		newY++;
 	}
 
+	movePeep(peep, newX, newY);
+}
+
+void gameScreen::movePeep(int peep, int newX, int newY)
+{
 	// Draw player in new position
 	// Checks which peep is selected and if the new position isn't the same as the selected peep's current position
 	if((peep == 1 && (newY != p1Y || newX != p1X))
