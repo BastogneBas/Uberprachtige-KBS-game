@@ -12,6 +12,7 @@ class gameScreen:public screen // Defines the gameScreen class
 	gameScreen();
 	gameScreen(Level *level);
 	gameScreen(uint8_t levelnr);
+	gameScreen(char* levelname);
 	void begin();
 	void end();
 	void refresh();

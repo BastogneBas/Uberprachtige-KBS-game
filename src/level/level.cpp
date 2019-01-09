@@ -15,7 +15,7 @@ Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 	// Copy barrel locations from current level to ram
 	for (uint8_t y = 0; y < Definitions::gameHeight; y++)
 	{
-		Definitions::irComm->println(barrels[y], BIN);
+//		Definitions::irComm->println(barrels[y], BIN);
 //		this->barrels[i] = barrels[i];
 //		Definitions::irComm->print(i);
 //		Definitions::irComm->print(": ");
@@ -23,9 +23,9 @@ Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 //		Definitions::irComm->println();
 
 
-		Definitions::irComm->print(y);
-		Definitions::irComm->print(": ");
-		Definitions::irComm->println(barrels[y], BIN);
+//		Definitions::irComm->print(y);
+//		Definitions::irComm->print(": ");
+//		Definitions::irComm->println(barrels[y], BIN);
 		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
 		{
 			uint16_t mask = (1 << (Definitions::gameWidth - 1)) >> x;
@@ -99,7 +99,6 @@ Level::Level(String name)
 	{
 //TODO: Fix it
 		uint16_t barrelsy = (((uint16_t) random(0xFFFF)) &
-							//(((uint16_t)0xFFFF) & 
 							~(LevelDefs::YouCantPlaceBarrelsHere[y]));
 		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
 		{

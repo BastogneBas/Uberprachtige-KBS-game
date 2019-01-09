@@ -266,7 +266,7 @@ void lvlSelectScreen::startGame()
 	    if(selectedButton == 4)
         {
             delete Definitions::currentScreen;
-            Definitions::currentScreen = new gameScreen(new Level("Random"));
+            Definitions::currentScreen = new gameScreen("Random");
         }
 	    else
         {
