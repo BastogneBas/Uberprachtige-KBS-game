@@ -36,13 +36,6 @@ void gameScreen::begin() // Initializes the game's screen
 {
 	// Set background to black and draw the initial level
 	Definitions::tft->fillScreen(ILI9341_BLACK);
-#if PEEP==2
-	Definitions::tft->setTextSize(1);
-	Definitions::tft->setTextColor(ILI9341_WHITE);
-	Definitions::tft->setCursor(0, 0);
-	Definitions::tft->println("Wachten op speler 1...");
-	waitForStart();
-#endif
 	level.begin();
 	// TODO: Decide if this commented-out piece of code can be removed
     /*level.printMap();
@@ -118,26 +111,6 @@ void gameScreen::begin() // Initializes the game's screen
 	drawScore();
 }
 
-#ifdef PEEP=2
-void gameScreen::waitForStart()
-{
-	while(1)
-	{
-		while(!Definitions::irComm->available())
-		{
-			PRR=PRR;
-		}
-		if(Definitions::irComm->read() == 0x02)
-		{
-			while(!Definitions::irComm->available())
-			{
-				PRR=PRR;
-			}
-
-		}
-	}
-}
-#endif
 void gameScreen::end() // End the match by calculating some scores and showing the endScreen
 {
 //    Definitions::irComm->println("P1:");
