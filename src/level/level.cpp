@@ -149,7 +149,7 @@ void Level::begin()
 		}
 	}
 
-	Definitions::irComm->println();
+	//Definitions::irComm->println();
 	printMap();
 }
 

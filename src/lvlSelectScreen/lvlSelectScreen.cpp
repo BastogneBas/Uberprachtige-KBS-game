@@ -104,7 +104,7 @@ void lvlSelectScreen::waitForStart()
 			else
 			{
 				Definitions::tft->println(receivedlvl);
-				selectedButton = receivedlvl;
+				selectedButton = receivedlvl+1;
 			}
 		}
 		else if(receivedcmd == 0x05)
@@ -264,11 +264,16 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 // Function that will be called if the user wants to go to start a level
 void lvlSelectScreen::startGame(uint16_t seed)
 {
-#if PEEP==1
+//#if PEEP==1
+	Definitions::irComm->println('H');
+//	Definitions::setTextDebug();
+//	Definitions::tft->println(0x02);
 	Definitions::irComm->write(0x02);
+//	Definitions::tft->println(selectedButton);
 	Definitions::irComm->write(selectedButton);
+//	Definitions::tft->println(0x05);
 	Definitions::irComm->write(0x05);
-#endif
+//#endif
 	//Definitions::irComm->println(selectedButton);
 	// Checking if buttonSelect is > 0 && <= 4 for general functions on all buttons
 	if ((selectedButton > 0) && (selectedButton <= 4))

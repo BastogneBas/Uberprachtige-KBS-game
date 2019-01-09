@@ -24,6 +24,9 @@ gameScreen::gameScreen(Level *level)
 
 gameScreen::gameScreen(uint8_t levelnr)
 {
+	Definitions::irComm->write(0x02);
+	Definitions::irComm->write(levelnr);
+	Definitions::irComm->write(0x05);
 	this->level = Level(LevelDefs::levelBarrels[levelnr], LevelDefs::levelNames[levelnr]);
 }
 

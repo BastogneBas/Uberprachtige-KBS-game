@@ -200,10 +200,10 @@ void IRComm::pcint1ISR()
 				}
 			}
 		}
-		if(PINC & (1 << PINC3))
-			PORTD &= ~(1 << PORTD0);
-		else
-			PORTD |= (1 << PORTD0);
+	//	if(PINC & (1 << PINC3))
+	//		PORTD &= ~(1 << PORTD0);
+	//	else
+	//		PORTD |= (1 << PORTD0);
 	}
 }
 // Reset the receival and indicate that it has started
