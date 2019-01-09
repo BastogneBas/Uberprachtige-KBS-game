@@ -10,7 +10,6 @@
 // *** Constructor *** //
 IRComm::IRComm()
 {
-
 	/* --Initialize the send timer--
 	 * Uses Timer0
 	 * Toggles OC0A (Digital PIN 6) on compare match
@@ -347,8 +346,6 @@ void IRComm::shiftbufferleft()
 		writeIndex--;
 	}
 }
-
-
 
 // *** Reading from buffer *** //
 // Checks the amount of bytes waiting to be read.

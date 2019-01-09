@@ -42,7 +42,6 @@ void gameScreen::begin() // Initializes the game's screen
 	// Set background to black and draw the initial level
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 	level.begin();
-
 	// TODO: Decide if this commented-out piece of code can be removed
     /*level.printMap();
 	level.drawMap();
@@ -119,16 +118,16 @@ void gameScreen::begin() // Initializes the game's screen
 
 void gameScreen::end() // End the match by calculating some scores and showing the endScreen
 {
-    Definitions::irComm->println("P1:");
-    Definitions::irComm->println(livesP1);
-    Definitions::irComm->println(scoreP1);
-    Definitions::irComm->println("P2: ");
-    Definitions::irComm->println(livesP2);
-    Definitions::irComm->println(scoreP2);
-    Definitions::irComm->print("t: ");
-    Definitions::irComm->println(currentTime);
-    Definitions::irComm->print("dp: ");
-    Definitions::irComm->println(deadPlayer);
+//    Definitions::irComm->println("P1:");
+//    Definitions::irComm->println(livesP1);
+//    Definitions::irComm->println(scoreP1);
+//    Definitions::irComm->println("P2: ");
+//    Definitions::irComm->println(livesP2);
+//    Definitions::irComm->println(scoreP2);
+//    Definitions::irComm->print("t: ");
+//    Definitions::irComm->println(currentTime);
+//    Definitions::irComm->print("dp: ");
+//    Definitions::irComm->println(deadPlayer);
     // Check who won the game
     checkWinner();
     // Add some extra's to the scores
@@ -137,13 +136,17 @@ void gameScreen::end() // End the match by calculating some scores and showing t
     gameScreen::drawEndScreen();
 
     // TODO: Find out what the heck this even is
-    while (Definitions::nunchuk->cButton == 0)
+    while (true)
     {
         if (Definitions::nunchuk->cButton)
         {
             // Jumping to the first line of the program to reset all the processes
             asm volatile ("  jmp 0");
         }
+		else
+		{
+			PRR = PRR;
+		}
     }
 }
 
@@ -175,18 +178,18 @@ void gameScreen::calculateEndScores() // Adds or removes a bonus to the players'
 {
     if(winner == 0) // If the game is tied, give both players a bonus
     {
-        scoreP1 += ((currentTime * 10) + (livesP1 * 100));
-        scoreP2 += ((currentTime * 10) + (livesP2 * 100));
+        scoreP1 += ((currentTime / 2) + (livesP1 * 20));
+        scoreP2 += ((currentTime / 2) + (livesP2 * 20));
     }
     else if(winner == 1) // If player 1 won, give them a bonus
     {
-        scoreP1 += ((currentTime * 10) + (livesP1 * 100));
-        scoreP2 -= ((currentTime * 10) - (livesP2 * 100));
+        scoreP1 += ((currentTime / 2) + (livesP1 * 20));
+        scoreP2 -= ((currentTime / 2) - (livesP2 * 20));
     }
     else if(winner == 2) // If player 2 won, give them a bonus
     {
-        scoreP1 -= ((currentTime * 10) - (livesP1 * 100));
-        scoreP2 += ((currentTime * 10) + (livesP2 * 100));
+        scoreP1 -= ((currentTime / 10) - (livesP1 * 20));
+        scoreP2 += ((currentTime / 10) + (livesP2 * 20));
     }
 }
 
@@ -270,6 +273,11 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 {
     // Increment refresh counter
     *RefreshCnt++;
+
+//	if(Definitions::irComm->available())
+//	{
+//
+//	}
 
     if((*RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
     {
@@ -559,6 +567,14 @@ void gameScreen::movePeep(int peep) // Move a player across the level
                 // Set player 1's position values
                 p1X = newX;
                 p1Y = newY;
+				Definitions::irComm->write(0x05);
+				Definitions::irComm->println("p1pos:");
+				Definitions::irComm->write(p1X);
+				Definitions::irComm->print(p1X);
+				Definitions::irComm->print(", ");
+				Definitions::irComm->write(p1Y);
+				Definitions::irComm->println(p1Y);
+
             }
 			if(peep == 2) // If the selected player is player 2
 			{
@@ -666,7 +682,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
 						    // Remove a life from player 1
 							livesP1--;
 							// Add 1000 to player 2's score
-							scoreP2 += 1000;
+							scoreP2 += 10;
 							// Draw the new value for the scores
 							drawScore();
 						}
@@ -675,7 +691,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                             // Remove a life from player 2
 							livesP2--;
                             // Add 1000 to player 1's score
-							scoreP1 += 1000;
+							scoreP1 += 10;
                             // Draw the new value for the scores
 							drawScore();
 						}
@@ -738,7 +754,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                             // Remove a life from player 1
 							livesP1--;
                             // Add 1000 to player 2's score
-							scoreP2 += 1000;
+							scoreP2 += 10;
                             // Draw the new value for the scores
 							drawScore();
 						}
@@ -747,7 +763,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                             // Remove a life from player 2
 							livesP2--;
                             // Add 1000 to player 1's score
-							scoreP1 += 1000;
+							scoreP1 += 10;
                             // Draw the new value for the scores
 							drawScore();
 						}
@@ -767,7 +783,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                 // Remove a life from player 1
                 livesP1--;
                 // Add 1000 to player 2's score
-                scoreP2 += 1000;
+                scoreP2 += 10;
                 // Draw the new value for the scores
                 drawScore();
 			}
@@ -776,7 +792,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                 // Remove a life from player 2
                 livesP2--;
                 // Add 1000 to player 1's score
-                scoreP1 += 1000;
+                scoreP1 += 10;
                 // Draw the new value for the scores
                 drawScore();
 			}

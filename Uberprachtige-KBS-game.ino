@@ -108,21 +108,21 @@ void own_init(){
 
 	PORTC |= (1 << PORTC3) | (1 << PORTC2);
 
+	/* --Interrupt for timer1--
+	 * The timer works in CTC mode
+	 * With a prescaler of 256
+	 * The top (OCR1A) will be set to
+	 * 1562 so the timer will be ticking
+	 * 100 times/second.
+	 */
+
 	TCCR1A =
-		(0 << COM1A1) |
-		(0 << COM1A0) |
-		(0 << COM1B1) |
-		(0 << COM1B0) |
-		(0 << WGM11)  |
-		(0 << WGM10)  ;
+		(0 << COM1A1) | (0 << COM1A0) | (0 << COM1B1) |
+		(0 << COM1B0) | (0 << WGM11)  | (0 << WGM10);
 	TCCR1B =
-		(0 << ICNC1) |
-		(0 << ICES1) |
-		(0 << WGM13) |
-		(1 << WGM12) |
-		(1 << CS12)  |
-		(0 << CS11)  |
-		(0 << CS10)  ;
+		(0 << ICNC1) | (0 << ICES1) | (0 << WGM13) |
+		(1 << WGM12) | (1 << CS12)  | (0 << CS11)  |
+		(0 << CS10);
 
 	OCR1A = (uint16_t) 1562;
 	TIMSK1 = (1 << OCIE1A);

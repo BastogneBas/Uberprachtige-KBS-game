@@ -13,7 +13,6 @@
 #include "../../screen.h"
 #include "../level/levelDefs.h"
 #include "../game/game.h"
-
 // Defining constructor
 lvlSelectScreen::lvlSelectScreen()
 {
@@ -26,6 +25,7 @@ void lvlSelectScreen::begin()
 	// Filling the screen with darkGrey
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 
+#if PEEP==1
 	// For loop that makes the four buttons in the levelSelectScreen
 	for (uint8_t i = 1; i <= 4; i++)
 	{
@@ -60,7 +60,59 @@ void lvlSelectScreen::begin()
 	}
 	lvlSelectScreen::selectedButton = 1;
 	lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
+#elif PEEP==2
+	Definitions::tft->setTextSize(2);
+	Definitions::tft->setTextColor(ILI9341_WHITE);
+	Definitions::tft->setCursor(0, 0);
+	Definitions::tft->println("Wachten op speler 1...");
+	Definitions::tft->setTextSize(1);
+	waitForStart();
+#endif
 }
+
+#if PEEP==2
+void lvlSelectScreen::waitForStart()
+{
+	while(1)
+	{
+		while(!Definitions::irComm->available())
+			PRR = PRR;
+		int receivedcmd = Definitions::irComm->read();
+		if(receivedcmd == 0x02)
+		{
+			Definitions::tft->print("Starting level ");
+			while(!Definitions::irComm->available())
+				PRR = PRR;
+			int receivedlvl = Definitions::irComm->read();
+			if(receivedlvl == 0x04)
+			{
+				Definitions::tft->println("random");
+				selectedButton = 4;
+				// TODO: Handle Seedbyte
+			}
+			else if(receivedlvl > 0x04)
+			{
+				Definitions::tft->println("error, lvl# too high");
+			}
+			else
+			{
+				Definitions::tft->println(receivedlvl);
+				selectedButton = receivedlvl;
+			}
+		}
+		else if(receivedcmd == 0x05)
+		{
+			startGame();
+			break;
+		}
+		else
+		{
+			Definitions::tft->print("received: ");
+			Definitions::tft->println(Definitions::irComm->read());
+		}
+	}
+}
+#endif
 
 // Defining refreshcount variable
 uint32_t *refreshCount = 0;
@@ -234,6 +286,11 @@ void lvlSelectScreen::startGame()
 //		}
 		Definitions::currentScreen->begin();
 	}
+#if PEEP==1
+	Definitions::irComm->write(0x02);
+	Definitions::irComm->write(selectedButton);
+	Definitions::irComm->write(0x05);
+#endif
 }
 
 void lvlSelectScreen::end()
