@@ -316,7 +316,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             //Serial.println(getPlacedTime, DEC);
             //placed = true; */
         }
-
+#endif
 		// TODO: Explain this statement
 #if PEEP == 1
         if(*RefreshCnt >= level.getBombTime(0) + 48)
