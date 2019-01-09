@@ -26,6 +26,7 @@ void lvlSelectScreen::begin()
 	// Filling the screen with darkGrey
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 
+#ifdef PEEP=1
 	// For loop that makes the four buttons in the levelSelectScreen
 	for (uint8_t i = 1; i <= 4; i++)
 	{
@@ -60,6 +61,7 @@ void lvlSelectScreen::begin()
 	}
 	lvlSelectScreen::selectedButton = 1;
 	lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
+#endif
 }
 
 // Defining refreshcount variable

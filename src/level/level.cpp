@@ -155,7 +155,7 @@ String Level::getName()
 
 void Level::printMap()
 {
-//#ifdef DEBUG
+#ifdef DEBUG
 	for (uint8_t y = 0; y <= Definitions::gameHeight + 1; y++)
 	{
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
@@ -171,7 +171,7 @@ void Level::printMap()
 		}
 		Definitions::irComm->println();
 	}
-//#endif
+#endif
 }
 
 uint16_t Level::getObjectAt(uint8_t x, uint8_t y)

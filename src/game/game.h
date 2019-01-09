@@ -27,6 +27,9 @@ class gameScreen:public screen // Defines the gameScreen class
 	void placeBomb(int peep, uint16_t x, uint16_t y);
 	void drawExplosion(int peep, uint16_t explX, uint16_t explY);
 	void drawAir(uint16_t explX, uint16_t explY);
+#ifdef PEEP=2
+	void waitForStart();
+#endif
 	// Define Variables
 	Level level;
 	uint8_t livesP1 = 3;

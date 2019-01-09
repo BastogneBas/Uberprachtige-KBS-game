@@ -10,7 +10,6 @@
 // *** Constructor *** //
 IRComm::IRComm()
 {
-
 	/* --Initialize the send timer--
 	 * Uses Timer0
 	 * Toggles OC0A (Digital PIN 6) on compare match
