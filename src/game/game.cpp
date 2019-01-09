@@ -287,6 +287,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
         // If the Z button is pressed and there's no bomb on the current x and y position...
         // ...and a bomb is not currently active and [WHATEVER getBombPeep DOES]...
+#if PEEP == 1
         if(Definitions::nunchuk->zButton && level.getBombX(0) == 0
             && level.getBombTime(0) == 0 && level.getBombY(0) == 0
             && level.getBombPeep(0) == 0)
@@ -313,15 +314,13 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
         }
 
 		// TODO: Explain this statement
+#if PEEP == 1
         if(*RefreshCnt >= level.getBombTime(0) + 48)
         {
-            if(((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
+            if((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
                 && !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
-                ||((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
-                && !(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion)))
             {
                 drawExplosion(1, level.getBombX(0), level.getBombY(0));
-                drawExplosion(2, level.getBombX(1), level.getBombY(1));
 
             #ifdef DEBUG
                 // Print some debug information on the screen
@@ -334,6 +333,26 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             #endif
             }
         }
+#elif PEEP == 2
+        if(*RefreshCnt >= level.getBombTime(1) + 48)
+            {
+                if((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
+                    && !(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))
+                {
+                    drawExplosion(2, level.getBombX(1), level.getBombY(1));
+
+                #ifdef DEBUG
+                    // Print some debug information on the screen
+                    Definitions::print("BombTime: ");
+                    Definitions::print(level.getBombTime(1) + 12);
+                    Definitions::println("  ");
+                    Definitions::print("ExplTime: ");
+                    Definitions::print(level.getBombTime(1) + 24);
+                    Definitions::println("      ");
+                #endif
+                }
+            }
+#endif
 
 // TODO: Decide if this commented-out piece of code can be removed
 /*
@@ -364,7 +383,6 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
             }
         }
-
         if(Definitions::nunchuk->cButton) // If the C-Button is pressed, move player 2
         {
             movePeep(2);
