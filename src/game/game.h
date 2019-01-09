@@ -34,7 +34,6 @@ class gameScreen:public screen // Defines the gameScreen class
 	int16_t scoreP1 = 4000;
 	int16_t scoreP2 = 4000;
 	uint8_t timeCounter = 0;
-	uint8_t currentTime = 180;
 	uint8_t deadPlayer = 0;
 	uint8_t winner = 0;
 };
