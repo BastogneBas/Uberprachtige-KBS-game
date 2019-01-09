@@ -219,11 +219,14 @@ int main()
 			//{
 			//	Definitions::irComm->write(Definitions::irComm->read());
 			//}
-			if (Serial.available()){
-				char buffer[64] = {0};
-				Serial.readBytes(buffer, Serial.available());
+			while (Serial.available()){
+//				char buffer[64] = {0};
+//				Serial.readBytes(buffer, Serial.available());
 //				Serial.println(buffer);
-				Definitions::irComm->print(buffer);
+//				Definitions::irComm->print(buffer);
+				char in = Serial.read();
+				Serial.println(in, HEX);
+				Definitions::irComm->write(in);
 //				Serial.println("Done");
 			}
 
