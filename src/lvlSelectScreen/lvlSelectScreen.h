@@ -11,6 +11,7 @@ class lvlSelectScreen:public screen
 	void checkNunchuck();
 	void repaint(uint8_t selectedButton);
 	void startGame();
+	void waitForStart();
 
 	// Defining variable that holds the value of the current button being selected
 	uint8_t selectedButton = 1;

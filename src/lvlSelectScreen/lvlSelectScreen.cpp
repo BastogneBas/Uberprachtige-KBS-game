@@ -13,7 +13,6 @@
 #include "../../screen.h"
 #include "../level/levelDefs.h"
 #include "../game/game.h"
-
 // Defining constructor
 lvlSelectScreen::lvlSelectScreen()
 {
@@ -26,7 +25,7 @@ void lvlSelectScreen::begin()
 	// Filling the screen with darkGrey
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 
-#ifdef PEEP=1
+#if PEEP==1
 	// For loop that makes the four buttons in the levelSelectScreen
 	for (uint8_t i = 1; i <= 4; i++)
 	{
@@ -61,8 +60,44 @@ void lvlSelectScreen::begin()
 	}
 	lvlSelectScreen::selectedButton = 1;
 	lvlSelectScreen::repaint(lvlSelectScreen::selectedButton);
+#elif PEEP==2
+	Definitions::tft->setTextSize(2);
+	Definitions::tft->setTextColor(ILI9341_WHITE);
+	Definitions::tft->setCursor(0, 0);
+	Definitions::tft->println("Wachten op speler 1...");
+	waitForStart();
 #endif
 }
+
+#if PEEP==2
+void lvlSelectScreen::waitForStart()
+{
+	while(!Definitions::irComm->available())
+	{
+		PRR=PRR;
+	}
+	if(Definitions::irComm->read() == 0x02)
+	{
+		Definitions::tft->print("Starting level ");
+		if(Definitions::irComm->read() != 0x01
+			&& Definitions::irComm->read() != 0x02
+			&& Definitions::irComm->read() != 0x03)
+		{
+			Definitions::tft->println("random");
+			// TODO: Handle Seedbyte
+		}
+		else
+		{
+			selectedButton = Definitions::irComm->read();
+			Definitions::tft->println(selectedButton);
+		}
+	}
+	if(Definitions::irComm->read() == 0x01)
+	{
+		startGame();
+	}
+}
+#endif
 
 // Defining refreshcount variable
 uint32_t *refreshCount = 0;
