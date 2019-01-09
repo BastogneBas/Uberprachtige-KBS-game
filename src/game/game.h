@@ -48,13 +48,5 @@ class gameScreen:public screen // Defines the gameScreen class
 	uint8_t timeCounter = 0;
 	uint8_t deadPlayer = 0;
 	uint8_t winner = 0;
-	uint8_t recCmd;
-	uint8_t recLives;
-	uint8_t recScore;
-	uint8_t recPx;
-	uint8_t recPy;
-	uint8_t recBx;
-	uint8_t recBy;
-	uint8_t recBt;
 };
 #endif

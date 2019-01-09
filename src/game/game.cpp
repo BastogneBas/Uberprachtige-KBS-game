@@ -292,72 +292,64 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
 	if(Definitions::irComm->available())
 	{
-		recCmd = Definitions::irComm->read();
+		uint8_t recCmd = Definitions::irComm->read();
 		if(recCmd == 0x03)
 		{
-			if(Definitions::irComm->available())
-			{
-				recLives = Definitions::irComm->read();
-			#if PEEP==1
-				livesP2 = recLives;
-			#elif PEEP==2
-				livesP1 = recLives;
-			#endif
-			}
+			while(!Definitions::irComm->available())
+				PRR=PRR;
+			uint8_t recLives = Definitions::irComm->read();
+		#if PEEP==1
+			livesP2 = recLives;
+		#elif PEEP==2
+			livesP1 = recLives;
+		#endif
 		}
 		else if(recCmd == 0x04)
 		{
-			if(Definitions::irComm->available())
-			{
-				recScore = Definitions::irComm->read();
+			while(!Definitions::irComm->available())
+				PRR=PRR;
+			uint8_t recScore = Definitions::irComm->read();
 			#if PEEP==1
 				scoreP2 = recScore;
 			#elif PEEP==2
 				scoreP1 = recScore;
 			#endif
-			}
+
 		}
 		else if(recCmd == 0x05)
 		{
-			if(Definitions::irComm->available())
-			{
-				recPx = Definitions::irComm->read();
-			#if PEEP==1
-				p2X = recPx;
-			#elif PEEP==2
-				p1X = recPx;
-			#endif
+			while(!Definitions::irComm->available())
+				PRR=PRR;
+			uint8_t recPx = Definitions::irComm->read();
 
-				if(Definitions::irComm->available())
-				{
-					recPy = Definitions::irComm->read();
-				#if PEEP==1
-					p2Y = recPy;
-				#elif PEEP==2
-					p1Y = recPy;
-				#endif
-				}
-			}
+			while(!Definitions::irComm->available())
+				PRR=PRR;
+			uint8_t recPy = Definitions::irComm->read();
+		#if PEEP==1
+			p2X = recPx;
+			p2Y = recPy;
+			movePeep(2);
+		#elif PEEP==2
+			p1X = recPx;
+			p1Y = recPy;
+			movePeep(1);
+		#endif
 		}
 		else if(recCmd == 0x06)
 		{
-			if(Definitions::irComm->available())
-			{
-				recBx = Definitions::irComm->read();
-				if(Definitions::irComm->available())
-				{
-					recPy = Definitions::irComm->read();
-				#if PEEP==1
-					placeBomb(2, recBx, recBy);
-				#elif PEEP==2
-					placeBomb(1, recBx, recBy);
-				#endif
-					if(Definitions::irComm->available())
-					{
-						recBt = Definitions::irComm->read();
-					}
-				}
-			}
+			while(!Definitions::irComm->available())
+				PRR=PRR;
+			uint8_t recBx = Definitions::irComm->read();
+			while(!Definitions::irComm->available())
+				PRR=PRR;
+			uint8_t recBy = Definitions::irComm->read();
+			#if PEEP==1
+				placeBomb(2, recBx, recBy);
+			#elif PEEP==2
+				placeBomb(1, recBx, recBy);
+			#endif
+			while(!Definitions::irComm->available())
+				PRR=PRR;
 		}
 	}
 	drawTimer();
