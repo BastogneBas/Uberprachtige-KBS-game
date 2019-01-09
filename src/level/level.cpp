@@ -8,10 +8,33 @@
  */
 Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 {
+	for (int x = 0; x <= Definitions::gameWidth + 1; x++)
+		for (int y = 0; y <= Definitions::gameHeight + 1; y++)
+			map[y][x] = 0;
+
 	// Copy barrel locations from current level to ram
-	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
+	for (uint8_t y = 0; y < Definitions::gameHeight; y++)
 	{
-		this->barrels[i] = barrels[i];
+		Definitions::irComm->println(barrels[y], BIN);
+//		this->barrels[i] = barrels[i];
+//		Definitions::irComm->print(i);
+//		Definitions::irComm->print(": ");
+//		Definitions::irComm->println(this->barrels[i], BIN);
+//		Definitions::irComm->println();
+
+
+		Definitions::irComm->print(y);
+		Definitions::irComm->print(": ");
+		Definitions::irComm->println(barrels[y], BIN);
+		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
+		{
+			uint16_t mask = (1 << (Definitions::gameWidth - 1)) >> x;
+			if (barrels[y] & (mask))
+			{
+				setObjectAt(x + 1, y + 1, mapObject::barrel);
+			}
+//			markObjectAt(x + 1, y + 1, mapObject::needsRedraw);
+		}
 	}
 	// And set the name of the current level
 	this->name = name;
@@ -22,7 +45,8 @@ Level::Level(const uint16_t (*barrels)[Definitions::gameHeight], const char *nam
 	// Copy barrel locations from current level to ram
 	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
 	{
-		this->barrels[i] = *barrels[i];
+		// TODO: Fix it
+//		this->barrels[i] = *barrels[i];
 	}
 	// And set the name of the current level
 	this->name = name;
@@ -71,11 +95,20 @@ Level::Level(String name)
 	randomSeed(analogRead(A0));
 	//randomSeed(0xFFFF);
 	// For each line use a random uint16_t for barrel locations, and turn off the where no barrel can be placed
-	for (uint8_t i = 0; i < Definitions::gameHeight; i++)
+	for (uint8_t y = 0; y < Definitions::gameHeight; y++)
 	{
-		this->barrels[i] = (((uint16_t) random(0xFFFF)) &
+//TODO: Fix it
+		uint16_t barrelsy = (((uint16_t) random(0xFFFF)) &
 							//(((uint16_t)0xFFFF) & 
-							~(LevelDefs::YouCantPlaceBarrelsHere[i]));
+							~(LevelDefs::YouCantPlaceBarrelsHere[y]));
+		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
+		{
+			uint16_t mask = (1 << (Definitions::gameWidth - 1)) >> x;
+			if (barrelsy & mask)
+			{
+				setObjectAt(x + 1, y + 1, mapObject::barrel);
+			}
+		}
 	}
 	// Set the name of the level
 	this->name = name;
@@ -97,14 +130,14 @@ void Level::begin()
 	uint8_t width = Definitions::gameWidth + 1, height =
 		Definitions::gameHeight + 1;
 
-	printMap();
-	Definitions::irComm->println();
+	//printMap();
+	//Definitions::irComm->println();
 
-	for (int x = 0; x <= width; x++)
-		for (int y = 0; y <= height; y++)
-			map[y][x] = 0;
+//	for (int x = 0; x <= width; x++)
+//		for (int y = 0; y <= height; y++)
+//			map[y][x] = 0;
 
-	printMap();
+	//printMap();
 
 	for (int x = 0; x <= width; x++)
 		setObjectAt(x, 0, mapObject::block);
@@ -126,13 +159,16 @@ void Level::begin()
 
 	for (uint8_t y = 0; y < Definitions::gameHeight; y++)
 	{
+//		Definitions::irComm->print(y);
+//		Definitions::irComm->print(": ");
+//		Definitions::irComm->println(this->barrels[y], BIN);
 		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
 		{
-			uint16_t mask = (1 << (Definitions::gameWidth - 1)) >> x;
-			if (getBarrels()[y] & (mask))
-			{
-				setObjectAt(x + 1, y + 1, mapObject::barrel);
-			}
+//			uint16_t mask = (1 << (Definitions::gameWidth - 1)) >> x;
+//			if (this->barrels[y] & (mask))
+//			{
+//				setObjectAt(x + 1, y + 1, mapObject::barrel);
+//			}
 			markObjectAt(x + 1, y + 1, mapObject::needsRedraw);
 		}
 	}
@@ -141,11 +177,12 @@ void Level::begin()
 	printMap();
 }
 
-// Returns the barrel locations
-uint16_t *Level::getBarrels()
-{
-	return this->barrels;
-}
+// TODO: Fix it
+//// Returns the barrel locations
+//uint16_t *Level::getBarrels()
+//{
+//	return this->barrels;
+//}
 
 // Returns the level name
 String Level::getName()

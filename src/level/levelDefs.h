@@ -16,7 +16,6 @@ class LevelDefs
 
 	// A mask for the locations where no barrels can be placed
 	static const uint16_t YouCantPlaceBarrelsHere[11];
-  private:
 	/* The static barrel locations we will be using.
 	 * For explanation see: level.h
 	 */
@@ -24,5 +23,6 @@ class LevelDefs
 
 	// The static level names that will be used.
 	static const char *levelNames[];
+  private:
 };
 #endif

@@ -219,7 +219,8 @@ void lvlSelectScreen::startGame()
 	    else
         {
             delete Definitions::currentScreen;
-            Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(selectedButton-1));
+            Definitions::currentScreen = new gameScreen(selectedButton-1);
+            //Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(selectedButton-1));
         }
 //		else if (selectedButton == 3)
 //		{

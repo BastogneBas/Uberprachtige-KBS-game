@@ -22,6 +22,11 @@ gameScreen::gameScreen(Level *level)
     this->level = *level;
 }
 
+gameScreen::gameScreen(uint8_t levelnr)
+{
+	this->level = Level(LevelDefs::levelBarrels[levelnr], LevelDefs::levelNames[levelnr]);
+}
+
 // Define players' positions
 int p2Y = 0, p2X = 0;
 int p1Y = 0, p1X = 0;
