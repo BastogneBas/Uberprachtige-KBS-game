@@ -380,19 +380,27 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             && level.getBombPeep(0) == 0)
         {
             // TODO: fix a possible bug in this code where both players place a bomb when only p1 should place one
-            if(Definitions::nunchuk->cButton
-                && Definitions::nunchuk->zButton) // If both C and Z are pressed...
-            {
-                // Place a bomb on player 2's position
-                level.setBomb(1, p2X, p2Y, *RefreshCnt, 2);
+//            if(Definitions::nunchuk->cButton
+//                && Definitions::nunchuk->zButton) // If both C and Z are pressed...
+//            {
+//                // Place a bomb on player 2's position
+//                level.setBomb(1, p2X, p2Y, *RefreshCnt, 2);
+//                placeBomb(2, level.getBombX(1), level.getBombY(1));
+//            }
+//            if(Definitions::nunchuk->zButton) // If only the Z button is pressed...
+//            {
+//                // Place a bomb on player 1's position
+//                level.setBomb(0, p1X, p1Y, *RefreshCnt, 1);
+//                placeBomb(1, level.getBombX(0), level.getBombY(0));
+//            }
+
+			#if PEEP==1
+				level.setBomb(0, p1X, p1Y, *RefreshCnt, 1);
+				placeBomb(1, level.getBombX(0), level.getBombY(0));
+			#elif PEEP==2
+				level.setBomb(1, p2X, p2Y, *RefreshCnt, 2);
                 placeBomb(2, level.getBombX(1), level.getBombY(1));
-            }
-            if(Definitions::nunchuk->zButton) // If only the Z button is pressed...
-            {
-                // Place a bomb on player 1's position
-                level.setBomb(0, p1X, p1Y, *RefreshCnt, 1);
-                placeBomb(1, level.getBombX(0), level.getBombY(0));
-            }
+			#endif
 
             // TODO: Decide if this commented-out piece of code can be removed
             /* //getPlacedTime = level.getBombTime(0);
@@ -470,14 +478,11 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
             }
         }
-        if(Definitions::nunchuk->cButton) // If the C-Button is pressed, move player 2
-        {
-            movePeep(2);
-        }
-        else // Otherwise, move player 1
-        {
-            movePeep(1);
-        }
+#if PEEP==1
+        movePeep(1);
+#elif PEEP==2
+		movePeep(2);
+#endif
 
     #ifdef DEBUG
         ///Print some debug information
@@ -502,9 +507,6 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 		Definitions::print("  ");
     #endif
         level.drawMap();
-
-        drawLives();
-        //gameScreen::drawLives();
     }
 }
 
@@ -691,18 +693,19 @@ void gameScreen::movePeep(int peep) // Move a player across the level
 				p2X = newX;
 				p2Y = newY;
 			}
+		#if PEEP==1
+			Definitions::irComm->write(0x05);
+			Definitions::irComm->write(p1X);
+			Definitions::irComm->write(p1Y);
+		#elif PEEP==2
+			Definitions::irComm->write(0x05);
+			Definitions::irComm->write(p2X);
+			Definitions::irComm->write(p2Y);
+		#endif
 		}
 	}
 
-#if PEEP==1
-	Definitions::irComm->write(0x05);
-	Definitions::irComm->write(p1X);
-	Definitions::irComm->write(p1Y);
-#elif PEEP==2
-	Definitions::irComm->write(0x05);
-	Definitions::irComm->write(p2X);
-	Definitions::irComm->write(p2Y);
-#endif
+
 
     // TODO: Decide if this commented-out piece of code can be removed
 	//draw peep on the newest location
@@ -798,6 +801,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
 						{
 						    // Remove a life from player 1
 							livesP1--;
+							drawLives();
 							// Add 1000 to player 2's score
 							scoreP2 += 10;
 							// Draw the new value for the scores
@@ -807,6 +811,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
 						{
                             // Remove a life from player 2
 							livesP2--;
+							drawLives();
                             // Add 1000 to player 1's score
 							scoreP1 += 10;
                             // Draw the new value for the scores
@@ -870,6 +875,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
 						{
                             // Remove a life from player 1
 							livesP1--;
+							drawLives();
                             // Add 1000 to player 2's score
 							scoreP2 += 10;
                             // Draw the new value for the scores
@@ -879,6 +885,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
 						{
                             // Remove a life from player 2
 							livesP2--;
+							drawLives();
                             // Add 1000 to player 1's score
 							scoreP1 += 10;
                             // Draw the new value for the scores
@@ -899,6 +906,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
 			{
                 // Remove a life from player 1
                 livesP1--;
+				drawLives();
                 // Add 1000 to player 2's score
                 scoreP2 += 10;
                 // Draw the new value for the scores
@@ -908,6 +916,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
 			{
                 // Remove a life from player 2
                 livesP2--;
+				drawLives();
                 // Add 1000 to player 1's score
                 scoreP1 += 10;
                 // Draw the new value for the scores
