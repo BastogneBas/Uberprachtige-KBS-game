@@ -104,7 +104,7 @@ void lvlSelectScreen::waitForStart()
 			else
 			{
 				Definitions::tft->println(receivedlvl);
-				selectedButton = receivedlvl+1;
+				selectedButton = receivedlvl;
 			}
 		}
 		else if(receivedcmd == 0x05)
@@ -266,12 +266,12 @@ void lvlSelectScreen::startGame(uint16_t seed)
 {
 //#if PEEP==1
 	Definitions::irComm->println('H');
-//	Definitions::setTextDebug();
-//	Definitions::tft->println(0x02);
+	Definitions::setTextDebug();
+	Definitions::tft->println(0x02);
 	Definitions::irComm->write(0x02);
-//	Definitions::tft->println(selectedButton);
+	Definitions::tft->println(selectedButton);
 	Definitions::irComm->write(selectedButton);
-//	Definitions::tft->println(0x05);
+	Definitions::tft->println(0x05);
 	Definitions::irComm->write(0x05);
 //#endif
 	//Definitions::irComm->println(selectedButton);

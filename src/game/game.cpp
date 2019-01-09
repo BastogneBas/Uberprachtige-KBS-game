@@ -24,9 +24,9 @@ gameScreen::gameScreen(Level *level)
 
 gameScreen::gameScreen(uint8_t levelnr)
 {
-	Definitions::irComm->write(0x02);
-	Definitions::irComm->write(levelnr);
-	Definitions::irComm->write(0x05);
+//	Definitions::irComm->write(0x02);
+//	Definitions::irComm->write(levelnr);
+//	Definitions::irComm->write(0x05);
 	this->level = Level(LevelDefs::levelBarrels[levelnr], LevelDefs::levelNames[levelnr]);
 }
 
@@ -290,6 +290,7 @@ uint32_t *RefreshCnt = 0;
 //bool placed;
 void gameScreen::refresh() // Handles refreshing the screen and updating some variables
 {
+	PORTD ^= (1 << PORTD0);
     // Increment refresh counter
     *RefreshCnt++;
 
@@ -507,6 +508,19 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
     #endif
         level.drawMap();
     }
+	
+	if((*RefreshCnt % 100) == 0)
+	{
+		#if PEEP==1
+			Definitions::irComm->write(0x05);
+			Definitions::irComm->write(p1X);
+			Definitions::irComm->write(p1Y);
+		#elif PEEP==2
+			Definitions::irComm->write(0x05);
+			Definitions::irComm->write(p2X);
+			Definitions::irComm->write(p2Y);
+		#endif
+	}
 }
 
 void gameScreen::drawLives() // Print the amount of lives per player on-screen
@@ -676,13 +690,13 @@ void gameScreen::movePeep(int peep, int newX, int newY)
                 // Set player 1's position values
                 p1X = newX;
                 p1Y = newY;
-				Definitions::irComm->write(0x05);
-				Definitions::irComm->println("p1pos:");
-				Definitions::irComm->write(p1X);
-				Definitions::irComm->print(p1X);
-				Definitions::irComm->print(", ");
-				Definitions::irComm->write(p1Y);
-				Definitions::irComm->println(p1Y);
+//				Definitions::irComm->write(0x05);
+//				Definitions::irComm->println("p1pos:");
+//				Definitions::irComm->write(p1X);
+//				Definitions::irComm->print(p1X);
+//				Definitions::irComm->print(", ");
+//				Definitions::irComm->write(p1Y);
+//				Definitions::irComm->println(p1Y);
 
             }
 			if(peep == 2) // If the selected player is player 2
@@ -697,15 +711,16 @@ void gameScreen::movePeep(int peep, int newX, int newY)
 				p2X = newX;
 				p2Y = newY;
 			}
-		#if PEEP==1
-			Definitions::irComm->write(0x05);
-			Definitions::irComm->write(p1X);
-			Definitions::irComm->write(p1Y);
-		#elif PEEP==2
-			Definitions::irComm->write(0x05);
-			Definitions::irComm->write(p2X);
-			Definitions::irComm->write(p2Y);
-		#endif
+			#if PEEP==1
+				Definitions::irComm->write(0x05);
+				Definitions::irComm->write(p1X);
+				Definitions::irComm->write(p1Y);
+			#elif PEEP==2
+				Definitions::irComm->write(0x05);
+				Definitions::irComm->write(p2X);
+				Definitions::irComm->write(p2Y);
+			#endif
+
 		}
 	}
 

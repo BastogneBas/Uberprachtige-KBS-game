@@ -112,7 +112,7 @@ void own_init(){
 		(1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4)
 		| (1 << DDB5);
 	DDRD |=
-		(1 << DDD1) | (1 << DDD2) | (1 << DDD3) | (1 << DDD4) | (1 << DDD5)
+		(1 << DDD0) | (1 << DDD1) | (1 << DDD2) | (1 << DDD3) | (1 << DDD4) | (1 << DDD5)
 		| (1 << DDD6) | (1 << DDD7);
 	DDRC |= (1 << DDC1);
 
