@@ -119,7 +119,7 @@ void IRComm::timer0ISR()
 // Sends one bit
 void IRComm::sendBit(uint8_t sendType)
 {
-//	PORTB |= (1 << PORTB5);
+	PORTD |= (1 << PORTD1);
 	/* --Sending a bit--
 	 * Uses timer0 as defined above
 	 * Timer0 will always be running and comparing...
@@ -154,7 +154,7 @@ void IRComm::sendBit(uint8_t sendType)
 	}
 
 	// Disable digital PIN 1 to indicate that the sending is done
-//	PORTB &= ~(1 << PORTB5);
+	PORTD &= ~(1 << PORTD1);
 }
 
 
@@ -200,10 +200,10 @@ void IRComm::pcint1ISR()
 				}
 			}
 		}
-//		if(PINC & (1 << PINC3))
-//			PORTB &= ~(1 << PORTB4);
-//		else
-//			PORTB |= (1 << PORTB4);
+		if(PINC & (1 << PINC3))
+			PORTD &= ~(1 << PORTD0);
+		else
+			PORTD |= (1 << PORTD0);
 	}
 }
 // Reset the receival and indicate that it has started
