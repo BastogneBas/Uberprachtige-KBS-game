@@ -173,18 +173,18 @@ void gameScreen::calculateEndScores() // Adds or removes a bonus to the players'
 {
     if(winner == 0) // If the game is tied, give both players a bonus
     {
-        scoreP1 += ((currentTime * 10) + (livesP1 * 100));
-        scoreP2 += ((currentTime * 10) + (livesP2 * 100));
+        scoreP1 += ((currentTime / 2) + (livesP1 * 20));
+        scoreP2 += ((currentTime / 2) + (livesP2 * 20));
     }
     else if(winner == 1) // If player 1 won, give them a bonus
     {
-        scoreP1 += ((currentTime * 10) + (livesP1 * 100));
-        scoreP2 -= ((currentTime * 10) - (livesP2 * 100));
+        scoreP1 += ((currentTime / 2) + (livesP1 * 20));
+        scoreP2 -= ((currentTime / 2) - (livesP2 * 20));
     }
     else if(winner == 2) // If player 2 won, give them a bonus
     {
-        scoreP1 -= ((currentTime * 10) - (livesP1 * 100));
-        scoreP2 += ((currentTime * 10) + (livesP2 * 100));
+        scoreP1 -= ((currentTime / 10) - (livesP1 * 20));
+        scoreP2 += ((currentTime / 10) + (livesP2 * 20));
     }
 }
 
@@ -677,7 +677,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
 						    // Remove a life from player 1
 							livesP1--;
 							// Add 1000 to player 2's score
-							scoreP2 += 1000;
+							scoreP2 += 10;
 							// Draw the new value for the scores
 							drawScore();
 						}
@@ -686,7 +686,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                             // Remove a life from player 2
 							livesP2--;
                             // Add 1000 to player 1's score
-							scoreP1 += 1000;
+							scoreP1 += 10;
                             // Draw the new value for the scores
 							drawScore();
 						}
@@ -749,7 +749,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                             // Remove a life from player 1
 							livesP1--;
                             // Add 1000 to player 2's score
-							scoreP2 += 1000;
+							scoreP2 += 10;
                             // Draw the new value for the scores
 							drawScore();
 						}
@@ -758,7 +758,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                             // Remove a life from player 2
 							livesP2--;
                             // Add 1000 to player 1's score
-							scoreP1 += 1000;
+							scoreP1 += 10;
                             // Draw the new value for the scores
 							drawScore();
 						}
@@ -778,7 +778,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                 // Remove a life from player 1
                 livesP1--;
                 // Add 1000 to player 2's score
-                scoreP2 += 1000;
+                scoreP2 += 10;
                 // Draw the new value for the scores
                 drawScore();
 			}
@@ -787,7 +787,7 @@ void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draw
                 // Remove a life from player 2
                 livesP2--;
                 // Add 1000 to player 1's score
-                scoreP1 += 1000;
+                scoreP1 += 10;
                 // Draw the new value for the scores
                 drawScore();
 			}
