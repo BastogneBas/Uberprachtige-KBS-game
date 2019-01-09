@@ -212,8 +212,8 @@ int main()
 	{
 		//Serial.println("Refresh");
 		// Refresh screen
-		if (startRefresh)
-		{
+//		if (startRefresh)
+//		{
 			refreshDone = 0;
 			//if(Definitions::irComm->available())
 			//{
@@ -232,27 +232,27 @@ int main()
 
 			if(Definitions::irComm->available())
 			{
-//				Serial.print(Definitions::irComm->available());
-//				Serial.print("\t");
-//				Serial.print(Definitions::irComm->peek(), HEX);
-//				Serial.print("\t");
+				Serial.print(Definitions::irComm->available());
+				Serial.print("\t");
+				Serial.print((uint8_t)Definitions::irComm->peek(), HEX);
+				Serial.print("\t");
 				Serial.write(Definitions::irComm->read());
-//				Serial.println();
+				Serial.println();
 //				//Serial.print("\t");
 //				//Definitions::irComm->println(Definitions::irComm->available());
 			}
         #ifdef TFT
-			Definitions::currentScreen->refresh();
+//			Definitions::currentScreen->refresh();
 		#endif
 			startRefresh = 0;
 			refreshDone = 1;
-		}
-		else
-		{
+//		}
+//		else
+//		{
 			/* We need to do something in our loop for some reason, so we set
 			 * the Power Reduction Register to the value of itself... */
 			//asm volatile ("nop");
-			PRR = PRR;
-		}
+//			PRR = PRR;
+//		}
 	}
 }
