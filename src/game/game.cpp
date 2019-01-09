@@ -158,13 +158,17 @@ void gameScreen::end() // End the match by calculating some scores and showing t
     gameScreen::drawEndScreen();
 
     // TODO: Find out what the heck this even is
-    while (Definitions::nunchuk->cButton == 0)
+    while (true)
     {
         if (Definitions::nunchuk->cButton)
         {
             // Jumping to the first line of the program to reset all the processes
             asm volatile ("  jmp 0");
         }
+		else
+		{
+			PRR = PRR;
+		}
     }
 }
 
