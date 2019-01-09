@@ -65,7 +65,7 @@ Level::Level(String name, uint16_t seed)
 	// Use the analog input of A0 as the seed for the random number generator
 	uint16_t seed = analogRead(A0);
 	Definitions::irComm->write((uint8_t)seed);
-	Definitions::irComm->write((uint8_t)(seed>>8))
+	Definitions::irComm->write((uint8_t)(seed>>8));
 	randomSeed(seed);
 #elif PEEP == 2
 	randomSeed(seed);
