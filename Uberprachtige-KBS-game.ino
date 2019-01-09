@@ -150,7 +150,8 @@ int main()
 	own_init();
 	//Serial.begin(500000);
 	Definitions::irComm = new IRComm();
-	Definitions::irComm->println('\n');
+//	Definitions::irComm->println('\n');
+//	Definitions::irComm->println("Morning!");
 
 //#ifndef IR
 	// Initialize the tft
@@ -188,7 +189,6 @@ int main()
 //	Serial.setTimeout(12);
 	// Construct the irComm class
 
-	Definitions::irComm->println("Morning!");
 //	Serial.print("This is ");
 //	Serial.print(PEEP);
 //	Serial.print(" speaking at ");

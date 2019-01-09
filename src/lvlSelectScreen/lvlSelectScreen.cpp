@@ -264,7 +264,7 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 // Function that will be called if the user wants to go to start a level
 void lvlSelectScreen::startGame(uint16_t seed)
 {
-	Definitions::irComm->println(selectedButton);
+	//Definitions::irComm->println(selectedButton);
 	// Checking if buttonSelect is > 0 && <= 4 for general functions on all buttons
 	if ((selectedButton > 0) && (selectedButton <= 4))
 	{

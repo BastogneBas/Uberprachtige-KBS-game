@@ -301,7 +301,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 			#if PEEP==1
 				livesP2 = recLives;
 			#elif PEEP==2
-				livesp1 = recLives;
+				livesP1 = recLives;
 			#endif
 			}
 		}
