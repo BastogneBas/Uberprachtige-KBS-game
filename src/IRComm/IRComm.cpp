@@ -119,7 +119,7 @@ void IRComm::timer0ISR()
 // Sends one bit
 void IRComm::sendBit(uint8_t sendType)
 {
-	PORTD |= (1 << PORTD1);
+	PORTD &= ~(1 << PORTD1);
 	/* --Sending a bit--
 	 * Uses timer0 as defined above
 	 * Timer0 will always be running and comparing...
@@ -154,7 +154,7 @@ void IRComm::sendBit(uint8_t sendType)
 	}
 
 	// Disable digital PIN 1 to indicate that the sending is done
-	PORTD &= ~(1 << PORTD1);
+	PORTD |= (1 << PORTD1);
 }
 
 
