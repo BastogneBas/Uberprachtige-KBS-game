@@ -27,9 +27,13 @@ gameScreen::gameScreen(uint8_t levelnr)
 	this->level = Level(LevelDefs::levelBarrels[levelnr], LevelDefs::levelNames[levelnr]);
 }
 
-gameScreen::gameScreen(char* levelName)
+gameScreen::gameScreen(String levelName, uint16_t seed)
 {
+#if PEEP == 1
 	this->level = Level(levelName);
+#elif PEEP == 2
+	this->level = Level(levelName, seed);
+#endif
 }
 
 // Define players' positions

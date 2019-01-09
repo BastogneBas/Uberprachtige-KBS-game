@@ -52,47 +52,24 @@ Level::Level(const uint16_t (*barrels)[Definitions::gameHeight], const char *nam
 	this->name = name;
 }
 
-/* Returns the X value of the bomb specified */
-uint8_t Level::getBombX(int index)
-{
-	return this->bombX[index];
-}
-
-/* Returns the Y value of the bomb specified */
-uint8_t Level::getBombY(int index)
-{
-	return this->bombY[index];
-}
-
-/* Returns the time, the specified bomb was placed */
-uint32_t Level::getBombTime(int index)
-{
-	return this->bombTime[index];
-}
-
-/* Returns by which peep the specified bomb was placed */
-uint8_t Level::getBombPeep(int index)
-{
-	return this->bombPeep[index];
-}
-
-/* Sets the value of a bomb at the specified index */
-void Level::setBomb(int index, uint8_t x, uint8_t y, uint32_t time,
-					uint8_t peep)
-{
-	bombX[index] = x;
-	bombY[index] = y;
-	bombTime[index] = time;
-	bombPeep[index] = peep;
-}
-
 /* Level constructor
  * Creates a level with random barrel locations
  */
+#if PEEP == 1
 Level::Level(String name)
+#elif PEEP == 2
+Level::Level(String name, uint16_t seed)
+#endif
 {
+#if PEEP == 1
 	// Use the analog input of A0 as the seed for the random number generator
-	randomSeed(analogRead(A0));
+	uint16_t seed = analogRead(A0);
+	Definitions::irComm->write((uint8_t)seed);
+	Definitions::irComm->write((uint8_t)(seed>>8))
+	randomSeed(seed);
+#elif PEEP == 2
+	randomSeed(seed);
+#endif
 	//randomSeed(0xFFFF);
 	// For each line use a random uint16_t for barrel locations, and turn off the where no barrel can be placed
 	for (uint8_t y = 0; y < Definitions::gameHeight; y++)
@@ -187,6 +164,40 @@ void Level::begin()
 String Level::getName()
 {
 	return this->name;
+}
+
+/* Returns the X value of the bomb specified */
+uint8_t Level::getBombX(int index)
+{
+	return this->bombX[index];
+}
+
+/* Returns the Y value of the bomb specified */
+uint8_t Level::getBombY(int index)
+{
+	return this->bombY[index];
+}
+
+/* Returns the time, the specified bomb was placed */
+uint32_t Level::getBombTime(int index)
+{
+	return this->bombTime[index];
+}
+
+/* Returns by which peep the specified bomb was placed */
+uint8_t Level::getBombPeep(int index)
+{
+	return this->bombPeep[index];
+}
+
+/* Sets the value of a bomb at the specified index */
+void Level::setBomb(int index, uint8_t x, uint8_t y, uint32_t time,
+					uint8_t peep)
+{
+	bombX[index] = x;
+	bombY[index] = y;
+	bombTime[index] = time;
+	bombPeep[index] = peep;
 }
 
 void Level::printMap()

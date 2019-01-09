@@ -73,6 +73,7 @@ void lvlSelectScreen::begin()
 #if PEEP==2
 void lvlSelectScreen::waitForStart()
 {
+	uint16_t seed = 0;
 	while(1)
 	{
 		while(!Definitions::irComm->available())
@@ -88,7 +89,11 @@ void lvlSelectScreen::waitForStart()
 			{
 				Definitions::tft->println("random");
 				selectedButton = 4;
-				// TODO: Handle Seedbyte
+				Definitions::tft->println("Waiting for seed...");
+				while(!(Definitions::irComm->available()>1))
+					PRR=PRR;
+				seed = Definitions::irComm->read();
+				seed = (Definitions::irComm->read() << 8);
 			}
 			else if(receivedlvl > 0x04)
 			{
@@ -102,7 +107,7 @@ void lvlSelectScreen::waitForStart()
 		}
 		else if(receivedcmd == 0x05)
 		{
-			startGame();
+			startGame(seed);
 			break;
 		}
 		else
@@ -257,7 +262,7 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 }
 
 // Function that will be called if the user wants to go to start a level
-void lvlSelectScreen::startGame()
+void lvlSelectScreen::startGame(uint16_t seed)
 {
 	Definitions::irComm->println(selectedButton);
 	// Checking if buttonSelect is > 0 && <= 4 for general functions on all buttons
@@ -266,7 +271,11 @@ void lvlSelectScreen::startGame()
 	    if(selectedButton == 4)
         {
             delete Definitions::currentScreen;
-            Definitions::currentScreen = new gameScreen("Random");
+#if PEEP == 1
+			Definitions::currentScreen = new gameScreen("Random");
+#elif PEEP == 2
+            Definitions::currentScreen = new gameScreen("Random", seed);
+#endif
         }
 	    else
         {

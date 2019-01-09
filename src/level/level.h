@@ -62,6 +62,7 @@ class Level
 	Level(uint16_t barrels[Definitions::gameHeight], String name);
 	Level(const uint16_t(*)[11], const char* name);
 	Level(String name);
+	Level(String name, uint16_t seed);
 	Level();
 	~Level();
 	void begin();
