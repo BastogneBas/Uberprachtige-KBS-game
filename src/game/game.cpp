@@ -351,11 +351,13 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 			while(!Definitions::irComm->available())
 				PRR=PRR;
 			uint8_t recBy = Definitions::irComm->read();
-			#if PEEP==1
-				placeBomb(2, recBx, recBy);
-			#elif PEEP==2
-				placeBomb(1, recBx, recBy);
-			#endif
+		#if PEEP==1
+			level.setBomb(1, recBx, recBy, *RefreshCnt, 2);
+			placeBomb(2, level.getBombX(1), level.getBombY(1));
+		#elif PEEP==2
+			level.setBomb(0, recBx, recBy, *RefreshCnt, 1);
+			placeBomb(1, level.getBombX(0), level.getBombY(0));
+		#endif
 			while(!Definitions::irComm->available())
 				PRR=PRR;
 		}
