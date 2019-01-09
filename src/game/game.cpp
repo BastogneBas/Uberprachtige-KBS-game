@@ -37,7 +37,6 @@ void gameScreen::begin() // Initializes the game's screen
 	// Set background to black and draw the initial level
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 	level.begin();
-
 	// TODO: Decide if this commented-out piece of code can be removed
     /*level.printMap();
 	level.drawMap();
@@ -114,16 +113,16 @@ void gameScreen::begin() // Initializes the game's screen
 
 void gameScreen::end() // End the match by calculating some scores and showing the endScreen
 {
-    Definitions::irComm->println("P1:");
-    Definitions::irComm->println(livesP1);
-    Definitions::irComm->println(scoreP1);
-    Definitions::irComm->println("P2: ");
-    Definitions::irComm->println(livesP2);
-    Definitions::irComm->println(scoreP2);
-    Definitions::irComm->print("t: ");
-    Definitions::irComm->println(currentTime);
-    Definitions::irComm->print("dp: ");
-    Definitions::irComm->println(deadPlayer);
+//    Definitions::irComm->println("P1:");
+//    Definitions::irComm->println(livesP1);
+//    Definitions::irComm->println(scoreP1);
+//    Definitions::irComm->println("P2: ");
+//    Definitions::irComm->println(livesP2);
+//    Definitions::irComm->println(scoreP2);
+//    Definitions::irComm->print("t: ");
+//    Definitions::irComm->println(currentTime);
+//    Definitions::irComm->print("dp: ");
+//    Definitions::irComm->println(deadPlayer);
     // Check who won the game
     checkWinner();
     // Add some extra's to the scores
@@ -270,10 +269,10 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
     // Increment refresh counter
     *RefreshCnt++;
 
-	if(Definitions::irComm->available)
-	{
-		
-	}
+//	if(Definitions::irComm->available())
+//	{
+//
+//	}
 
     if((*RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
     {
@@ -582,7 +581,7 @@ void gameScreen::movePeep(int peep) // Move a player across the level
                 p1X = newX;
                 p1Y = newY;
 				Definitions::irComm->write(0x05);
-				Definitions::irComm->println("p1pos:")
+				Definitions::irComm->println("p1pos:");
 				Definitions::irComm->write(p1X);
 				Definitions::irComm->print(p1X);
 				Definitions::irComm->print(", ");
