@@ -5,6 +5,16 @@
 #ifndef SPELSCHERM_H
 #define SPELSCHERM_H
 
+// Defining all the datatypes
+#define START_BYTE 		0x01
+#define LEVEL_BYTE 		0x02
+#define LIVES_BYTE 		0x03
+#define SCORE_BYTE 		0x04
+#define PEEP_LOCATION	0x05
+#define BOMB_LOCATION 	0x06
+#define STOP_BYTE 		0x07
+#define SEND_AGAIN 		0xFF
+
 class gameScreen:public screen // Defines the gameScreen class
 {
   public:
@@ -36,7 +46,6 @@ class gameScreen:public screen // Defines the gameScreen class
 	int16_t scoreP1 = 4000;
 	int16_t scoreP2 = 4000;
 	uint8_t timeCounter = 0;
-	uint8_t currentTime = 180;
 	uint8_t deadPlayer = 0;
 	uint8_t winner = 0;
 };

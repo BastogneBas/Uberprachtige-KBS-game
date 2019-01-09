@@ -34,6 +34,9 @@ screen *Definitions::currentScreen;
 Stream *Definitions::irComm;
 //#endif
 
+uint8_t Definitions::timerCounter;
+uint8_t Definitions::currentTime;
+
 // Reset refreshing
 static int startRefresh = 0, refreshDone = 1;
 
@@ -61,6 +64,12 @@ ISR(TIMER1_COMPA_vect) // Timer1 output compare interrupt
 	if(refreshDone)
 	{
 		startRefresh = 1;
+	}
+	Definitions::timerCounter++;
+	if(Definitions::timerCounter >= 39)
+	{
+		Definitions::currentTime--;
+		Definitions::timerCounter = 0;
 	}
 }
 

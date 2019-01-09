@@ -77,6 +77,9 @@ class Definitions // Define the constants
 	static screen *currentScreen;
 	static Stream *irComm;
 
+	static uint8_t timerCounter;
+	static uint8_t currentTime;
+
 	static void printScreenSize(uint16_t pointer)
 	{
 		irComm->print("\t0x");

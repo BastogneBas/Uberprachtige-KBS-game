@@ -42,6 +42,8 @@ int p1Y = 0, p1X = 0;
 int newX, newY;
 uint8_t lives1, lives2;
 
+int endTimer;
+
 void gameScreen::begin() // Initializes the game's screen
 {
 	// Set background to black and draw the initial level
@@ -111,14 +113,15 @@ void gameScreen::begin() // Initializes the game's screen
 		Definitions::tft->fillCircle(i, 75, 10, ILI9341_RED);
 	}
 
-	/* Set the timer to begin value to count down from
-	 * NOTE: is currently done because of a bug where it isn't properly set from the header sometimes
-	 * Can be removed if the bug is fixed and this seems unnecessary */
-	//currentTime = 180;
+	Definitions::currentTime = 180;
 
 	// Draw initial timer and score values
 	drawTimer();
 	drawScore();
+
+	level.drawMap();
+
+	Definitions::currentTime = 180;
 }
 
 void gameScreen::end() // End the match by calculating some scores and showing the endScreen
@@ -133,6 +136,7 @@ void gameScreen::end() // End the match by calculating some scores and showing t
 //    Definitions::irComm->println(currentTime);
 //    Definitions::irComm->print("dp: ");
 //    Definitions::irComm->println(deadPlayer);
+	endTimer = Definitions::currentTime;
     // Check who won the game
     checkWinner();
     // Add some extra's to the scores
@@ -159,7 +163,7 @@ void gameScreen::checkWinner() // Check who won the game
 {
     // If the game is over and the timer hasn't reached zero yet...
     // ...a player has died, so the player who's dead has lost the game
-    if(!currentTime == 0)
+    if(!Definitions::currentTime == 0)
     {
         if(deadPlayer == 1)
             winner = 2;
@@ -183,18 +187,18 @@ void gameScreen::calculateEndScores() // Adds or removes a bonus to the players'
 {
     if(winner == 0) // If the game is tied, give both players a bonus
     {
-        scoreP1 += ((currentTime / 2) + (livesP1 * 20));
-        scoreP2 += ((currentTime / 2) + (livesP2 * 20));
+        scoreP1 += ((endTimer / 2) + (livesP1 * 20));
+        scoreP2 += ((endTimer / 2) + (livesP2 * 20));
     }
     else if(winner == 1) // If player 1 won, give them a bonus
     {
-        scoreP1 += ((currentTime / 2) + (livesP1 * 20));
-        scoreP2 -= ((currentTime / 2) - (livesP2 * 20));
+        scoreP1 += ((endTimer/ 2) + (livesP1 * 20));
+        scoreP2 -= ((endTimer / 2) - (livesP2 * 20));
     }
     else if(winner == 2) // If player 2 won, give them a bonus
     {
-        scoreP1 -= ((currentTime / 10) - (livesP1 * 20));
-        scoreP2 += ((currentTime / 10) + (livesP2 * 20));
+        scoreP1 -= ((endTimer / 10) - (livesP1 * 20));
+        scoreP2 += ((endTimer / 10) + (livesP2 * 20));
     }
 }
 
@@ -269,7 +273,7 @@ void gameScreen::drawEndScreen() // Draws the screen showing the results of the 
     Definitions::tft->setCursor(10, 90);
     Definitions::tft->println("Eindtijd:");
     Definitions::tft->setCursor(180, 90);
-    Definitions::tft->print(currentTime);
+    Definitions::tft->print(endTimer);
 }
 
 uint32_t *RefreshCnt = 0;
@@ -283,6 +287,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 //	{
 //
 //	}
+	drawTimer();
 
     if((*RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
     {
@@ -296,6 +301,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
         // If the Z button is pressed and there's no bomb on the current x and y position...
         // ...and a bomb is not currently active and [WHATEVER getBombPeep DOES]...
+#if PEEP == 1
         if(Definitions::nunchuk->zButton && level.getBombX(0) == 0
             && level.getBombTime(0) == 0 && level.getBombY(0) == 0
             && level.getBombPeep(0) == 0)
@@ -320,17 +326,15 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             //Serial.println(getPlacedTime, DEC);
             //placed = true; */
         }
-
+#endif
 		// TODO: Explain this statement
+#if PEEP == 1
         if(*RefreshCnt >= level.getBombTime(0) + 48)
         {
-            if(((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
+            if((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
                 && !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
-                ||((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
-                && !(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion)))
             {
                 drawExplosion(1, level.getBombX(0), level.getBombY(0));
-                drawExplosion(2, level.getBombX(1), level.getBombY(1));
 
             #ifdef DEBUG
                 // Print some debug information on the screen
@@ -343,6 +347,26 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             #endif
             }
         }
+#elif PEEP == 2
+        if(*RefreshCnt >= level.getBombTime(1) + 48)
+            {
+                if((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
+                    && !(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))
+                {
+                    drawExplosion(2, level.getBombX(1), level.getBombY(1));
+
+                #ifdef DEBUG
+                    // Print some debug information on the screen
+                    Definitions::print("BombTime: ");
+                    Definitions::print(level.getBombTime(1) + 12);
+                    Definitions::println("  ");
+                    Definitions::print("ExplTime: ");
+                    Definitions::print(level.getBombTime(1) + 24);
+                    Definitions::println("      ");
+                #endif
+                }
+            }
+#endif
 
 // TODO: Decide if this commented-out piece of code can be removed
 /*
@@ -373,7 +397,6 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
             }
         }
-
         if(Definitions::nunchuk->cButton) // If the C-Button is pressed, move player 2
         {
             movePeep(2);
@@ -409,18 +432,6 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
         drawLives();
         //gameScreen::drawLives();
-    }
-    timeCounter++;
-
-    // Update the current time
-    if(timeCounter >= 30) //If 30 refreshes have happened (roughly 1 second)
-    {
-        // Subtract one from the timer (timer counts down)
-        currentTime--;
-        // Draw the new timer value
-        drawTimer();
-        // Reset the counter for the timer
-        timeCounter = 0;
     }
 }
 
@@ -479,11 +490,11 @@ void gameScreen::drawTimer() // Draws the timer value
     // Sets the proper values for printing the text and prints the value of the timer
     Definitions::tft->setTextColor(ILI9341_WHITE, ILI9341_BLACK);
     Definitions::tft->setCursor(286, 100);
-    Definitions::tft->print(currentTime);
+    Definitions::tft->print(Definitions::currentTime);
     Definitions::tft->println(" ");
 
     // Ends the game if the timer has ran out
-    if(currentTime == 0) // If the timer has reached zero...
+    if(Definitions::currentTime == 0) // If the timer has reached zero...
     {
         // Set the winner to zero (tied)
         winner = 0;
