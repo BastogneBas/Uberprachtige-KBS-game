@@ -26,8 +26,6 @@
  * If PEEP is defined as 2, the current arudino will be player 2
  * The frequecny of IR comms will be dependant on which player you are */
 
-#define P2
-
 // First two are used for compilation with -DP1 or -DP2
 #ifdef P1
 	#pragma message "Compiling for PEEP 1"
