@@ -1,4 +1,5 @@
-#include "src/homeScreen/homeScreen.h"
+//#include "src/homeScreen/homeScreen.h"
+#include "src/lvlSelectScreen/lvlSelectScreen.h"
 #include "src/game/game.h"
 #include "src/level/levelDefs.h"
 #include "src/IRComm/IRComm.h"
@@ -176,7 +177,8 @@ int main()
 #ifdef TFT
 	// Opening the homeScreen
 	//Definitions::printScreenSize((uint16_t)Definitions::currentScreen);
-	Definitions::currentScreen = new homeScreen();
+	//Definitions::currentScreen = new homeScreen();
+	Definitions::currentScreen = new lvlSelectScreen();
 	Definitions::currentScreen->begin();
 	Definitions::printScreenSize((uint16_t)Definitions::currentScreen);
 

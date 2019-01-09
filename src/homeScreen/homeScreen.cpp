@@ -26,7 +26,7 @@ void homeScreen::begin()
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 
 	// For loop that makes the three buttons in the homeScreen
-	for (uint8_t i = 1; i <= 2; i++)
+	for (uint8_t i = 1; i <= 1; i++)
 	{
 		// Setting the values for the fist button
 		Definitions::tft->drawRect(39, homeScreen::yRect, 242, 42,
@@ -45,10 +45,10 @@ void homeScreen::begin()
 		{
 			Definitions::tft->print("Levels");
 		}
-		else
-		{
-			Definitions::tft->print("High-scores");
-		}
+//		else
+//		{
+//			Definitions::tft->print("High-scores");
+//		}
 
 		// Adding 50 to the variables, so the buttons will be underneath each other
 		homeScreen::yRect += 50;
@@ -114,33 +114,33 @@ void homeScreen::refresh()
 	// Updating the nunchuk values
 	Definitions::nunchuk->update();
 
-	// If statement that checks if the nunchuk joystick is pushed down
-	if (Definitions::nunchuk->analogY < 50)
-	{
-		// Checking if buttonSelect (variable that holds the current buttonValue)
-		// isn't >= 3. This will check if the button is at or past the last button
-		if (!(homeScreen::buttonSelect >= 2))
-		{
-			// If it isn't, it means that the last button hasn't been reached yet, so we can increment it
-			homeScreen::buttonSelect++;
-		}
-		// Else, we only have to repaint the button, which must be done every time
-		homeScreen::repaint(homeScreen::buttonSelect);
-	}
-
-	// If statement that checks if the nunchuk joystick is pushed down
-	else if (Definitions::nunchuk->analogY > 200)
-	{
-		// The same thing happens if the joystick is being pushed up
-		// If buttonSelect isn't smaller or equal to 0 OR buttonSelect isn't 1
-		if (!(homeScreen::buttonSelect <= 1))
-		{
-			// Then it is possible to decrement the value (button hasn't reached the bottom yet)
-			homeScreen::buttonSelect--;
-		}
-		// Else, we only have to repaint the button, which must be done every time
-		homeScreen::repaint(homeScreen::buttonSelect);
-	}
+//	// If statement that checks if the nunchuk joystick is pushed down
+//	if (Definitions::nunchuk->analogY < 50)
+//	{
+//		// Checking if buttonSelect (variable that holds the current buttonValue)
+//		// isn't >= 3. This will check if the button is at or past the last button
+//		if (!(homeScreen::buttonSelect >= 2))
+//		{
+//			// If it isn't, it means that the last button hasn't been reached yet, so we can increment it
+//			homeScreen::buttonSelect++;
+//		}
+//		// Else, we only have to repaint the button, which must be done every time
+//		homeScreen::repaint(homeScreen::buttonSelect);
+//	}
+//
+//	// If statement that checks if the nunchuk joystick is pushed down
+//	else if (Definitions::nunchuk->analogY > 200)
+//	{
+//		// The same thing happens if the joystick is being pushed up
+//		// If buttonSelect isn't smaller or equal to 0 OR buttonSelect isn't 1
+//		if (!(homeScreen::buttonSelect <= 1))
+//		{
+//			// Then it is possible to decrement the value (button hasn't reached the bottom yet)
+//			homeScreen::buttonSelect--;
+//		}
+//		// Else, we only have to repaint the button, which must be done every time
+//		homeScreen::repaint(homeScreen::buttonSelect);
+//	}
 
 	// If statement that will check if the zButton is being pushed
 	// and if buttonSelect != 0. With the zButton we can select button in the menu
@@ -172,34 +172,34 @@ void homeScreen::repaint(uint8_t buttonSelect)
 		Definitions::tft->setCursor(55, 90);
 		Definitions::tft->print("Levels");
 
-		Definitions::tft->setTextColor(ILI9341_BLACK);
-		Definitions::tft->setCursor(55, 140);
-		Definitions::tft->print("High-scores");
+//		Definitions::tft->setTextColor(ILI9341_BLACK);
+//		Definitions::tft->setCursor(55, 140);
+//		Definitions::tft->print("High-scores");
 	}
 
 	// The same things happens with buttons 2 and 3
-	else if (buttonSelect == 2)
-	{
-		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_DARKGREY);
-		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_WHITE);
+//	else if (buttonSelect == 2)
+//	{
+//		Definitions::tft->drawRect(39, 79, 242, 42, ILI9341_DARKGREY);
+//		Definitions::tft->drawRect(39, 129, 242, 42, ILI9341_WHITE);
+//
+//
+//		Definitions::tft->setTextColor(ILI9341_BLACK);
+//		Definitions::tft->setCursor(55, 90);
+//		Definitions::tft->print("Levels");
 
+//		Definitions::tft->setTextColor(ILI9341_RED);
+//		Definitions::tft->setCursor(55, 140);
+//		Definitions::tft->print("High-scores");
 
-		Definitions::tft->setTextColor(ILI9341_BLACK);
-		Definitions::tft->setCursor(55, 90);
-		Definitions::tft->print("Levels");
-
-		Definitions::tft->setTextColor(ILI9341_RED);
-		Definitions::tft->setCursor(55, 140);
-		Definitions::tft->print("High-scores");
-
-	}
+//	}
 }
 
 // Function that will be called if the user wants to go to a new window (= zButton being pressed)
 void homeScreen::newScreen(uint8_t buttonSelect)
 {
 	// Checking if buttonSelect is > 0 && <= 3 for general functions on all buttons
-	if (buttonSelect > 0 && buttonSelect <= 3)
+	if (buttonSelect > 0 && buttonSelect <= 1)
 	{
 		delete Definitions::currentScreen;
 
@@ -209,10 +209,10 @@ void homeScreen::newScreen(uint8_t buttonSelect)
 		{
 			Definitions::currentScreen = new lvlSelectScreen();
 		}
-		else if (buttonSelect == 2)
-		{
-			//Definitions::currentScreen = new highScoreScreen();
-		}
+//		else if (buttonSelect == 2)
+//		{
+//			//Definitions::currentScreen = new highScoreScreen();
+//		}
 
 		// Opening the new window
 		Definitions::currentScreen->begin();

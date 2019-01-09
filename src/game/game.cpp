@@ -141,6 +141,9 @@ void gameScreen::end() // End the match by calculating some scores and showing t
     checkWinner();
     // Add some extra's to the scores
     calculateEndScores();
+#if PEEP==1
+	Definitions::irComm->write(0x07);
+#endif
     // Print the endScreen, showing if you won or lost and the scores
     gameScreen::drawEndScreen();
 
@@ -283,10 +286,76 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
     // Increment refresh counter
     *RefreshCnt++;
 
-//	if(Definitions::irComm->available())
-//	{
-//
-//	}
+	if(Definitions::irComm->available())
+	{
+		recCmd = Definitions::irComm->read();
+		if(recCmd == 0x03)
+		{
+			if(Definitions::irComm->available())
+			{
+				recLives = Definitions::irComm->read();
+			#if PEEP==1
+				livesP2 = recLives;
+			#elif PEEP==2
+				livesp1 = recLives;
+			#endif
+			}
+		}
+		else if(recCmd == 0x04)
+		{
+			if(Definitions::irComm->available())
+			{
+				recScore = Definitions::irComm->read();
+			#if PEEP==1
+				scoreP2 = recScore;
+			#elif PEEP==2
+				scoreP1 = recScore;
+			#endif
+			}
+		}
+		else if(recCmd == 0x05)
+		{
+			if(Definitions::irComm->available())
+			{
+				recPx = Definitions::irComm->read();
+			#if PEEP==1
+				p2X = recPx;
+			#elif PEEP==2
+				p1X = recPx;
+			#endif
+
+				if(Definitions::irComm->available())
+				{
+					recPy = Definitions::irComm->read();
+				#if PEEP==1
+					p2Y = recPy;
+				#elif PEEP==2
+					p1Y = recPy;
+				#endif
+				}
+			}
+		}
+		else if(recCmd == 0x06)
+		{
+			if(Definitions::irComm->available())
+			{
+				recBx = Definitions::irComm->read();
+				if(Definitions::irComm->available())
+				{
+					recPy = Definitions::irComm->read();
+				#if PEEP==1
+					placeBomb(2, recBx, recBy);
+				#elif PEEP==2
+					placeBomb(1, recBx, recBy);
+				#endif
+					if(Definitions::irComm->available())
+					{
+						recBt = Definitions::irComm->read();
+					}
+				}
+			}
+		}
+	}
 	drawTimer();
 
     if((*RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
@@ -437,6 +506,13 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
 void gameScreen::drawLives() // Print the amount of lives per player on-screen
 {
+#if PEEP==1
+	Definitions::irComm->write(0x03);
+	Definitions::irComm->write(scoreP1);
+#elif PEEP==2
+	Definitions::irComm->write(0x03);
+	Definitions::irComm->write(scoreP2);
+#endif
     // Set x-location of lives
     uint16_t x = 305;
 
@@ -505,6 +581,13 @@ void gameScreen::drawTimer() // Draws the timer value
 
 void gameScreen::drawScore() // Draws the score values
 {
+#if PEEP==1
+	Definitions::irComm->write(0x04);
+	Definitions::irComm->write(scoreP1);
+#elif PEEP==2
+	Definitions::irComm->write(0x04);
+	Definitions::irComm->write(scoreP2);
+#endif
     // Sets values and draws score of player 1
     Definitions::tft->setCursor(274, 120);
     Definitions::tft->print(scoreP1);
@@ -607,6 +690,16 @@ void gameScreen::movePeep(int peep) // Move a player across the level
 		}
 	}
 
+#if PEEP==1
+	Definitions::irComm->write(0x05);
+	Definitions::irComm->write(p1X);
+	Definitions::irComm->write(p1Y);
+#elif PEEP==2
+	Definitions::irComm->write(0x05);
+	Definitions::irComm->write(p2X);
+	Definitions::irComm->write(p2Y);
+#endif
+
     // TODO: Decide if this commented-out piece of code can be removed
 	//draw peep on the newest location
 	/*if (peep == 1)
@@ -640,6 +733,10 @@ void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y) // Place a bomb
 	// now there is a bom placed
 	level.markObjectAt(x, y, mapObject::bomb);
 	level.markObjectAt(x, y, mapObject::needsRedraw);
+
+	Definitions::irComm->write(0x06);
+	Definitions::irComm->write(x);
+	Definitions::irComm->write(y);
 }
 
 void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draws an explosion on the screen
