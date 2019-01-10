@@ -1,11 +1,13 @@
 #include "levelDefs.h"
 
+// The names of all the levels
 const char *LevelDefs::levelNames[] = {
 	"Level 1",
 	"Level 2",
 	"Level 3"
 };
 
+// The bitmaps of the barrels of all the levels
 const uint16_t LevelDefs::levelBarrels[][11] = {
 	{
 	 0b0000000101001001,
@@ -21,17 +23,17 @@ const uint16_t LevelDefs::levelBarrels[][11] = {
 	 0b0001010010110000,
 	 },
 	{
-	 0b0000000111111111,		//
+	 0b0000001001011101,		//
 	 0b0000000101010101,
-	 0b0000000111111111,		//
-	 0b0001010101010101,
-	 0b0001111111111111,		//
-	 0b0001010101010101,
-	 0b0001111111111111,		//
-	 0b0001010101010101,
-	 0b0001111111110000,		//
-	 0b0001010101010000,
-	 0b0001111111110000,		//
+	 0b0000001010101010,		//
+	 0b0001010001000100,
+	 0b0001101100110011,		//
+	 0b0001010001000101,
+	 0b0001000110100101,		//
+	 0b0001010001000101,
+	 0b0001100110001000,		//
+	 0b0001010100010000,
+	 0b0001101100111000,		//
 	 },
 	{
 	 0b0000000000000000,
@@ -65,6 +67,8 @@ const uint16_t LevelDefs::levelBarrels[][11] = {
 	0b0001111111110000,
 */
 
+// The places in a level where no barrels can be placed.
+// Used for generating random levels
 const uint16_t LevelDefs::YouCantPlaceBarrelsHere[11] = {
 	0b1111110000000000,
 	0b1111101010101010,
@@ -78,26 +82,3 @@ const uint16_t LevelDefs::YouCantPlaceBarrelsHere[11] = {
 	0b1110101010101011,
 	0b1110000000000111
 };
-
-Level* LevelDefs::getLevel(uint8_t levelId)
-{
-	//Definitions::irComm->println("lvldef:84");
-    //const uint16_t (*pBarrels)[11] = &LevelDefs::levelBarrels[levelId];
-	//Definitions::printScreenSize((uint16_t)pBarrels);
-    Definitions::irComm->println("lvldef:86");
-	Level ret;
-	//Level* ret = new Level(pBarrels, LevelDefs::levelNames[levelId]);
-	ret = Level(LevelDefs::levelBarrels[levelId], LevelDefs::levelNames[levelId]);
-//	ret = Level(pBarrels, LevelDefs::levelNames[levelId]);
-	Level* pret = &ret;
-//	Definitions::irComm->println("lvldef:88");
-//	Definitions::irComm->println((uint32_t) pret, HEX);
-//	Definitions::irComm->println(sizeof(*pret), HEX);
-
-//    Level** rat = &pret;
-//    Definitions::irComm->println("lvldef:93");
-//    Definitions::irComm->println((uint32_t) rat, HEX);
-//    Definitions::irComm->println(sizeof(*rat), HEX);
-
-	return pret;
-}
