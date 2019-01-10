@@ -755,8 +755,7 @@ void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y) // Place a bomb
         // Place a bomb where Player 2 placed the bomb
 		level.markObjectAt(x, y, mapObject::bombPeep2);
 	}
-	// TODO: Wat is deez?
-	// now there is a bom placed
+	// Mark the place as a bomb and indicate that it needs to be redrawn
 	level.markObjectAt(x, y, mapObject::bomb);
 	level.markObjectAt(x, y, mapObject::needsRedraw);
 
