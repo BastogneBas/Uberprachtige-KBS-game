@@ -9,7 +9,7 @@ This will dowload the Aruino subsystem and the Arduino-Makefile files in the hom
 ### Windows
 Cry
 
-**__For some reason, you can't build the project in Windows__**
+_**For some reason, you can't build the project in Windows**_
 ## Building
 
 To easily specify for which player you would like to compile, specify `PEEP` in your command:
@@ -44,7 +44,7 @@ And thus to build code for peep 2 and for another device, and monitor it:
 
 
 
-__Have fun playing!__
+_Have fun playing!_
 
 
 
