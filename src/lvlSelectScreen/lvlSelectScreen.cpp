@@ -70,30 +70,44 @@ void lvlSelectScreen::begin()
 #endif
 }
 
+// Checking if player 2 is playing, if so, he has to wait for the level that is going to be played.
 #if PEEP==2
+
+// Function that waits until the level has been received
 void lvlSelectScreen::waitForStart()
 {
+	// Defining variable that holds the seed
 	uint16_t seed = 0;
+
+	// While true
 	while(1)
 	{
 		while(!Definitions::irComm->available())
+			// C++ doesn't like empty while-loops, so we do nothing with PRR = PRR
 			PRR = PRR;
+
+		// 		
 		int receivedcmd = Definitions::irComm->read();
 		Definitions::tft->print("received: ");
 		Definitions::tft->println(receivedcmd);
+
 		if(receivedcmd == 0x02)
 		{
 			Definitions::tft->print("Starting level ");
+
 			while(!Definitions::irComm->available())
 				PRR = PRR;
+
 			int receivedlvl = Definitions::irComm->read();
 			if(receivedlvl == 0x04)
 			{
 				Definitions::tft->println("random");
 				selectedButton = 4;
 				Definitions::tft->println("Waiting for seed...");
+
 				while(!(Definitions::irComm->available()>1))
 					PRR=PRR;
+
 				seed = Definitions::irComm->read();
 				seed = (Definitions::irComm->read() << 8);
 			}
@@ -264,7 +278,7 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 // Function that will be called if the user wants to go to start a level
 void lvlSelectScreen::startGame(uint16_t seed)
 {
-//#if PEEP==1
+
 	Definitions::irComm->println('H');
 	Definitions::setTextDebug();
 	Definitions::tft->println(0x02);
@@ -273,8 +287,7 @@ void lvlSelectScreen::startGame(uint16_t seed)
 	Definitions::irComm->write(selectedButton);
 	Definitions::tft->println(0x05);
 	Definitions::irComm->write(0x05);
-//#endif
-	//Definitions::irComm->println(selectedButton);
+
 	// Checking if buttonSelect is > 0 && <= 4 for general functions on all buttons
 	if ((selectedButton > 0) && (selectedButton <= 4))
 	{
@@ -291,18 +304,7 @@ void lvlSelectScreen::startGame(uint16_t seed)
         {
             delete Definitions::currentScreen;
             Definitions::currentScreen = new gameScreen(selectedButton-1);
-            //Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(selectedButton-1));
         }
-//		else if (selectedButton == 3)
-//		{
-//			// Deleting current pointer
-//			delete Definitions::currentScreen;
-//
-//			Definitions::currentScreen =
-//				new gameScreen(LevelDefs::getLevel(2));
-//			Definitions::currentScreen->begin();
-//
-//		}
 		Definitions::currentScreen->begin();
 	}
 }
