@@ -14,12 +14,13 @@ IRComm::IRComm()
 	 * Uses Timer0
 	 * Toggles OC0A (Digital PIN 6) on compare match
 	 * Operates in Fast PWM mode with OCRA as TOP
-	 * Compares with SENDTOP (defined in IRComm.h)
 	 * Runs at the frequency defined in staticDefinitions.cpp
 	 * Runs without prescaler
 	*/
 	TCCR0A = (1 << COM0A0) | (1 << WGM00) | (1 << WGM01);
 	TCCR0B = (1 << CS00) | (1 << WGM02);
+
+	// Set top based on which frequency is sending
 #if PWMFREQ == 38
 	OCR0A = 210;
 #elif PWMFREQ == 56
@@ -27,19 +28,22 @@ IRComm::IRComm()
 #else
 #error Invalid PWM frequency
 #endif
+
 	// Enable timer0 compare interrupts
 	TIMSK0 = (1 << OCIE0A);
+
 
 	/* --Initialize the receive timer--
 	 * Uses Timer2
 	 * Toggles OC2A (Digital PIN 11) on compare match
 	 * Operates in Fast PWM mode with OCRA as TOP
-	 * Compares with RECTOP (defined in IRComm.h)
 	 * Runs at the frequency defined in staticDefinitions.cpp
 	 * Runs without prescaler
 	*/
 	TCCR2A = (1 << COM2A0) | (1 << WGM20) | (1 << WGM21);
 	TCCR2B = (1 << CS20) | (1 << WGM22);
+
+	// Set top based on which frequency is receiving
 #if PWMFREQ == 38
 	OCR2A = 142;
 #elif PWMFREQ == 56
@@ -47,21 +51,25 @@ IRComm::IRComm()
 #else
 #error Invalid PWM frequency
 #endif
+
 	// Enable timer2 compare interrupts
 	TIMSK2 = (1 << OCIE2A);
+
 
 	// --Pin Change interrupts for receiving data--
 	// Enable pin change interrupts for PCINT[15:8]
 	PCICR = (1 << PCIE1);
 	// Enable pin change interrupts on Analog PIN 3
 	PCMSK1 = (1 << PCINT11);
+
+	// Enable global interrupts
 	sei();
 
+	// Prepare receiving data
 	startReadByte();
 	startReceiveBit();
 	read();
 }
-
 
 
 // *** Sending *** //
@@ -71,12 +79,16 @@ size_t IRComm::write(uint8_t byte){
 	// We send half duplex, so wait til we're done receiving
 	while(readByteHasStarted)
 		PRR = PRR;
+	// Disable receiving of bytes
 	bitReceiveEnabled = 0;
 
+	// Send a start-bit
 	sendBit(START_BIT);
+	// Send the byte
 	for(uint8_t i=0;i<8;i++){
 		sendBit(byte & (1 << (7-i)) ? ONE_BIT : ZERO_BIT);
 	}
+	// Send the stop-bit
 	sendBit(STOP_BIT);
 
 	// And go back to receiving mode
@@ -119,7 +131,6 @@ void IRComm::timer0ISR()
 // Sends one bit
 void IRComm::sendBit(uint8_t sendType)
 {
-	PORTD &= ~(1 << PORTD1);
 	/* --Sending a bit--
 	 * Uses timer0 as defined above
 	 * Timer0 will always be running and comparing...
@@ -149,23 +160,21 @@ void IRComm::sendBit(uint8_t sendType)
 	while (!bitSendComplete)
 	{
 		// Do something useless, because the arduino can't handle empty whiles for some reason
-		//asm volatile ("nop");
 		PRR = PRR;
 	}
-
-	// Disable digital PIN 1 to indicate that the sending is done
-	PORTD |= (1 << PORTD1);
 }
 
-
-
 // *** Receiving *** //
-
+// Timer 2 Compare Interrupt
 void IRComm::timer2ISR()
 {
+	// If receiving has been enabled
 	if (bitReceiveEnabled)
 	{
+		// Increment the counter
 		bitReceiveCounter++;
+
+		// If no stop bit has been received after 95 ticks
 		if(bitReceiveStarted && (bitReceiveCounter - bitReceiveStarted) > 95)
 		{
 			// Timed out...
@@ -174,6 +183,7 @@ void IRComm::timer2ISR()
 	}
 }
 
+// Pin Change Interrupt
 void IRComm::pcint1ISR()
 {
 	// If the receiving has been enabled
@@ -181,9 +191,7 @@ void IRComm::pcint1ISR()
 	{
 		// If the receive hasn't started yet
 		if (!bitReceiveStarted)
-		{
 			bitReceiveStarted = bitReceiveCounter;
-		}
 		else
 		{
 			// The message has ended...
@@ -191,22 +199,17 @@ void IRComm::pcint1ISR()
 			bitReceiveChanged = bitReceiveCounter;
 			// Process the data
 			uint8_t lastBitReceived = 2;
-			while(lastBitReceived == 2) // If, for some reason the bit is not received jet, try again.
+
+			while(lastBitReceived == 2) // If, for some reason the bit is not received yet, try again.
 			{
 				lastBitReceived = readByteIteration();
 				if(lastBitReceived != 1)
-				{
 					startReceiveBit();
-				}
 			}
 		}
-	//	if(PINC & (1 << PINC3))
-	//		PORTD &= ~(1 << PORTD0);
-	//	else
-	//		PORTD |= (1 << PORTD0);
 	}
 }
-// Reset the receival and indicate that it has started
+// Reset the receiving and indicate that it has started
 void IRComm::startReceiveBit()
 {
 	bitReceiveChanged = 0;
@@ -216,7 +219,7 @@ void IRComm::startReceiveBit()
 	bitReceiveEnabled = 1;
 }
 
-// Prepair for receiving the next byte
+// Prepare for receiving the next byte
 void IRComm::startReadByte()
 {
 	readByteIndex = 0;

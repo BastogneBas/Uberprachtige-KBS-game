@@ -4,8 +4,6 @@
 #include <Stream.h>
 #include <WString.h>
 
-//#include "../../staticDefinitions.cpp"
-
 #ifndef IRCOMM_H
 #define IRCOMM_H
 
@@ -70,8 +68,6 @@ class IRComm: public Stream
 
 
 //	AFTER REWITE OF CODE
-	
-
   protected:
 
   private:
