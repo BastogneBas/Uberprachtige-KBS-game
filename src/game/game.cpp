@@ -494,6 +494,8 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
             }
         }
+
+// Move the player based on which player the current arduino has
 #if PEEP==1
         movePeep(1);
 #elif PEEP==2
@@ -521,12 +523,15 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 		Definitions::tft->print("y:  ");
 		Definitions::tft->print((unsigned int) Definitions::nunchuk->analogY);
 		Definitions::print("  ");
-    #endif
+	#endif
+
+		// Draw the map
         level.drawMap();
     }
 	
 	if((*RefreshCnt % 100) == 0)
 	{
+		// After every 100 refreshes, send the players' data
 		#if PEEP==1
 			Definitions::irComm->write(0x05);
 			Definitions::irComm->write(p1X);
@@ -541,6 +546,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
 void gameScreen::drawLives() // Print the amount of lives per player on-screen
 {
+	// Send the new lives values via infrared
 #if PEEP==1
 	Definitions::irComm->write(0x03);
 	Definitions::irComm->write(scoreP1);
@@ -548,13 +554,9 @@ void gameScreen::drawLives() // Print the amount of lives per player on-screen
 	Definitions::irComm->write(0x03);
 	Definitions::irComm->write(scoreP2);
 #endif
-    // Set x-location of lives
+    // Set x-location of where lives are drawn
     uint16_t x = 305;
 
-//    Definitions::irComm->print("p1: ");
-//    Definitions::irComm->println(livesP1);
-//    Definitions::irComm->print("p2: ");
-//    Definitions::irComm->println(livesP2);
     if(livesP1 < 3) // If player 1 has lost lives
     {
         for(int i = 3 - livesP1; i > 0; i--) // Checks for the amount of lives player 1 has left
@@ -616,6 +618,7 @@ void gameScreen::drawTimer() // Draws the timer value
 
 void gameScreen::drawScore() // Draws the score values
 {
+	// Send the new score values via infrared
 #if PEEP==1
 	Definitions::irComm->write(0x04);
 	Definitions::irComm->write(scoreP1);
@@ -654,10 +657,7 @@ void gameScreen::movePeep(int peep) // Move a player across the level
 		newY = p2Y;
 	}
 
-	//Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
-
 	// Change the new position according to the joystick position
-	// TODO: decide if all commented-out code here can be removed
 	if(nunX <= 70 && (nunY > 50 && nunY < 200)) // && p2X > 1)  // If the joystick is moved to the left, move player to the left
 	{
 		newX--;
@@ -669,16 +669,15 @@ void gameScreen::movePeep(int peep) // Move a player across the level
 	else if((nunX > 50 && nunX < 200) && nunY >= 170) // && p2Y > 1) // If the joystick is moved upwards, move player upwards
 	{
 		// Nunchuck Y is inverted.
-		//p2Y--;
 		newY--;
 	}
 	else if((nunX > 50 && nunX < 200) && nunY <= 70) // && p2Y < Definitions::gameHeight) // If the joystick is moved downwards, move player downwards
 	{
         // Nunchuck Y is inverted.
-		//p2Y++;
 		newY++;
 	}
 
+	// Move the player to the new location
 	movePeep(peep, newX, newY);
 }
 
@@ -706,14 +705,6 @@ void gameScreen::movePeep(int peep, int newX, int newY)
                 // Set player 1's position values
                 p1X = newX;
                 p1Y = newY;
-//				Definitions::irComm->write(0x05);
-//				Definitions::irComm->println("p1pos:");
-//				Definitions::irComm->write(p1X);
-//				Definitions::irComm->print(p1X);
-//				Definitions::irComm->print(", ");
-//				Definitions::irComm->write(p1Y);
-//				Definitions::irComm->println(p1Y);
-
             }
 			if(peep == 2) // If the selected player is player 2
 			{
@@ -727,6 +718,7 @@ void gameScreen::movePeep(int peep, int newX, int newY)
 				p2X = newX;
 				p2Y = newY;
 			}
+			// Send the new location values via infrared
 			#if PEEP==1
 				Definitions::irComm->write(0x05);
 				Definitions::irComm->write(p1X);
@@ -739,27 +731,10 @@ void gameScreen::movePeep(int peep, int newX, int newY)
 
 		}
 	}
-
-
-
-    // TODO: Decide if this commented-out piece of code can be removed
-	//draw peep on the newest location
-	/*if (peep == 1)
-	   {
-	   drawPeep1(p2X, p2Y);
-
-	   }
-
-	   if (peep == 2)
-	   {
-	   drawPeep2(p2X, p2Y);
-	   } */
-	//return dirX, dirY;
 }
 
 void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y) // Place a bomb
 {
-    // TODO: Decide if this commented-out piece of code can be removed
 	//level.setBomb(0, x, y, )
 	if(peep == 1) // If player 1 placed the bomb
 	{
@@ -776,6 +751,7 @@ void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y) // Place a bomb
 	level.markObjectAt(x, y, mapObject::bomb);
 	level.markObjectAt(x, y, mapObject::needsRedraw);
 
+	// Send the new bomb location values via infrared
 	Definitions::irComm->write(0x06);
 	Definitions::irComm->write(x);
 	Definitions::irComm->write(y);
@@ -783,12 +759,6 @@ void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y) // Place a bomb
 
 void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draws an explosion on the screen
 {
-// TODO: Decide if this commented-out piece of code can be removed
-//    int explX = p2X;
-//    int explY = p2Y;
-//    int X = p2X;
-//    int Y = p2Y;
-
     /* Checks where the explosions can be placed
      * The checks are done as follows:
      * +    +   +   +   +   +   +
