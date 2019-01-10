@@ -22,17 +22,36 @@
 // Size of the buffer.
 #define BUFFER_SIZE	   50
 
-// Indicates that debugging on a single Arduino is enabled
-//#define SOLODEBUG
-
-// PWMFREQ is defined in Static Definations, based on which player is playing
-
 class IRComm: public Stream
 {
   public:
+	// Defining constructor
 	IRComm();
 
-	// Variable definitions
+	// Defining functions that handle tha timer functionalities
+	void timer0ISR();
+	void pcint1ISR();
+	void timer2ISR();
+
+	// Defining functions that can be called from outside the class to get the IR-data
+	size_t write(uint8_t);
+	int available();
+	int read();
+	int peek();
+	using Print::write;
+
+  private:
+	// Defining private functions
+	void shiftbufferleft();
+	void startReceiveBit();
+	void startReadByte();
+	void sendBit(uint8_t sendType);
+	int readByteIteration();
+
+	// Defining private variables
+	int8_t writeIndex = 0;
+	char charbuffer[BUFFER_SIZE] = "";
+
 	uint8_t bitSendEnabled = 0;
 	uint16_t bitSendCounter = 0;
 	uint8_t bitSendType = 0;
@@ -48,32 +67,6 @@ class IRComm: public Stream
 	uint8_t readByteCharacter = 0;
 	uint8_t readByteIndex = 0;
 	uint8_t readByteHasStarted = false;
-
-	// Function definitions
-	void timer0ISR();
-	void sendBit(uint8_t sendType);
-
-	void timer2ISR();
-	void pcint1ISR();
-	void startReceiveBit();
-	void startReadByte();
-	int readByteIteration();
-
-	// Inherited from Stream
-	size_t write(uint8_t);
-	int available();
-	int read();
-	int peek();
-	using Print::write;
-
-
-//	AFTER REWITE OF CODE
-  protected:
-
-  private:
-	void shiftbufferleft();
-	char charbuffer[BUFFER_SIZE] = "";
-	int8_t writeIndex = 0;
 };
 
 #endif

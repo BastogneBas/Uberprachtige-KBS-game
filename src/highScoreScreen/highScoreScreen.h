@@ -1,3 +1,8 @@
+/*
+ * Due to problems to memory problems we are not using this class right now.
+ * If, in the future, it is possible to include it again, we will do it.
+ */
+
 
 #ifndef UBERPRACHTIGE_KBS_GAME_HIGHSCORESCREEN_H
 #define UBERPRACHTIGE_KBS_GAME_HIGHSCORESCREEN_H
