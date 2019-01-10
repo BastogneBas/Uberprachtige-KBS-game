@@ -43,7 +43,13 @@ And thus to build code for peep 2 and for another device, and monitor it:
 * Press the reset button on the arduino to go to the start.
 
 
-```Frans is onze held
+
+__Have fun playing!__
+
+
+
+```
+Frans Bauer FTW
                                                                                 
                                            ~+:                                  
                                        =~:+=+$=?+~+=                            
