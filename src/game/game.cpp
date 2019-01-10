@@ -6,7 +6,6 @@
 #include "../level/level.h"
 #include "../level/levelDefs.h"
 #include "game.h"
-#include "bomb.h"
 
 // Uncomment this to enable some debug code
 //#define DEBUG 1
@@ -169,7 +168,7 @@ void gameScreen::end() // End the match by calculating some scores and showing t
 		while(!Definitions::irComm->read())
 			PRR=PRR;
 		// Set the timer
-		currentTime = Definitions::irComm->read();
+		Definitions::currentTime = Definitions::irComm->read();
 	}
 #endif
 

@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include "../../staticDefinitions.cpp"
-#include "../game/bomb.h"
 
 #ifndef LEVEL_H
 #define LEVEL_H
