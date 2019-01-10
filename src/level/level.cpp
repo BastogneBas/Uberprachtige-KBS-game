@@ -15,17 +15,6 @@ Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 	// Copy barrel locations from current level to ram
 	for (uint8_t y = 0; y < Definitions::gameHeight; y++)
 	{
-//		Definitions::irComm->println(barrels[y], BIN);
-//		this->barrels[i] = barrels[i];
-//		Definitions::irComm->print(i);
-//		Definitions::irComm->print(": ");
-//		Definitions::irComm->println(this->barrels[i], BIN);
-//		Definitions::irComm->println();
-
-
-//		Definitions::irComm->print(y);
-//		Definitions::irComm->print(": ");
-//		Definitions::irComm->println(barrels[y], BIN);
 		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
 		{
 			uint16_t mask = (1 << (Definitions::gameWidth - 1)) >> x;
@@ -33,7 +22,6 @@ Level::Level(uint16_t barrels[Definitions::gameHeight], String name)
 			{
 				setObjectAt(x + 1, y + 1, mapObject::barrel);
 			}
-//			markObjectAt(x + 1, y + 1, mapObject::needsRedraw);
 		}
 	}
 	// And set the name of the current level
@@ -106,15 +94,6 @@ void Level::begin()
 	uint8_t width = Definitions::gameWidth + 1, height =
 		Definitions::gameHeight + 1;
 
-	//printMap();
-	//Definitions::irComm->println();
-
-//	for (int x = 0; x <= width; x++)
-//		for (int y = 0; y <= height; y++)
-//			map[y][x] = 0;
-
-	//printMap();
-
 	for (int x = 0; x <= width; x++)
 		setObjectAt(x, 0, mapObject::block);
 	for (int y = 0; y <= height; y++)
@@ -135,30 +114,13 @@ void Level::begin()
 
 	for (uint8_t y = 0; y < Definitions::gameHeight; y++)
 	{
-//		Definitions::irComm->print(y);
-//		Definitions::irComm->print(": ");
-//		Definitions::irComm->println(this->barrels[y], BIN);
 		for (uint8_t x = 0; x < Definitions::gameWidth; x++)
 		{
-//			uint16_t mask = (1 << (Definitions::gameWidth - 1)) >> x;
-//			if (this->barrels[y] & (mask))
-//			{
-//				setObjectAt(x + 1, y + 1, mapObject::barrel);
-//			}
 			markObjectAt(x + 1, y + 1, mapObject::needsRedraw);
 		}
 	}
-
-	//Definitions::irComm->println();
 	printMap();
 }
-
-// TODO: Fix it
-//// Returns the barrel locations
-//uint16_t *Level::getBarrels()
-//{
-//	return this->barrels;
-//}
 
 // Returns the level name
 String Level::getName()
@@ -200,61 +162,48 @@ void Level::setBomb(int index, uint8_t x, uint8_t y, uint32_t time,
 	bombPeep[index] = peep;
 }
 
-void Level::printMap()
-{
-#ifdef DEBUG
-	for (uint8_t y = 0; y <= Definitions::gameHeight + 1; y++)
-	{
-		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
-		{
-			if (map[y][x] <= 0xFFF)
-				Definitions::irComm->print("0");
-			if (map[y][x] <= 0xFF)
-				Definitions::irComm->print("0");
-			if (map[y][x] <= 0xF)
-				Definitions::irComm->print("0");
-			Definitions::irComm->print(map[y][x], HEX);
-			Definitions::irComm->print("\t");
-		}
-		Definitions::irComm->println();
-	}
-#endif
-}
-
+// get the object of specified location
 uint16_t Level::getObjectAt(uint8_t x, uint8_t y)
 {
 	return map[y][x];
 }
 
+// change object at specified location
 void Level::setObjectAt(uint8_t x, uint8_t y, uint16_t object)
 {
 	this->setObjectAt(x, y, object, false);
 }
 
+// change object at specified location when it needs to be redrawn
 void Level::setObjectAt(uint8_t x, uint8_t y, uint16_t object,
 						uint8_t drawn)
 {
-	if (!drawn)
+    if (!drawn)
 		map[y][x] = (object | mapObject::needsRedraw);
 	else
 		map[y][x] = (object & ~(mapObject::needsRedraw));
 }
 
+//give specified location a mark of specified object
 void Level::markObjectAt(uint8_t x, uint8_t y, uint16_t flag)
 {
 	map[y][x] |= flag;
 }
 
+// undo mark of specified object on specified location
 void Level::unmarkObjectAt(uint8_t x, uint8_t y, uint16_t flag)
 {
 	map[y][x] &= ~flag;
 }
 
+// draw the map of the game
 void Level::drawMap()
 {
+    // loop through the map's y
 	for (uint8_t y = 0; y <= Definitions::gameHeight + 1; y++)
 	{
 		Definitions::tft->startWrite();
+		// loop through the map's x
 		for (uint8_t x = 0; x <= Definitions::gameWidth + 1; x++)
 		{
 			uint16_t currentObject =
@@ -263,17 +212,21 @@ void Level::drawMap()
 				(getObjectAt(x, y) & mapObject::needsRedraw) ==
 				mapObject::needsRedraw;
 			setObjectAt(x, y, currentObject, true);
+			// when current object needs redraw
 			if (Redraw)
 			{
+			    // when an object is air --> is 0
 				if (!(currentObject & mapObject::air))
 				{
 					uint16_t _x = x * 16, _y = y * 16;
 #ifdef DEBUG
 					Definitions::println("Draw air");
 #endif
+					// draw air
 					Definitions::tft->writeFillRect(_x, _y, 16, 16,
 													ILI9341_BLACK);
 				}
+				// when an object is block etc
 				if (currentObject & mapObject::block)
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
@@ -284,6 +237,7 @@ void Level::drawMap()
 					{
 						for (uint16_t i = 0; i < _w; i++)
 						{
+						    // draw block on specified x and y
 							Definitions::tft->writePixel(_x + i, _y,
 														 pgm_read_word
 														 (&blokje
@@ -291,6 +245,7 @@ void Level::drawMap()
 						}
 					}
 				}
+				// etc
 				if (currentObject & mapObject::barrel)
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
@@ -308,7 +263,7 @@ void Level::drawMap()
 						}
 					}
 				}
-
+				// etc
 				if (currentObject & mapObject::bomb
 					&& !(currentObject & mapObject::explosion)
 					&& currentObject & mapObject::bombPeep2)
@@ -329,6 +284,7 @@ void Level::drawMap()
 						}
 					}
 				}
+				// etc
 				if (currentObject & mapObject::explosion
 					&& !(currentObject & mapObject::explosionV)
 					&& currentObject & mapObject::bombPeep2)
@@ -348,6 +304,7 @@ void Level::drawMap()
 						}
 					}
 				}
+				// etc
 				if (currentObject & mapObject::explosion
 					&& (currentObject & mapObject::explosionV)
 					&& currentObject & mapObject::bombPeep2)
@@ -367,6 +324,7 @@ void Level::drawMap()
 						}
 					}
 				}
+				// etc
 				if (currentObject & mapObject::bomb
 					&& currentObject & mapObject::explosion
 					&& currentObject & mapObject::bombPeep2)
@@ -386,7 +344,7 @@ void Level::drawMap()
 						}
 					}
 				}
-
+				// etc
 				if (currentObject & mapObject::bomb
 					&& !(currentObject & mapObject::explosion)
 					&& currentObject & mapObject::bombPeep1)
@@ -407,6 +365,7 @@ void Level::drawMap()
 						}
 					}
 				}
+				// etc
 				if (currentObject & mapObject::explosion
 					&& !(currentObject & mapObject::explosionV)
 					&& currentObject & mapObject::bombPeep1)
@@ -426,6 +385,7 @@ void Level::drawMap()
 						}
 					}
 				}
+				// etc
 				if (currentObject & mapObject::explosion
 					&& (currentObject & mapObject::explosionV)
 					&& currentObject & mapObject::bombPeep1)
@@ -445,6 +405,7 @@ void Level::drawMap()
 						}
 					}
 				}
+				// etc
 				if (currentObject & mapObject::bomb
 					&& currentObject & mapObject::explosion
 					&& currentObject & mapObject::bombPeep1)
@@ -464,6 +425,7 @@ void Level::drawMap()
 						}
 					}
 				}
+				// etc
 				if (currentObject & mapObject::peep1)
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
@@ -481,6 +443,7 @@ void Level::drawMap()
 						}
 					}
 				}
+				// etc
 				if (currentObject & mapObject::peep2)
 				{
 					uint16_t _x = x * 16, _y = y * 16, _w = 16, _h = 16;
@@ -500,6 +463,7 @@ void Level::drawMap()
 				}
 			}
 		}
+		// writing is done
 		Definitions::tft->endWrite();
 	}
 }
