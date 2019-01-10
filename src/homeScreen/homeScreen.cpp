@@ -1,3 +1,5 @@
+/* ***CURRENTLY NOT IN USE *** */
+
 // Including libs for enabling the screen
 #include "../Adafruit_GFX_Library/Adafruit_GFX.h"	// Core graphics library
 #include "../Adafruit_ILI9341/Adafruit_ILI9341.h"	// Hardware-specific library
