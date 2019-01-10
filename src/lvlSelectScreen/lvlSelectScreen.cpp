@@ -82,48 +82,66 @@ void lvlSelectScreen::waitForStart()
 	// While true
 	while(1)
 	{
+		// Wait if data isn't available
 		while(!Definitions::irComm->available())
 			// C++ doesn't like empty while-loops, so we do nothing with PRR = PRR
 			PRR = PRR;
 
-		// 		
+		// Saving the data to a variable
 		int receivedcmd = Definitions::irComm->read();
 
+		// If data == 0x02, it means that level data has been received
 		if(receivedcmd == LEVEL_BYTE)
 		{
+			// Eroor message
 			Definitions::tft->print("Starting level ");
 
+			// While there is no data available, do nothing
 			while(!Definitions::irComm->available())
 				PRR = PRR;
 
+			// If data is available, put it in a variable
 			int receivedlvl = Definitions::irComm->read();
+
+			// If the data == 0x04, it means a random level has been send
 			if(receivedlvl == 0x04)
 			{
+				// Error message
 				Definitions::tft->println("random");
+
+				// Selecting the button
 				selectedButton = 4;
+
+				// Error message
 				Definitions::tft->println("Waiting for seed...");
 
+				// Wait until the data available > 1, else do nothing
 				while(!(Definitions::irComm->available()>1))
 					PRR=PRR;
 
+				// Feeding the seed and shift it 8 places, so 2 bytes can be placed inside the uint16_t.
 				seed = Definitions::irComm->read();
 				seed = (Definitions::irComm->read() << 8);
 			}
 			else if(receivedlvl > 0x04)
 			{
+				// Error message if the level > 0x04.
 				Definitions::tft->println("error, lvl# too high");
 			}
 			else
 			{
+				// Print the level that has been received
 				Definitions::tft->println(receivedlvl);
 				selectedButton = receivedlvl;
 			}
 		}
+		// Else if 0x01 (startbyte) has been received, start the game and break the loop.
 		else if(receivedcmd == START_BYTE)
 		{
 			startGame(seed);
 			break;
 		}
+		// Else, do nothing
 		else
 		{
 		}
