@@ -88,10 +88,8 @@ void lvlSelectScreen::waitForStart()
 
 		// 		
 		int receivedcmd = Definitions::irComm->read();
-		Definitions::tft->print("received: ");
-		Definitions::tft->println(receivedcmd);
 
-		if(receivedcmd == 0x02)
+		if(receivedcmd == LEVEL_BYTE)
 		{
 			Definitions::tft->print("Starting level ");
 
@@ -121,7 +119,7 @@ void lvlSelectScreen::waitForStart()
 				selectedButton = receivedlvl;
 			}
 		}
-		else if(receivedcmd == 0x05)
+		else if(receivedcmd == START_BYTE)
 		{
 			startGame(seed);
 			break;
@@ -278,43 +276,42 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 // Function that will be called if the user wants to go to start a level
 void lvlSelectScreen::startGame(uint16_t seed)
 {
-
-	Definitions::irComm->println('H');
-	Definitions::setTextDebug();
-	Definitions::tft->println(0x02);
-	Definitions::irComm->write(0x02);
-	Definitions::tft->println(selectedButton);
+	// Send the level
+	Definitions::irComm->write(LEVEL_BYTE);
 	Definitions::irComm->write(selectedButton);
-	Definitions::tft->println(0x05);
-	Definitions::irComm->write(0x05);
+	// Send the startbyte
+	Definitions::irComm->write(START_BYTE);
 
 	// Checking if buttonSelect is > 0 && <= 4 for general functions on all buttons
 	if ((selectedButton > 0) && (selectedButton <= 4))
 	{
+		// Start the random level
 	    if(selectedButton == 4)
         {
             delete Definitions::currentScreen;
-#if PEEP == 1
+            // PEEP 2 requires a seed for the random level while PEEP 1 doesn't
+		#if PEEP == 1
 			Definitions::currentScreen = new gameScreen("Random");
-#elif PEEP == 2
+		#elif PEEP == 2
             Definitions::currentScreen = new gameScreen("Random", seed);
-#endif
+		#endif
         }
+	    // Start the selected level
 	    else
         {
             delete Definitions::currentScreen;
             Definitions::currentScreen = new gameScreen(selectedButton-1);
         }
+
+	    // Start the game
 		Definitions::currentScreen->begin();
 	}
 }
 
 void lvlSelectScreen::end()
 {
-
 }
 
 void lvlSelectScreen::checkNunchuck()
 {
-
 }
