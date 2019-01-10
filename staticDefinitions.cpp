@@ -71,7 +71,7 @@ class Definitions // Define the constants
 #elif PEEP == 2
 	static const uint8_t currentPlayer = 2;
 #endif
-
+	// Defining some static definitions, so they can be called from all the classes.
 	static Adafruit_ILI9341 *tft;
 	static ArduinoNunchuk *nunchuk;
 	static screen *currentScreen;
@@ -79,15 +79,6 @@ class Definitions // Define the constants
 
 	static uint8_t timerCounter;
 	static uint8_t currentTime;
-
-/*	static void printScreenSize(uint16_t pointer)
-	{
-		irComm->print("\t0x");
-		irComm->print(pointer, HEX);
-		irComm->print("\t0x");
-		uint8_t* ptr = new uint8_t;
-		irComm->println((uint16_t)ptr, HEX);
-	}*/
 
 	/* Set the text position at 0,0 and color at white on black
 	 * FOR DEBUGGING */
@@ -97,112 +88,6 @@ class Definitions // Define the constants
 		tft->setCursor(0, 0);
 		tft->setTextSize(1);
 	}
-
-	/* BEGIN PRINTs */
-	/* SEE: https://github.com/arduino/ArduinoCore-avr/blob/all-master/cores/arduino/Print.h */
-	static void print(const String s)
-	{
-		tft->print(s);
-	}
-
-	static void print(const char str[])
-	{
-		tft->print(str);
-	}
-
-	static void print(char c)
-	{
-		tft->print(c);
-	}
-
-	static void print(unsigned char b, int base)
-	{
-		tft->print(b, base);
-	}
-
-	static void print(int n, int base)
-	{
-		tft->print(n, base);
-	}
-
-	static void print(unsigned int n, int base)
-	{
-		tft->print(n, base);
-	}
-
-	static void print(long n, int base)
-	{
-		tft->print(n, base);
-	}
-
-	static void print(unsigned long n, int base)
-	{
-		tft->print(n, base);
-	}
-
-	static void print(double n, int digits)
-	{
-		tft->print(n, digits);
-	}
-
-	static void print(bool b, int base)
-	{
-		tft->print(b, base);
-	}
-	//static auto& print = static_cast<void>(tft->print);
-
-	static void println(void)
-	{
-		tft->println();
-	}
-
-	static void println(const String & s)
-	{
-		tft->println(s);
-	}
-
-	static void println(const char c[])
-	{
-		tft->println(c);
-	}
-
-	static void println(char c)
-	{
-		tft->println(c);
-	}
-
-	static void println(unsigned char b, int base)
-	{
-		tft->println(b, base);
-	}
-
-	static void println(int num, int base)
-	{
-		tft->println(num, base);
-	}
-
-	static void println(unsigned int num, int base)
-	{
-		tft->println(num, base);
-	}
-
-	static void println(long num, int base)
-	{
-		tft->println(num, base);
-	}
-
-	static void println(unsigned long num, int base)
-	{
-		tft->println(num, base);
-	}
-
-	static void println(double num, int digits)
-	{
-		tft->println(num, digits);
-	}
-
-	static const uint8_t timer = 180;
-	/* END PRINTs */
 };
 
 #endif
