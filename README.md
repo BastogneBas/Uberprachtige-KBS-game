@@ -8,16 +8,20 @@ To set up the environment in Linux, execute `./setup_envirenment`.
 This will dowload the Aruino subsystem and the Arduino-Makefile files in the home directory of the current user
 ### Windows
 Cry
+
 **__For some reason, you can't build the project in Windows__**
 ## Building
 
 To easily specify for which player you would like to compile, specify `PEEP` in your command:
+
 `make PEEP=1`
+
 or
+
 `make PEEP=2`
-But don't forget to `make clean` when using it. Otherwise your code would not compile!
 
 If you want to specify a device, use the option `DEVICE_PATH`
+
 Your command would look like
 `make DEVICE_PATH=/dev/ttyACM1`
 
