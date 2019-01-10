@@ -438,13 +438,17 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 			#endif
         }
 #endif
-		// TODO: Explain this statement
+
 #if PEEP == 1
+        // wait a few seconds after the bomb is placed
+        // and draw explosion
         if(*RefreshCnt >= level.getBombTime(0) + 48)
         {
+            // check if there is a bomb placed on specified location
             if((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
                 && !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
             {
+                // draw the explosion of the bomb
                 drawExplosion(1, level.getBombX(0), level.getBombY(0));
 
             #ifdef DEBUG
@@ -459,11 +463,14 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             }
         }
 #elif PEEP == 2
+        // wait a few seconds after the bomb is placed
         if(*RefreshCnt >= level.getBombTime(1) + 48)
             {
+                // check if peep 2 has placed a bomb on given location
                 if((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
                     && !(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))
                 {
+                    // draw explosion on specified location
                     drawExplosion(2, level.getBombX(1), level.getBombY(1));
 
                 #ifdef DEBUG
@@ -479,14 +486,16 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             }
 #endif
 
-        // TODO: Explain what this does
+        // wait a few seconds after bomb is placed and explosion has been drawn
         if(*RefreshCnt >= level.getBombTime(0) + 92)
         {
+            // check if there is an explosion placed
             if((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
                 && (level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion)
                 || (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
                 && (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))
             {
+                // draw air on specified location
                 drawAir(level.getBombX(0), level.getBombY(0));
                 drawAir(level.getBombX(1), level.getBombY(1));
                 level.setBomb(0, 0, 0, 0, 0);
