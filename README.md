@@ -27,24 +27,48 @@ To set up the environment in Linux, execute `./setup_envirenment`.
 This will dowload the Aruino subsystem and the Arduino-Makefile files in the home directory of the current user.
 ### Windows
 Cry
+
+_**For some reason, you can't build the project in Windows**_
 ## Building
 
 To easily specify for which player you would like to compile, specify `PEEP` in your command:
-```make PEEP=1```
+
+`make PEEP=1`
+
 or
-```make PEEP=2```
-But don't forget to `make clean` when using it. Otherwise your code would not compile!
+
+`make PEEP=2`
 
 If you want to specify a device, use the option `DEVICE_PATH`
+
 Your command would look like
-```make DEVICE_PATH=/dev/ttyACM1```
+`make DEVICE_PATH=/dev/ttyACM1`
 
 And thus to build code for peep 2 and for another device, and monitor it:
-```make clean upload monitor DEVICE_PATH=/dev/ttyACM1 PEEP=2```
+`make clean upload monitor DEVICE_PATH=/dev/ttyACM1 PEEP=2`
 
-# 
+# Instructions for playing the game
+## Level selection screen
+* Use the joystick on the nunchuk to change selected button
+* Then press the Z button to accept the selection
+## The game
+* Use the joystick to move the peep
+* Press the Z button to place a bomb
+* Run away to avoid the bomb
+* The peep who dies first loses.
+* If the timer expires, the peep with the least amount of lives left, wins.
+* If both peeps have the save score, then it's a draw.
+## Endscreen
+* Press the reset button on the arduino to go to the start.
 
-```Frans is onze held
+
+
+_Have fun playing!_
+
+
+
+```
+Frans Bauer FTW
                                                                                 
                                            ~+:                                  
                                        =~:+=+$=?+~+=                            
