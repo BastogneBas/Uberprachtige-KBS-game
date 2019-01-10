@@ -1,11 +1,30 @@
 # Überprachtige-KBS-game
-Our beautiful Bomberman game
+A Bomberman game running on arduino's with multiplayer functionality.
+## Game Description
+The game supports two players, referred to as peeps. Peep 1 is the master and Peep 2 is the slave.
+When the game is started, the level select screen will be opened. Peep 1 will be able to choose a level and Peep 2 will wait for Peep 1 to select a level. The game has three levels, but a random level can also be chosen. Level 1 & 2 are levels made by us. Level 3 is an empty level.
+When selecting a level, Peep 1 will send the level number. If the selected level is random, a seed byte to generate the level will also be sent.
+
+Afterwards, the game will be loaded. The layout of the screen can be seen in the image below
+![Game screen layout](https://i.imgur.com/Zxvom9d.jpg)
+Format: ![Alt Text](url)
+
+The level can be seen on the left of the screen. It shows the peeps (Peep 1 is blue, Peep 2 is red), the barrels and the unbreakable blocks. On the right, important values are shown.
+The values are, from top to bottom:
+* Peep 1's lives
+* Peep 2's lives
+* The countdown timer
+* Peep 1's score
+* Peep 2's score
+
+The peeps can move indepentently from eachother. The new location of the peeps after they have moved will be sent over infrared. The peeps can also place bombs, but this currently is broken. If it would work though, the bomb location would be sent over and would explode for both players. If a peep gets hit, a life is removed and the new lives will be sent over. Peeps will also get scorepoints for hitting eachother.
+When a player is dead, or the timer has ran out, the game will be over. If the game ended on someone losing all their lives, the winner will be the one who is still alive. If the timer has ran out, the winner will be based on score. Players get a bonus when the game has ended.
 
 # Installation
 ## Environment setup
 ### Linux
 To set up the environment in Linux, execute `./setup_envirenment`.
-This will dowload the Aruino subsystem and the Arduino-Makefile files in the home directory of the current user
+This will dowload the Aruino subsystem and the Arduino-Makefile files in the home directory of the current user.
 ### Windows
 Cry
 ## Building
