@@ -1,30 +1,14 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include "../../staticDefinitions.cpp"
-#include "../game/bomb.h"
 
 #ifndef LEVEL_H
 #define LEVEL_H
 
-
-// *INDENT-OFF*
-/*enum class mapObject:unsigned char
-{
-	air			= 0b00000000,
-	block		= 0b00000001,
-	barrel		= 0b00000010,
-	peep1		= 0b00000100,
-	peep2		= 0b00001000,
-	bomb 		= 0b00010000,
-	explosion 	= 0b00100000,
-
-	peep1Air	= peep1|air
-};*/
-
 class mapObject
 {
   public:
-	// Masks
+	// Defining all the masks. Each game property gets it's own mask.
 	static const unsigned int air			= 0b0000000000000000; // 0b 0000 0000 0000 0000
 
 	static const unsigned int block			= 0b0000000000000001; // 0b 0000 0000 0000 000x
@@ -42,17 +26,6 @@ class mapObject
 	static const unsigned int bombPeep1		= 0b0000000100000000; // 0b 0000 000x 0000 0000
 	static const unsigned int bombPeep2		= 0b0000001000000000; // 0b 0000 00x0 0000 0000
 };
-
-// *INDENT-ON*
-
-/*mapObject& operator|(mapObject& m1, mapObject& m2){
-	switch(m1){
-		case m1:
-			return m1;
-			break;
-	}
-};*/
-
 
 class Level
 {
@@ -90,15 +63,7 @@ class Level
 
 
   private:
-	/* The barrel locations
-	 * Every uint32_t is a horizontal row of barrels. So for example:
-	 *  If barrels[0] = 0b0000000000010101
-	 *  Shows barrels at:
-	 *      ███████████████
-	 *      █        B B B█
-	 */
-//	uint16_t barrels[Definitions::gameHeight] = { 0 };
-
+	// Variable that holds the grid of a map
 	uint16_t map[Definitions::gameHeight + 2][Definitions::gameWidth + 2] = {
 		{0},
 		{0},

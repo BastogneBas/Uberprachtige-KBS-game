@@ -1,3 +1,8 @@
+/*
+ * Due to problems to memory problems we are not using this class right now.
+ * If, in the future, it is possible to include it again, we will do it.
+ */
+
 #include "../Adafruit_GFX_Library/Adafruit_GFX.h"	// Core graphics library
 #include "../Adafruit_ILI9341/Adafruit_ILI9341.h"	// Hardware-specific library
 #include "../ArduinoNunchuk/ArduinoNunchuk.h"

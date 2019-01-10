@@ -66,7 +66,10 @@ ISR(TIMER1_COMPA_vect) // Timer1 output compare interrupt
 	{
 		startRefresh = 1;
 	}
+	// Counter for in-game timer
 	Definitions::timerCounter++;
+
+	// Reset after 39 ticks (roughly 1 second)
 	if(Definitions::timerCounter >= 39)
 	{
 		Definitions::currentTime--;
@@ -125,7 +128,6 @@ void own_init(){
 	 * 1562 so the timer will be ticking
 	 * 100 times/second.
 	 */
-
 	TCCR1A =
 		(0 << COM1A1) | (0 << COM1A0) | (0 << COM1B1) |
 		(0 << COM1B0) | (0 << WGM11)  | (0 << WGM10);
@@ -143,22 +145,17 @@ void own_init(){
 
 int main()
 {
-	// TODO: replace with own initialisation.
-	// SEE: https://github.com/arduino/ArduinoCore-avr/blob/b084848f2eaf9ccb3ac9a64ac5492d91df4706bf/cores/arduino/wiring.c#L241
-	// Default Arduino initialisation.
-#warning Needs to be replaced
+	// Initialize the arduino with proper values for timers
 	own_init();
-	//Serial.begin(500000);
-	Definitions::irComm = new IRComm();
-//	Definitions::irComm->println('\n');
-//	Definitions::irComm->println("Morning!");
 
-//#ifndef IR
-	// Initialize the tft
+	// Initialize irComm class
+	Definitions::irComm = new IRComm();
+
+	// Initialize the tft screen
 	Definitions::tft =
 		new Adafruit_ILI9341(Definitions::TFT_CS, Definitions::TFT_DC);
+
 #ifdef TFT
-#warning TFT
 	Definitions::tft->begin();
 	yield();
 	Definitions::tft->setRotation(1);
@@ -170,88 +167,36 @@ int main()
 	Definitions::println("Welkom!");
 #endif
 
-	// Initialize the Nunchuk for player 1
+	// Initialize the Nunchuk
 	Definitions::nunchuk = new ArduinoNunchuk();
 	Definitions::nunchuk->init();
 
 #ifdef TFT
-	// Opening the homeScreen
-	//Definitions::currentScreen = new homeScreen();
+	// Opening the level select screen
 	Definitions::currentScreen = new lvlSelectScreen();
 	Definitions::currentScreen->begin();
 
 #endif
 
-#ifdef IR
-//	Serial.setTimeout(12);
-	// Construct the irComm class
-
-//	Serial.print("This is ");
-//	Serial.print(PEEP);
-//	Serial.print(" speaking at ");
-//	Serial.print(PWMFREQ);
-//	Serial.println(" kHz");
-	
-	//Definitions::irComm->startReadByte();
-	//Definitions::irComm->startReceiveBit();
-	//Definitions::irComm->println(Definitions::irComm->read());
-#else
-	Definitions::irComm =
-		new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C,
-						   &UDR0);
+#ifndef IR
+	// Use Serial when not using IR
+	Definitions::irComm = new HardwareSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C, &UDR0);
 	((HardwareSerial *) (Definitions::irComm))->begin(9600);
-
-#if PEEP == 1
-	char mystr[] = "hello";
-	Definitions::irComm->print(mystr);
-	//delay (1000);
-
-#else
-	char mystr[10];
-	Definitions::irComm->readBytes(mystr, 5);
-	Definitions::irComm->println(mystr);
-	//delay(1000);
-#endif
-
 #endif
 
 	while (true)
 	{
-		//Serial.println("Refresh");
 		// Refresh screen
 		if (startRefresh)
 		{
 			refreshDone = 0;
-			//if(Definitions::irComm->available())
-			//{
-			//	Definitions::irComm->write(Definitions::irComm->read());
-			//}
-//			if (Serial.available()){
-//				char buffer[64] = {0};
-//				Serial.readBytes(buffer, Serial.available());
-//				Serial.println(buffer);
-//				Definitions::irComm->print(buffer);
-//				Serial.println("Done");
-//			}
-//
-//			if(Definitions::irComm->available())
-//			{
-//				Serial.print(Definitions::irComm->available());
-//				Serial.print("\t");
-//				Serial.print(Definitions::irComm->peek(), HEX);
-//				Serial.print("\t");
-//				Serial.write(Definitions::irComm->read());
-//				Serial.println();
-//				//Serial.print("\t");
-//				//Definitions::irComm->println(Definitions::irComm->available());
-//			}
+
         #ifdef TFT
-//			Definitions::irComm->print("\t0x");
-//			Definitions::irComm->print((uint16_t)Definitions::currentScreen, HEX);
-//			Definitions::irComm->print("\t0x");
-//			Definitions::irComm->println(sizeof(((Definitions::currentScreen))), HEX);
+			// Refresh the screen when using the screen
 			Definitions::currentScreen->refresh();
 		#endif
+
+			// Refresh the screen
 			startRefresh = 0;
 			refreshDone = 1;
 		}
@@ -259,7 +204,6 @@ int main()
 		{
 			/* We need to do something in our loop for some reason, so we set
 			 * the Power Reduction Register to the value of itself... */
-			//asm volatile ("nop");
 			PRR = PRR;
 		}
 	}

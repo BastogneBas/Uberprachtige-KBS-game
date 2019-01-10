@@ -6,30 +6,28 @@
 #include "../level/level.h"
 #include "../level/levelDefs.h"
 #include "game.h"
-#include "bomb.h"
 
 // Uncomment this to enable some debug code
 //#define DEBUG 1
 
-// TODO: Explain to me what this does
+// gameScreen default constructor
 gameScreen::gameScreen()
 {
 }
 
-// Initialize gameScreen class
+// Initialize gameScreen class with level pointer
 gameScreen::gameScreen(Level *level)
 {
     this->level = *level;
 }
 
+// Initialize gameScreen class with level number
 gameScreen::gameScreen(uint8_t levelnr)
 {
-//	Definitions::irComm->write(0x02);
-//	Definitions::irComm->write(levelnr);
-//	Definitions::irComm->write(0x05);
 	this->level = Level(LevelDefs::levelBarrels[levelnr], LevelDefs::levelNames[levelnr]);
 }
 
+// Initialize gameScreen class with level name and seed
 gameScreen::gameScreen(String levelName, uint16_t seed)
 {
 #if PEEP == 1
@@ -39,16 +37,14 @@ gameScreen::gameScreen(String levelName, uint16_t seed)
 #endif
 }
 
-// Define players' positions
+// Initialize players' positions
 int p2Y = 0, p2X = 0;
 int p1Y = 0, p1X = 0;
-// TODO: Decide if this commented-out piece of code can be removed
-/*//uint8_t bomb1X, bomb1Y;
-//uint8_t bomb2X, bomb2Y;
-//uint8_t bombX, bombY;*/
 int newX, newY;
+// Initialize players' lives
 uint8_t lives1, lives2;
 
+// Keeps proper timer value towards the end of the game
 int endTimer;
 
 void gameScreen::begin() // Initializes the game's screen
@@ -56,33 +52,6 @@ void gameScreen::begin() // Initializes the game's screen
 	// Set background to black and draw the initial level
 	Definitions::tft->fillScreen(ILI9341_BLACK);
 	level.begin();
-	// TODO: Decide if this commented-out piece of code can be removed
-    /*level.printMap();
-	level.drawMap();
-	uint8_t width = Definitions::gameWidth+1, height = Definitions::gameHeight+1;
-	for (int x = 0; x <= width; x++)
-	    drawBlock(x, 0);
-	for (int y = 0; y <= height; y++)
-	    drawBlock(0, y);
-	for (int x = 0; x <= width; x++)
-	    drawBlock(x, height);
-	for (int y = 0; y <= height; y++)
-	    drawBlock(width, y);
-	for (int y = 2; y < height; y += 2)
-	    for (int x = 2; x < width; x += 2)
-	        drawBlock(x, y);
-	    drawPeep1(1, 1);
-	drawPeep2(Definitions::gameWidth, Definitions::gameHeight);
-
-	//Level level = new Level(level.getBarrels(), "Level1");
-	for (int x = 0; x < Definitions::gameHeight; x++) {
-	    for (uint16_t y = 0; y < Definitions::gameWidth; y++) {
-	        uint16_t mask = 1<<y;
-	        if (this->level.getBarrels()[x] & (mask)) {
-	            drawBarrel(y+1, x+1);
-	        }
-	    }
-	} */
 
 	// Set x and y positions for both players
 	p2X = Definitions::gameWidth;
@@ -120,6 +89,7 @@ void gameScreen::begin() // Initializes the game's screen
 		Definitions::tft->fillCircle(i, 75, 10, ILI9341_RED);
 	}
 
+	// Set the countdown timer to start value
 	Definitions::currentTime = 180;
 
 	// Draw initial timer and score values
@@ -128,44 +98,93 @@ void gameScreen::begin() // Initializes the game's screen
 
 	level.drawMap();
 
+	// Set the timer again to make up for lost time during level setup
 	Definitions::currentTime = 180;
 }
 
 void gameScreen::end() // End the match by calculating some scores and showing the endScreen
 {
-//    Definitions::irComm->println("P1:");
-//    Definitions::irComm->println(livesP1);
-//    Definitions::irComm->println(scoreP1);
-//    Definitions::irComm->println("P2: ");
-//    Definitions::irComm->println(livesP2);
-//    Definitions::irComm->println(scoreP2);
-//    Definitions::irComm->print("t: ");
-//    Definitions::irComm->println(currentTime);
-//    Definitions::irComm->print("dp: ");
-//    Definitions::irComm->println(deadPlayer);
+	// Set the endTimer
 	endTimer = Definitions::currentTime;
     // Check who won the game
     checkWinner();
     // Add some extra's to the scores
     calculateEndScores();
+
+    // Send and receive data based on which player the current arduino has
 #if PEEP==1
-	Definitions::irComm->write(0x07);
+	// Send the stop byte
+	Definitions::irComm->write(STOP_BYTE);
+
+	// Send player 1's score
+	Definitions::irComm->write(SCORE_BYTE);
+	Definitions::irComm->write(scoreP1);
+
+	// Send the timer value
+	Definitions::irComm->write(TIME_BYTE);
+	Definitions::irComm->write(Definitions::currentTime);
+
+	// Wait on incoming data
+	while(!Definitions::irComm->available())
+		PRR=PRR;
+
+	// Store the incoming command
+	uint8_t endreccmd = Definitions::irComm->read();
+
+	// If the score indication byte is received
+	if(endreccmd == SCORE_BYTE)
+	{
+		// Wait on incoming data
+		while(!Definitions::irComm->available())
+			PRR=PRR;
+		// Set player 2's score
+		scoreP2 = Definitions::irComm->read();
+	}
+#elif PEEP==2
+	// Send player 2's score
+	Definitions::irComm->write(SCORE_BYTE);
+	Definitions::irComm->write(scoreP2);
+
+	// Wait on incoming data
+	while(!Definitions::irComm->available())
+		PRR=PRR;
+
+	// Store the incoming command
+	uint8_t endreccmd = Definitions::irComm->read();
+
+	// If the score indication byte is received
+	if(endreccmd == SCORE_BYTE)
+	{
+		// Wait on incoming data
+		while(!Definitions::irComm->available())
+			PRR=PRR;
+		// Set player 1's score
+		scoreP1 = Definitions::irComm->read();
+	}
+	// If the timer indication byte is received
+	else if(endreccmd == TIME_BYTE)
+	{
+		// Wait on incoming data
+		while(!Definitions::irComm->read())
+			PRR=PRR;
+		// Set the timer
+		Definitions::currentTime = Definitions::irComm->read();
+	}
 #endif
+
     // Print the endScreen, showing if you won or lost and the scores
     gameScreen::drawEndScreen();
 
-    // TODO: Find out what the heck this even is
+    // Reset the game when the C-Button is pressed
     while (true)
     {
         if (Definitions::nunchuk->cButton)
-        {
-            // Jumping to the first line of the program to reset all the processes
-            asm volatile ("  jmp 0");
-        }
-		else
 		{
-			PRR = PRR;
+			// Jumping to the first line of the program to reset all the processes
+			asm volatile ("  jmp 0");
 		}
+		else
+			PRR = PRR;
     }
 }
 
@@ -286,71 +305,97 @@ void gameScreen::drawEndScreen() // Draws the screen showing the results of the 
     Definitions::tft->print(endTimer);
 }
 
+// Store how many refreshes have been done
 uint32_t *RefreshCnt = 0;
-//bool placed;
 void gameScreen::refresh() // Handles refreshing the screen and updating some variables
 {
-	PORTD ^= (1 << PORTD0);
     // Increment refresh counter
     *RefreshCnt++;
 
+    // Handle receiving of data
 	if(Definitions::irComm->available())
 	{
+		// Store the incoming command
 		uint8_t recCmd = Definitions::irComm->read();
-		if(recCmd == 0x03)
+
+		// If the lives indication byte is received
+		if(recCmd == LIVES_BYTE)
 		{
+			// Wait for incoming data
 			while(!Definitions::irComm->available())
 				PRR=PRR;
+			// Store the received lives
 			uint8_t recLives = Definitions::irComm->read();
+
+			/* If the current arduino is PEEP 1, they received the lives of PEEP 2...
+			 * So set the lives for PEEP 2
+			 * If the current arduino is PEEP 2 it's the other way around */
 		#if PEEP==1
 			livesP2 = recLives;
 		#elif PEEP==2
 			livesP1 = recLives;
 		#endif
 		}
-		else if(recCmd == 0x04)
+		// If the score indication byte is received
+		else if(recCmd == SCORE_BYTE)
 		{
+			// Wait for incoming data
 			while(!Definitions::irComm->available())
 				PRR=PRR;
+			// Store the received score
 			uint8_t recScore = Definitions::irComm->read();
+
+			/* If the current arduino is PEEP 1, they received the score of PEEP 2...
+			 * So set the score for PEEP 2
+			 * If the current arduino is PEEP 2 it's the other way around */
 			#if PEEP==1
 				scoreP2 = recScore;
 			#elif PEEP==2
 				scoreP1 = recScore;
 			#endif
-
 		}
-		else if(recCmd == 0x05)
+		// If the player location indication byte is received
+		else if(recCmd == PEEP_LOCATION)
 		{
+			// Wait for incoming data
 			while(!Definitions::irComm->available())
 				PRR=PRR;
+			// Store the received x position data
 			uint8_t recPx = Definitions::irComm->read();
 
+			// Wait for incoming data
 			while(!Definitions::irComm->available())
 				PRR=PRR;
+			// Store the received y position data
 			uint8_t recPy = Definitions::irComm->read();
 
-			Definitions::irComm->println(recPx);
-			Definitions::irComm->println(recPy);
-
+			/* If the current arduino is PEEP 1, they received the location data of PEEP 2...
+			 * So set the location for PEEP 2
+			 * If the current arduino is PEEP 2 it's the other way around */
 		#if PEEP==1
-			//p2X = recPx;
-			//p2Y = recPy;
 			movePeep(2, recPx, recPy);
 		#elif PEEP==2
-			//p1X = recPx;
-			//p1Y = recPy;
 			movePeep(1, recPx, recPy);
 		#endif
 		}
-		else if(recCmd == 0x06)
+		// If the bomb location indication byte is received
+		else if(recCmd == BOMB_LOCATION)
 		{
+			// Wait for incoming data
 			while(!Definitions::irComm->available())
 				PRR=PRR;
+			// Store the received x position data
 			uint8_t recBx = Definitions::irComm->read();
+
+			// Wait for incoming data
 			while(!Definitions::irComm->available())
 				PRR=PRR;
+			// Store the received y position data
 			uint8_t recBy = Definitions::irComm->read();
+
+			/* If the current arduino is PEEP 1, they received the bomb location data for PEEP 2...
+			 * So place a bomb of PEEP 2
+			 * If the current arduino is PEEP 2 it's the other way around */
 		#if PEEP==1
 			level.setBomb(1, recBx, recBy, *RefreshCnt, 2);
 			placeBomb(2, level.getBombX(1), level.getBombY(1));
@@ -358,10 +403,10 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 			level.setBomb(0, recBx, recBy, *RefreshCnt, 1);
 			placeBomb(1, level.getBombX(0), level.getBombY(0));
 		#endif
-			while(!Definitions::irComm->available())
-				PRR=PRR;
 		}
 	}
+
+	// Draw the timer value
 	drawTimer();
 
     if((*RefreshCnt % 3) == 0) // If the refresh counter is divisible by three... (run every three refreshes)
@@ -381,42 +426,28 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             && level.getBombTime(0) == 0 && level.getBombY(0) == 0
             && level.getBombPeep(0) == 0)
         {
-            // TODO: fix a possible bug in this code where both players place a bomb when only p1 should place one
-//            if(Definitions::nunchuk->cButton
-//                && Definitions::nunchuk->zButton) // If both C and Z are pressed...
-//            {
-//                // Place a bomb on player 2's position
-//                level.setBomb(1, p2X, p2Y, *RefreshCnt, 2);
-//                placeBomb(2, level.getBombX(1), level.getBombY(1));
-//            }
-//            if(Definitions::nunchuk->zButton) // If only the Z button is pressed...
-//            {
-//                // Place a bomb on player 1's position
-//                level.setBomb(0, p1X, p1Y, *RefreshCnt, 1);
-//                placeBomb(1, level.getBombX(0), level.getBombY(0));
-//            }
-
+			// If the current arduino has player 1, place a bomb for player 1
 			#if PEEP==1
 				level.setBomb(0, p1X, p1Y, *RefreshCnt, 1);
 				placeBomb(1, level.getBombX(0), level.getBombY(0));
+			// If the current arduino has player 2, place a bomb for player 2
 			#elif PEEP==2
 				level.setBomb(1, p2X, p2Y, *RefreshCnt, 2);
                 placeBomb(2, level.getBombX(1), level.getBombY(1));
 			#endif
-
-            // TODO: Decide if this commented-out piece of code can be removed
-            /* //getPlacedTime = level.getBombTime(0);
-            //Serial.println(getPlacedTime, DEC);
-            //placed = true; */
         }
 #endif
-		// TODO: Explain this statement
+
 #if PEEP == 1
+        // wait a few seconds after the bomb is placed
+        // and draw explosion
         if(*RefreshCnt >= level.getBombTime(0) + 48)
         {
+            // check if there is a bomb placed on specified location
             if((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
                 && !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
             {
+                // draw the explosion of the bomb
                 drawExplosion(1, level.getBombX(0), level.getBombY(0));
 
             #ifdef DEBUG
@@ -431,11 +462,14 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             }
         }
 #elif PEEP == 2
+        // wait a few seconds after the bomb is placed
         if(*RefreshCnt >= level.getBombTime(1) + 48)
             {
+                // check if peep 2 has placed a bomb on given location
                 if((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
                     && !(level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))
                 {
+                    // draw explosion on specified location
                     drawExplosion(2, level.getBombX(1), level.getBombY(1));
 
                 #ifdef DEBUG
@@ -451,28 +485,16 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
             }
 #endif
 
-// TODO: Decide if this commented-out piece of code can be removed
-/*
-//        if (*RefreshCnt == level.getBombTime(0) + 12) {
-//            if (((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb) &&
-//                 !(level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion))
-//                || ((level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb) &&
-//                    (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))) {
-//                drawExplosion(level.getBombX(0), level.getBombY(0));
-//                drawExplosion(level.getBombX(1), level.getBombY(1));
-//                //getExTime = *RefreshCnt;
-//            }
-//        }
-*/
-
-        // TODO: Explain what this does
+        // wait a few seconds after bomb is placed and explosion has been drawn
         if(*RefreshCnt >= level.getBombTime(0) + 92)
         {
+            // check if there is an explosion placed
             if((level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::bomb)
                 && (level.getObjectAt(level.getBombX(0), level.getBombY(0)) & mapObject::explosion)
                 || (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::bomb)
                 && (level.getObjectAt(level.getBombX(1), level.getBombY(1)) & mapObject::explosion))
             {
+                // draw air on specified location
                 drawAir(level.getBombX(0), level.getBombY(0));
                 drawAir(level.getBombX(1), level.getBombY(1));
                 level.setBomb(0, 0, 0, 0, 0);
@@ -480,6 +502,8 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
             }
         }
+
+// Move the player based on which player the current arduino has
 #if PEEP==1
         movePeep(1);
 #elif PEEP==2
@@ -507,12 +531,15 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 		Definitions::tft->print("y:  ");
 		Definitions::tft->print((unsigned int) Definitions::nunchuk->analogY);
 		Definitions::print("  ");
-    #endif
+	#endif
+
+		// Draw the map
         level.drawMap();
     }
 	
 	if((*RefreshCnt % 100) == 0)
 	{
+		// After every 100 refreshes, send the players' data
 		#if PEEP==1
 			Definitions::irComm->write(0x05);
 			Definitions::irComm->write(p1X);
@@ -527,20 +554,17 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 
 void gameScreen::drawLives() // Print the amount of lives per player on-screen
 {
+	// Send the new lives values via infrared
 #if PEEP==1
-	Definitions::irComm->write(0x03);
+	Definitions::irComm->write(LIVES_BYTE);
 	Definitions::irComm->write(scoreP1);
 #elif PEEP==2
 	Definitions::irComm->write(0x03);
 	Definitions::irComm->write(scoreP2);
 #endif
-    // Set x-location of lives
+    // Set x-location of where lives are drawn
     uint16_t x = 305;
 
-//    Definitions::irComm->print("p1: ");
-//    Definitions::irComm->println(livesP1);
-//    Definitions::irComm->print("p2: ");
-//    Definitions::irComm->println(livesP2);
     if(livesP1 < 3) // If player 1 has lost lives
     {
         for(int i = 3 - livesP1; i > 0; i--) // Checks for the amount of lives player 1 has left
@@ -602,11 +626,12 @@ void gameScreen::drawTimer() // Draws the timer value
 
 void gameScreen::drawScore() // Draws the score values
 {
+	// Send the new score values via infrared
 #if PEEP==1
-	Definitions::irComm->write(0x04);
+	Definitions::irComm->write(SCORE_BYTE);
 	Definitions::irComm->write(scoreP1);
 #elif PEEP==2
-	Definitions::irComm->write(0x04);
+	Definitions::irComm->write(SCORE_BYTE);
 	Definitions::irComm->write(scoreP2);
 #endif
     // Sets values and draws score of player 1
@@ -640,10 +665,7 @@ void gameScreen::movePeep(int peep) // Move a player across the level
 		newY = p2Y;
 	}
 
-	//Definitions::tft->fillRect(p2X*16, p2Y*16, 16, 16, ILI9341_BLACK);
-
 	// Change the new position according to the joystick position
-	// TODO: decide if all commented-out code here can be removed
 	if(nunX <= 70 && (nunY > 50 && nunY < 200)) // && p2X > 1)  // If the joystick is moved to the left, move player to the left
 	{
 		newX--;
@@ -655,16 +677,15 @@ void gameScreen::movePeep(int peep) // Move a player across the level
 	else if((nunX > 50 && nunX < 200) && nunY >= 170) // && p2Y > 1) // If the joystick is moved upwards, move player upwards
 	{
 		// Nunchuck Y is inverted.
-		//p2Y--;
 		newY--;
 	}
 	else if((nunX > 50 && nunX < 200) && nunY <= 70) // && p2Y < Definitions::gameHeight) // If the joystick is moved downwards, move player downwards
 	{
         // Nunchuck Y is inverted.
-		//p2Y++;
 		newY++;
 	}
 
+	// Move the player to the new location
 	movePeep(peep, newX, newY);
 }
 
@@ -692,14 +713,6 @@ void gameScreen::movePeep(int peep, int newX, int newY)
                 // Set player 1's position values
                 p1X = newX;
                 p1Y = newY;
-//				Definitions::irComm->write(0x05);
-//				Definitions::irComm->println("p1pos:");
-//				Definitions::irComm->write(p1X);
-//				Definitions::irComm->print(p1X);
-//				Definitions::irComm->print(", ");
-//				Definitions::irComm->write(p1Y);
-//				Definitions::irComm->println(p1Y);
-
             }
 			if(peep == 2) // If the selected player is player 2
 			{
@@ -713,6 +726,7 @@ void gameScreen::movePeep(int peep, int newX, int newY)
 				p2X = newX;
 				p2Y = newY;
 			}
+			// Send the new location values via infrared
 			#if PEEP==1
 				Definitions::irComm->write(0x05);
 				Definitions::irComm->write(p1X);
@@ -725,27 +739,10 @@ void gameScreen::movePeep(int peep, int newX, int newY)
 
 		}
 	}
-
-
-
-    // TODO: Decide if this commented-out piece of code can be removed
-	//draw peep on the newest location
-	/*if (peep == 1)
-	   {
-	   drawPeep1(p2X, p2Y);
-
-	   }
-
-	   if (peep == 2)
-	   {
-	   drawPeep2(p2X, p2Y);
-	   } */
-	//return dirX, dirY;
 }
 
 void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y) // Place a bomb
 {
-    // TODO: Decide if this commented-out piece of code can be removed
 	//level.setBomb(0, x, y, )
 	if(peep == 1) // If player 1 placed the bomb
 	{
@@ -757,11 +754,11 @@ void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y) // Place a bomb
         // Place a bomb where Player 2 placed the bomb
 		level.markObjectAt(x, y, mapObject::bombPeep2);
 	}
-	// TODO: Wat is deez?
-	// now there is a bom placed
+	// Mark the place as a bomb and indicate that it needs to be redrawn
 	level.markObjectAt(x, y, mapObject::bomb);
 	level.markObjectAt(x, y, mapObject::needsRedraw);
 
+	// Send the new bomb location values via infrared
 	Definitions::irComm->write(0x06);
 	Definitions::irComm->write(x);
 	Definitions::irComm->write(y);
@@ -769,12 +766,6 @@ void gameScreen::placeBomb(int peep, uint16_t x, uint16_t y) // Place a bomb
 
 void gameScreen::drawExplosion(int peep, uint16_t explX, uint16_t explY) // Draws an explosion on the screen
 {
-// TODO: Decide if this commented-out piece of code can be removed
-//    int explX = p2X;
-//    int explY = p2Y;
-//    int X = p2X;
-//    int Y = p2Y;
-
     /* Checks where the explosions can be placed
      * The checks are done as follows:
      * +    +   +   +   +   +   +
