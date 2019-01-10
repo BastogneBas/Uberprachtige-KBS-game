@@ -13,6 +13,7 @@
 #define PEEP_LOCATION	0x05
 #define BOMB_LOCATION 	0x06
 #define STOP_BYTE 		0x07
+#define TIME_BYTE		0x08
 #define SEND_AGAIN 		0xFF
 
 class gameScreen:public screen // Defines the gameScreen class

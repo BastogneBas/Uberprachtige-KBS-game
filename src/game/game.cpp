@@ -114,14 +114,14 @@ void gameScreen::end() // End the match by calculating some scores and showing t
     // Send and receive data based on which player the current arduino has
 #if PEEP==1
 	// Send the stop byte
-	Definitions::irComm->write(0x07);
+	Definitions::irComm->write(STOP_BYTE);
 
 	// Send player 1's score
-	Definitions::irComm->write(0x04);
+	Definitions::irComm->write(SCORE_BYTE);
 	Definitions::irComm->write(scoreP1);
 
 	// Send the timer value
-	Definitions::irComm->write(0x08);
+	Definitions::irComm->write(TIME_BYTE);
 	Definitions::irComm->write(Definitions::currentTime);
 
 	// Wait on incoming data
@@ -132,7 +132,7 @@ void gameScreen::end() // End the match by calculating some scores and showing t
 	uint8_t endreccmd = Definitions::irComm->read();
 
 	// If the score indication byte is received
-	if(endreccmd == 0x04)
+	if(endreccmd == SCORE_BYTE)
 	{
 		// Wait on incoming data
 		while(!Definitions::irComm->available())
@@ -142,7 +142,7 @@ void gameScreen::end() // End the match by calculating some scores and showing t
 	}
 #elif PEEP==2
 	// Send player 2's score
-	Definitions::irComm->write(0x04);
+	Definitions::irComm->write(SCORE_BYTE);
 	Definitions::irComm->write(scoreP2);
 
 	// Wait on incoming data
@@ -153,7 +153,7 @@ void gameScreen::end() // End the match by calculating some scores and showing t
 	uint8_t endreccmd = Definitions::irComm->read();
 
 	// If the score indication byte is received
-	if(endreccmd == 0x04)
+	if(endreccmd == SCORE_BYTE)
 	{
 		// Wait on incoming data
 		while(!Definitions::irComm->available())
@@ -162,7 +162,7 @@ void gameScreen::end() // End the match by calculating some scores and showing t
 		scoreP1 = Definitions::irComm->read();
 	}
 	// If the timer indication byte is received
-	else if(endreccmd == 0x08)
+	else if(endreccmd == TIME_BYTE)
 	{
 		// Wait on incoming data
 		while(!Definitions::irComm->read())
@@ -319,7 +319,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 		uint8_t recCmd = Definitions::irComm->read();
 
 		// If the lives indication byte is received
-		if(recCmd == 0x03)
+		if(recCmd == LIVES_BYTE)
 		{
 			// Wait for incoming data
 			while(!Definitions::irComm->available())
@@ -337,7 +337,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 		#endif
 		}
 		// If the score indication byte is received
-		else if(recCmd == 0x04)
+		else if(recCmd == SCORE_BYTE)
 		{
 			// Wait for incoming data
 			while(!Definitions::irComm->available())
@@ -355,7 +355,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 			#endif
 		}
 		// If the player location indication byte is received
-		else if(recCmd == 0x05)
+		else if(recCmd == PEEP_LOCATION)
 		{
 			// Wait for incoming data
 			while(!Definitions::irComm->available())
@@ -379,7 +379,7 @@ void gameScreen::refresh() // Handles refreshing the screen and updating some va
 		#endif
 		}
 		// If the bomb location indication byte is received
-		else if(recCmd == 0x06)
+		else if(recCmd == BOMB_LOCATION)
 		{
 			// Wait for incoming data
 			while(!Definitions::irComm->available())
@@ -556,7 +556,7 @@ void gameScreen::drawLives() // Print the amount of lives per player on-screen
 {
 	// Send the new lives values via infrared
 #if PEEP==1
-	Definitions::irComm->write(0x03);
+	Definitions::irComm->write(LIVES_BYTE);
 	Definitions::irComm->write(scoreP1);
 #elif PEEP==2
 	Definitions::irComm->write(0x03);
@@ -628,10 +628,10 @@ void gameScreen::drawScore() // Draws the score values
 {
 	// Send the new score values via infrared
 #if PEEP==1
-	Definitions::irComm->write(0x04);
+	Definitions::irComm->write(SCORE_BYTE);
 	Definitions::irComm->write(scoreP1);
 #elif PEEP==2
-	Definitions::irComm->write(0x04);
+	Definitions::irComm->write(SCORE_BYTE);
 	Definitions::irComm->write(scoreP2);
 #endif
     // Sets values and draws score of player 1
