@@ -7,7 +7,6 @@ When selecting a level, Peep 1 will send the level number. If the selected level
 
 Afterwards, the game will be loaded. The layout of the screen can be seen in the image below
 ![Game screen layout](https://i.imgur.com/Zxvom9d.jpg)
-Format: ![Alt Text](url)
 
 The level can be seen on the left of the screen. It shows the peeps (Peep 1 is blue, Peep 2 is red), the barrels and the unbreakable blocks. On the right, important values are shown.
 The values are, from top to bottom:
