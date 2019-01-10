@@ -119,7 +119,6 @@ void Level::begin()
 			markObjectAt(x + 1, y + 1, mapObject::needsRedraw);
 		}
 	}
-	printMap();
 }
 
 // Returns the level name

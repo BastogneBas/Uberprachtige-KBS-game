@@ -50,7 +50,7 @@ class Level
 	void markObjectAt(uint8_t x, uint8_t y, uint16_t flag);
 	void unmarkObjectAt(uint8_t x, uint8_t y, uint16_t flag);
 	void drawMap();
-	void printMap();
+//	void printMap();
 
 	//Bomb getBomb(int index);
 	//void setBomb(int index, Bomb bomb);
