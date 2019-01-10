@@ -70,48 +70,78 @@ void lvlSelectScreen::begin()
 #endif
 }
 
+// Checking if player 2 is playing, if so, he has to wait for the level that is going to be played.
 #if PEEP==2
+
+// Function that waits until the level has been received
 void lvlSelectScreen::waitForStart()
 {
+	// Defining variable that holds the seed
 	uint16_t seed = 0;
+
+	// While true
 	while(1)
 	{
+		// Wait if data isn't available
 		while(!Definitions::irComm->available())
+			// C++ doesn't like empty while-loops, so we do nothing with PRR = PRR
 			PRR = PRR;
+
+		// Saving the data to a variable
 		int receivedcmd = Definitions::irComm->read();
-		Definitions::tft->print("received: ");
-		Definitions::tft->println(receivedcmd);
-		if(receivedcmd == 0x02)
+
+		// If data == 0x02, it means that level data has been received
+		if(receivedcmd == LEVEL_BYTE)
 		{
+			// Eroor message
 			Definitions::tft->print("Starting level ");
+
+			// While there is no data available, do nothing
 			while(!Definitions::irComm->available())
 				PRR = PRR;
+
+			// If data is available, put it in a variable
 			int receivedlvl = Definitions::irComm->read();
+
+			// If the data == 0x04, it means a random level has been send
 			if(receivedlvl == 0x04)
 			{
+				// Error message
 				Definitions::tft->println("random");
+
+				// Selecting the button
 				selectedButton = 4;
+
+				// Error message
 				Definitions::tft->println("Waiting for seed...");
+
+				// Wait until the data available > 1, else do nothing
 				while(!(Definitions::irComm->available()>1))
 					PRR=PRR;
+
+				// Feeding the seed and shift it 8 places, so 2 bytes can be placed inside the uint16_t.
 				seed = Definitions::irComm->read();
 				seed = (Definitions::irComm->read() << 8);
 			}
 			else if(receivedlvl > 0x04)
 			{
+				// Error message if the level > 0x04.
 				Definitions::tft->println("error, lvl# too high");
 			}
 			else
 			{
+				// Print the level that has been received
 				Definitions::tft->println(receivedlvl);
 				selectedButton = receivedlvl;
 			}
 		}
-		else if(receivedcmd == 0x05)
+		// Else if 0x01 (startbyte) has been received, start the game and break the loop.
+		else if(receivedcmd == START_BYTE)
 		{
 			startGame(seed);
 			break;
 		}
+		// Else, do nothing
 		else
 		{
 		}
@@ -264,55 +294,42 @@ void lvlSelectScreen::repaint(uint8_t selectedButton)
 // Function that will be called if the user wants to go to start a level
 void lvlSelectScreen::startGame(uint16_t seed)
 {
-//#if PEEP==1
-	Definitions::irComm->println('H');
-	Definitions::setTextDebug();
-	Definitions::tft->println(0x02);
-	Definitions::irComm->write(0x02);
-	Definitions::tft->println(selectedButton);
+	// Send the level
+	Definitions::irComm->write(LEVEL_BYTE);
 	Definitions::irComm->write(selectedButton);
-	Definitions::tft->println(0x05);
-	Definitions::irComm->write(0x05);
-//#endif
-	//Definitions::irComm->println(selectedButton);
+	// Send the startbyte
+	Definitions::irComm->write(START_BYTE);
+
 	// Checking if buttonSelect is > 0 && <= 4 for general functions on all buttons
 	if ((selectedButton > 0) && (selectedButton <= 4))
 	{
+		// Start the random level
 	    if(selectedButton == 4)
         {
             delete Definitions::currentScreen;
-#if PEEP == 1
+            // PEEP 2 requires a seed for the random level while PEEP 1 doesn't
+		#if PEEP == 1
 			Definitions::currentScreen = new gameScreen("Random");
-#elif PEEP == 2
+		#elif PEEP == 2
             Definitions::currentScreen = new gameScreen("Random", seed);
-#endif
+		#endif
         }
+	    // Start the selected level
 	    else
         {
             delete Definitions::currentScreen;
             Definitions::currentScreen = new gameScreen(selectedButton-1);
-            //Definitions::currentScreen = new gameScreen(LevelDefs::getLevel(selectedButton-1));
         }
-//		else if (selectedButton == 3)
-//		{
-//			// Deleting current pointer
-//			delete Definitions::currentScreen;
-//
-//			Definitions::currentScreen =
-//				new gameScreen(LevelDefs::getLevel(2));
-//			Definitions::currentScreen->begin();
-//
-//		}
+
+	    // Start the game
 		Definitions::currentScreen->begin();
 	}
 }
 
 void lvlSelectScreen::end()
 {
-
 }
 
 void lvlSelectScreen::checkNunchuck()
 {
-
 }
