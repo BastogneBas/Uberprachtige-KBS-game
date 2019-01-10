@@ -5,7 +5,7 @@ The game supports two players, referred to as peeps. Peep 1 is the master and Pe
 When the game is started, the level select screen will be opened. Peep 1 will be able to choose a level and Peep 2 will wait for Peep 1 to select a level. The game has three levels, but a random level can also be chosen. Level 1 & 2 are levels made by us. Level 3 is an empty level.
 When selecting a level, Peep 1 will send the level number. If the selected level is random, a seed byte to generate the level will also be sent.
 
-Afterwards, the game will be loaded. The layout of the screen can be seen in the image below
+Afterwards, the game will be loaded. The layout of the screen can be seen in the image below:
 ![Game screen layout](https://i.imgur.com/Zxvom9d.jpg)
 
 The level can be seen on the left of the screen. It shows the peeps (Peep 1 is blue, Peep 2 is red), the barrels and the unbreakable blocks. On the right, important values are shown.
