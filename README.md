@@ -1,7 +1,13 @@
 # Überprachtige-KBS-game
-Onze prachtige game
+Our beautiful Bomberman game
 
 # Installation
+## Environment setup
+### Linux
+To set up the environment in Linux, execute `./setup_envirenment`.
+This will dowload the Aruino subsystem and the Arduino-Makefile files in the home directory of the current user
+### Windows
+Cry
 ## Building
 
 To easily specify for which player you would like to compile, specify `PEEP` in your command:
@@ -17,7 +23,9 @@ Your command would look like
 And thus to build code for peep 2 and for another device, and monitor it:
 ```make clean upload monitor DEVICE_PATH=/dev/ttyACM1 PEEP=2```
 
-```
+# 
+
+```Frans is onze held
                                                                                 
                                            ~+:                                  
                                        =~:+=+$=?+~+=                            
